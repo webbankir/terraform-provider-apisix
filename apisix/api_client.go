@@ -9,9 +9,19 @@ import (
 	"net/http"
 )
 
-//func New(endpoint string, apiKey string) ApiClient {
+type AddHeadersRoundtripper struct {
+	Headers http.Header
+	Nested  http.RoundTripper
+}
 
-//}
+func (h AddHeadersRoundtripper) RoundTrip(r *http.Request) (*http.Response, error) {
+	for k, vs := range h.Headers {
+		for _, v := range vs {
+			r.Header.Add(k, v)
+		}
+	}
+	return h.Nested.RoundTrip(r)
+}
 
 func getCl() ApiClient {
 	apiClient := http.DefaultClient
@@ -34,13 +44,14 @@ type ApiClient struct {
 
 func parseHttpResult(res *http.Response, body []byte) (int, []byte, error) {
 	log.Printf("[DEBUG] Got response: %#v", res)
-	log.Printf("[DEBUG] Got body: %#v", string(body))
+	log.Printf("[DEBUG] Got statuscode: %#v", res.StatusCode)
+	log.Printf("[DEBUG] Got body: %v", string(body))
 
 	var result map[string]interface{}
 	err := json.Unmarshal(body, &result)
 
 	if err != nil {
-		return 0, []byte{}, err
+		return res.StatusCode, []byte{}, err
 	}
 
 	if res.StatusCode >= 400 {
@@ -70,15 +81,10 @@ func (client ApiClient) Get(path string) (int, []byte, error) {
 	return parseHttpResult(res, body)
 }
 
-func (client ApiClient) Post(path string, obj interface{}) (int, []byte, error) {
+func (client ApiClient) Post(path string, jsonBytes []byte) (int, []byte, error) {
 	apiUrl := client.Endpoint + path
-	jsonString, err := json.Marshal(obj)
 
-	if err != nil {
-		return 0, []byte{}, err
-	}
-
-	res, err := client.HTTP.Post(apiUrl, "application/json; charset=utf-8", bytes.NewReader(jsonString))
+	res, err := client.HTTP.Post(apiUrl, "application/json; charset=utf-8", bytes.NewReader(jsonBytes))
 
 	if err != nil {
 		return 0, nil, err
@@ -93,15 +99,35 @@ func (client ApiClient) Post(path string, obj interface{}) (int, []byte, error) 
 	return parseHttpResult(res, body)
 }
 
-func (client ApiClient) Put(path string, obj interface{}) (int, []byte, error) {
+func (client ApiClient) Patch(path string, jsonBytes []byte) (int, []byte, error) {
 	apiUrl := client.Endpoint + path
-	jsonString, err := json.Marshal(obj)
-	log.Printf("[DEBUG] SEND -> %v", string(jsonString))
+
+	log.Printf("[DEBUG] SEND -> %v", string(jsonBytes))
+	req, err := http.NewRequest("PATCH", apiUrl, bytes.NewReader(jsonBytes))
 	if err != nil {
-		return 0, []byte{}, err
+		return 0, nil, err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	res, err := client.HTTP.Do(req)
+
+	if err != nil {
+		return 0, nil, err
 	}
 
-	req, err := http.NewRequest("PUT", apiUrl, bytes.NewReader(jsonString))
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return res.StatusCode, nil, err
+	}
+
+	return parseHttpResult(res, body)
+}
+
+func (client ApiClient) Put(path string, jsonBytes []byte) (int, []byte, error) {
+	apiUrl := client.Endpoint + path
+
+	log.Printf("[DEBUG] SEND -> %v", string(jsonBytes))
+	req, err := http.NewRequest("PUT", apiUrl, bytes.NewReader(jsonBytes))
 	if err != nil {
 		return 0, nil, err
 	}
@@ -137,4 +163,41 @@ func (client ApiClient) Delete(path string) error {
 	defer res.Body.Close()
 	_, err = ioutil.ReadAll(res.Body)
 	return err
+}
+
+func (client ApiClient) RunObject(method string, url string, data *map[string]interface{}) (map[string]interface{}, error) {
+	response := make(map[string]interface{})
+	var statusCode int
+	var body []byte
+	var err error
+	switch method {
+	case "GET":
+		statusCode, body, err = client.Get(url)
+	case "POST":
+		b, errA := json.Marshal(*data)
+		if errA == nil {
+			statusCode, body, err = client.Post(url, b)
+		}
+		err = errA
+	case "PUT":
+		b, errA := json.Marshal(*data)
+		if errA == nil {
+			statusCode, body, err = client.Put(url, b)
+		}
+		err = errA
+	}
+
+	if err != nil {
+		return response, err
+	}
+
+	if statusCode >= 400 {
+		return response, fmt.Errorf("got error: %v", string(body))
+	}
+
+	if err = json.Unmarshal(body, &response); err != nil {
+		return response, err
+	}
+
+	return response, nil
 }

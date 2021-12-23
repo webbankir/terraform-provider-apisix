@@ -5,39 +5,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/webbankir/terraform-provider-apisix/apisix/api_client"
 	"os"
 )
-
-//// Provider returns a terraform.ResourceProvider.
-//func Provider() *schema.Provider {
-//	return &schema.Provider{
-//		Schema: map[string]*schema.Schema{
-//			"endpoint": &schema.Schema{
-//				Type:        schema.TypeString,
-//				Required:    true,
-//				DefaultFunc: schema.EnvDefaultFunc("APISIX_ENDPOINT", nil),
-//			},
-//			"api_key": &schema.Schema{
-//				Type:        schema.TypeString,
-//				Required:    true,
-//				DefaultFunc: schema.EnvDefaultFunc("APISIX_API_KEY", nil),
-//			},
-//		},
-//		DataSourcesMap: map[string]*schema.Resource{
-//			//"apisix_route":                dataSourceRoute(),
-//			"apisix_plugin_proxy_rewrite": dataSourcePluginProxyRewrite(),
-//		},
-//		ResourcesMap: map[string]*schema.Resource{
-//			"apisix_route": resourceRoute(),
-//			"apisix_ssl":   resourceSsl(),
-//		},
-//		ConfigureFunc: func(r *schema.ResourceData) (interface{}, error) {
-//			config := New(r.Get("endpoint").(string), r.Get("api_key").(string))
-//			return config, nil
-//		},
-//	}
-//}
 
 var stderr = os.Stderr
 
@@ -47,7 +16,7 @@ func New() tfsdk.Provider {
 
 type provider struct {
 	configured bool
-	client     *api_client.Client
+	client     *ApiClient
 }
 
 func (p *provider) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
@@ -92,8 +61,10 @@ func (p *provider) Configure(ctx context.Context, req tfsdk.ConfigureProviderReq
 
 func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
 	return map[string]tfsdk.ResourceType{
-		"apisix_ssl":   ResourceSslType{},
-		"apisix_route": ResourceRouteType{},
+		"apisix_ssl_certificate": ResourceSslCertificateType{},
+		"apisix_route":           ResourceRouteType{},
+		"apisix_upstream":        ResourceUpstreamType{},
+		"apisix_stream_route":    ResourceStreamRouteType{},
 	}, nil
 }
 

@@ -4,28 +4,27 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/model"
 )
 
-type ResourceSslCertificateType struct {
+type ResourceStreamRouteType struct {
 	p      provider
 	client ApiClient
 }
 
-func (r ResourceSslCertificateType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return ResourceSslCertificateType{
+func (r ResourceStreamRouteType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
+	return ResourceStreamRouteType{
 		p:      *(p.(*provider)),
 		client: getCl(),
 	}, nil
 }
 
-func (r ResourceSslCertificateType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return model.SslCertificateSchema, nil
+func (r ResourceStreamRouteType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+	return model.StreamRouteTypeSchema, nil
 }
 
-func (r ResourceSslCertificateType) Create(ctx context.Context, request tfsdk.CreateResourceRequest, response *tfsdk.CreateResourceResponse) {
-	var plan model.SslCertificateType
+func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.CreateResourceRequest, response *tfsdk.CreateResourceResponse) {
+	var plan model.StreamRouteType
 
 	diags := request.Plan.Get(ctx, &plan)
 	response.Diagnostics.Append(diags...)
@@ -33,7 +32,7 @@ func (r ResourceSslCertificateType) Create(ctx context.Context, request tfsdk.Cr
 		return
 	}
 
-	requestObjectJsonBytes, err := model.SslCertificateTypeStateToMap(plan)
+	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&plan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -42,18 +41,17 @@ func (r ResourceSslCertificateType) Create(ctx context.Context, request tfsdk.Cr
 		return
 	}
 
-	result, err := r.client.CreateSslCertificate(requestObjectJsonBytes)
+	result, err := r.client.CreateStreamRoute(requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't create new ssl resource",
+			"Can't create new stream route resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	newState, err := model.SslCertificateTypeMapToState(result)
-	newState.PrivateKey = types.String{Value: plan.PrivateKey.Value}
+	newState, err := model.StreamRouteTypeMapToState(result)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -69,8 +67,8 @@ func (r ResourceSslCertificateType) Create(ctx context.Context, request tfsdk.Cr
 	}
 }
 
-func (r ResourceSslCertificateType) Delete(ctx context.Context, request tfsdk.DeleteResourceRequest, response *tfsdk.DeleteResourceResponse) {
-	var state model.SslCertificateType
+func (r ResourceStreamRouteType) Delete(ctx context.Context, request tfsdk.DeleteResourceRequest, response *tfsdk.DeleteResourceResponse) {
+	var state model.StreamRouteType
 
 	diags := request.State.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -78,11 +76,11 @@ func (r ResourceSslCertificateType) Delete(ctx context.Context, request tfsdk.De
 		return
 	}
 
-	err := r.client.DeleteSslCertificate(state.ID.Value)
+	err := r.client.DeleteStreamRoute(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't delete ssl resource",
+			"Can't delete stream route resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
@@ -95,8 +93,8 @@ func (r ResourceSslCertificateType) Delete(ctx context.Context, request tfsdk.De
 	}
 }
 
-func (r ResourceSslCertificateType) Read(ctx context.Context, request tfsdk.ReadResourceRequest, response *tfsdk.ReadResourceResponse) {
-	var state model.SslCertificateType
+func (r ResourceStreamRouteType) Read(ctx context.Context, request tfsdk.ReadResourceRequest, response *tfsdk.ReadResourceResponse) {
+	var state model.StreamRouteType
 
 	diags := request.State.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -106,13 +104,13 @@ func (r ResourceSslCertificateType) Read(ctx context.Context, request tfsdk.Read
 
 	if state.ID.Null {
 		response.Diagnostics.AddError(
-			"Can't read ssl certificate resource, ID is null",
+			"Can't read stream route resource, ID is null",
 			"Unexpected error",
 		)
 		return
 	}
 
-	result, err := r.client.GetSslCertificate(state.ID.Value)
+	result, err := r.client.GetStreamRoute(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -122,8 +120,7 @@ func (r ResourceSslCertificateType) Read(ctx context.Context, request tfsdk.Read
 		return
 	}
 
-	newState, err := model.SslCertificateTypeMapToState(result)
-	newState.PrivateKey = types.String{Value: state.PrivateKey.Value}
+	newState, err := model.StreamRouteTypeMapToState(result)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -140,8 +137,8 @@ func (r ResourceSslCertificateType) Read(ctx context.Context, request tfsdk.Read
 	}
 }
 
-func (r ResourceSslCertificateType) Update(ctx context.Context, request tfsdk.UpdateResourceRequest, response *tfsdk.UpdateResourceResponse) {
-	var state model.SslCertificateType
+func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.UpdateResourceRequest, response *tfsdk.UpdateResourceResponse) {
+	var state model.StreamRouteType
 
 	diags := request.Plan.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -149,7 +146,7 @@ func (r ResourceSslCertificateType) Update(ctx context.Context, request tfsdk.Up
 		return
 	}
 
-	requestObjectJsonBytes, err := model.SslCertificateTypeStateToMap(state)
+	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&state)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -158,7 +155,7 @@ func (r ResourceSslCertificateType) Update(ctx context.Context, request tfsdk.Up
 		return
 	}
 
-	result, err := r.client.UpdateSslCertificate(state.ID.Value, requestObjectJsonBytes)
+	result, err := r.client.UpdateStreamRoute(state.ID.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -168,8 +165,7 @@ func (r ResourceSslCertificateType) Update(ctx context.Context, request tfsdk.Up
 		return
 	}
 
-	newState, err := model.SslCertificateTypeMapToState(result)
-	newState.PrivateKey = types.String{Value: state.PrivateKey.Value}
+	newState, err := model.StreamRouteTypeMapToState(result)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -186,7 +182,7 @@ func (r ResourceSslCertificateType) Update(ctx context.Context, request tfsdk.Up
 	}
 }
 
-func (r ResourceSslCertificateType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
+func (r ResourceStreamRouteType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
 	//TODO implement me
 	panic("implement me")
 }
