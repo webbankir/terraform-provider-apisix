@@ -79,8 +79,10 @@ var PluginRedirectSchemaAttribute = tfsdk.Attribute{
 	}),
 }
 
+func (s PluginRedirectType) Name() string { return "redirect" }
+
 func (s PluginRedirectType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v["redirect"]; v != nil {
+	if v := v[s.Name()]; v != nil {
 		jsonData := v.(map[string]interface{})
 		item := PluginRedirectType{}
 
@@ -132,6 +134,7 @@ func (s PluginRedirectType) DecodeFomMap(v map[string]interface{}, pluginsType *
 		pluginsType.Redirect = &item
 	}
 }
+
 func (s PluginRedirectType) validate() error { return nil }
 
 func (s PluginRedirectType) EncodeToMap(m map[string]interface{}) {
@@ -139,29 +142,17 @@ func (s PluginRedirectType) EncodeToMap(m map[string]interface{}) {
 		"disable": s.Disable.Value,
 	}
 
-	if !s.HTTPToHTTPS.Null {
-		pluginValue["http_to_https"] = s.HTTPToHTTPS.Value
-	}
-
-	if !s.URI.Null {
-		pluginValue["uri"] = s.URI.Value
-	}
-
-	if !s.EncodeURI.Null {
-		pluginValue["encode_uri"] = s.EncodeURI.Value
-	}
-
-	if !s.AppendQueryString.Null {
-		pluginValue["append_query_string"] = s.AppendQueryString.Value
-	}
-
-	if !s.RetCode.Null {
-		pluginValue["ret_code"] = utils.TypeNumberToInt(s.RetCode)
-	}
+	utils.ValueToMap(s.HTTPToHTTPS, pluginValue, "http_to_https", true)
+	utils.ValueToMap(s.URI, pluginValue, "uri", true)
+	utils.ValueToMap(s.EncodeURI, pluginValue, "encode_uri", true)
+	utils.ValueToMap(s.AppendQueryString, pluginValue, "append_query_string", true)
+	utils.ValueToMap(s.RetCode, pluginValue, "ret_code", true)
 
 	if s.RegexUri != nil {
 		pluginValue["regex_uri"] = []string{s.RegexUri.Regex.Value, s.RegexUri.Replacement.Value}
+	} else {
+		pluginValue["regex_uri"] = nil
 	}
 
-	m["redirect"] = pluginValue
+	m[s.Name()] = pluginValue
 }

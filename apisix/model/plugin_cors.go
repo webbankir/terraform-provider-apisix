@@ -94,8 +94,10 @@ var PluginCorsSchemaAttribute = tfsdk.Attribute{
 	}),
 }
 
+func (s PluginCorsType) Name() string { return "cors" }
+
 func (s PluginCorsType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v["cors"]; v != nil {
+	if v := v[s.Name()]; v != nil {
 		jsonData := v.(map[string]interface{})
 		item := PluginCorsType{}
 
@@ -199,6 +201,8 @@ func (s PluginCorsType) EncodeToMap(m map[string]interface{}) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_origins"] = strings.Join(values, ",")
+	} else {
+		pluginValue["allow_origins"] = nil
 	}
 
 	if !s.AllowMethods.Null {
@@ -207,6 +211,8 @@ func (s PluginCorsType) EncodeToMap(m map[string]interface{}) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_methods"] = strings.Join(values, ",")
+	} else {
+		pluginValue["allow_methods"] = nil
 	}
 
 	if !s.AllowHeaders.Null {
@@ -215,6 +221,8 @@ func (s PluginCorsType) EncodeToMap(m map[string]interface{}) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_headers"] = strings.Join(values, ",")
+	} else {
+		pluginValue["allow_headers"] = nil
 	}
 
 	if !s.ExposeHeaders.Null {
@@ -223,6 +231,8 @@ func (s PluginCorsType) EncodeToMap(m map[string]interface{}) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["expose_headers"] = strings.Join(values, ",")
+	} else {
+		pluginValue["expose_headers"] = nil
 	}
 
 	if !s.AllowOriginsByRegex.Null {
@@ -235,10 +245,15 @@ func (s PluginCorsType) EncodeToMap(m map[string]interface{}) {
 
 	if !s.MaxAge.Null {
 		pluginValue["max_age"] = utils.TypeNumberToInt(s.MaxAge)
-	}
-	if !s.AllowCredential.Null {
-		pluginValue["allow_credential"] = s.AllowCredential.Value
+	} else {
+		pluginValue["max_age"] = nil
 	}
 
-	m["cors"] = pluginValue
+	if !s.AllowCredential.Null {
+		pluginValue["allow_credential"] = s.AllowCredential.Value
+	} else {
+		pluginValue["allow_credential"] = nil
+	}
+
+	m[s.Name()] = pluginValue
 }

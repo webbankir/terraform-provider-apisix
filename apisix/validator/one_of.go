@@ -23,25 +23,6 @@ func (j OneOfType) MarkdownDescription(ctx context.Context) string {
 }
 
 func (j OneOfType) Validate(ctx context.Context, request tfsdk.ValidateAttributeRequest, response *tfsdk.ValidateAttributeResponse) {
-
-	//result, _, _ := tftypes.WalkAttributePath(request.Config.Raw, tftypes.NewAttributePathWithSteps(request.AttributePath.Steps()))
-	//
-	//if result.(tftypes.Value).IsNull() {
-	//	return
-	//} else if result.(tftypes.Value).Type().Is(tftypes.List{}) {
-	//	if request.AttributeConfig.(types.List).Null {
-	//		return
-	//	}
-	//} else if result.(tftypes.Value).Type().Is(tftypes.Map{}) {
-	//	if request.AttributeConfig.(types.Map).Null {
-	//		return
-	//	}
-	//} else if result.(tftypes.Value).Type().Is(tftypes.Set{}) {
-	//	if request.AttributeConfig.(types.Set).Null {
-	//		return
-	//	}
-	//}
-
 	exists := false
 	for _, v := range j.Keys {
 		paths := strings.Split(v, ".")

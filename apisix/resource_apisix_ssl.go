@@ -9,14 +9,12 @@ import (
 )
 
 type ResourceSslCertificateType struct {
-	p      provider
-	client ApiClient
+	p provider
 }
 
 func (r ResourceSslCertificateType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
 	return ResourceSslCertificateType{
-		p:      *(p.(*provider)),
-		client: getCl(),
+		p: *(p.(*provider)),
 	}, nil
 }
 
@@ -42,7 +40,7 @@ func (r ResourceSslCertificateType) Create(ctx context.Context, request tfsdk.Cr
 		return
 	}
 
-	result, err := r.client.CreateSslCertificate(requestObjectJsonBytes)
+	result, err := r.p.client.CreateSslCertificate(requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -78,7 +76,7 @@ func (r ResourceSslCertificateType) Delete(ctx context.Context, request tfsdk.De
 		return
 	}
 
-	err := r.client.DeleteSslCertificate(state.ID.Value)
+	err := r.p.client.DeleteSslCertificate(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -112,7 +110,7 @@ func (r ResourceSslCertificateType) Read(ctx context.Context, request tfsdk.Read
 		return
 	}
 
-	result, err := r.client.GetSslCertificate(state.ID.Value)
+	result, err := r.p.client.GetSslCertificate(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -158,7 +156,7 @@ func (r ResourceSslCertificateType) Update(ctx context.Context, request tfsdk.Up
 		return
 	}
 
-	result, err := r.client.UpdateSslCertificate(state.ID.Value, requestObjectJsonBytes)
+	result, err := r.p.client.UpdateSslCertificate(state.ID.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(

@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"github.com/webbankir/terraform-provider-apisix/apisix/validator"
 )
 
@@ -43,8 +44,10 @@ var PluginServerlessPreFunctionSchemaAttribute = tfsdk.Attribute{
 	}),
 }
 
+func (s PluginServerlessPreFunctionType) Name() string { return "serverless-pre-function" }
+
 func (s PluginServerlessPreFunctionType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v["serverless-pre-function"]; v != nil {
+	if v := v[s.Name()]; v != nil {
 		jsonData := v.(map[string]interface{})
 		item := PluginServerlessPreFunctionType{}
 
@@ -85,17 +88,8 @@ func (s PluginServerlessPreFunctionType) EncodeToMap(m map[string]interface{}) {
 		"disable": s.Disable.Value,
 	}
 
-	if !s.Phase.Null {
-		pluginValue["phase"] = s.Phase.Value
-	}
+	utils.ValueToMap(s.Phase, pluginValue, "phase", true)
+	utils.ValueToMap(s.Functions, pluginValue, "functions", true)
 
-	if !s.Functions.Null {
-		var values []string
-		for _, v := range s.Functions.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		pluginValue["functions"] = values
-	}
-
-	m["serverless-pre-function"] = pluginValue
+	m[s.Name()] = pluginValue
 }

@@ -8,14 +8,12 @@ import (
 )
 
 type ResourceStreamRouteType struct {
-	p      provider
-	client ApiClient
+	p provider
 }
 
 func (r ResourceStreamRouteType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
 	return ResourceStreamRouteType{
-		p:      *(p.(*provider)),
-		client: getCl(),
+		p: *(p.(*provider)),
 	}, nil
 }
 
@@ -32,7 +30,7 @@ func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.Creat
 		return
 	}
 
-	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&plan)
+	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&plan, false)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -41,7 +39,7 @@ func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.Creat
 		return
 	}
 
-	result, err := r.client.CreateStreamRoute(requestObjectJsonBytes)
+	result, err := r.p.client.CreateStreamRoute(requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -76,7 +74,7 @@ func (r ResourceStreamRouteType) Delete(ctx context.Context, request tfsdk.Delet
 		return
 	}
 
-	err := r.client.DeleteStreamRoute(state.ID.Value)
+	err := r.p.client.DeleteStreamRoute(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -110,7 +108,7 @@ func (r ResourceStreamRouteType) Read(ctx context.Context, request tfsdk.ReadRes
 		return
 	}
 
-	result, err := r.client.GetStreamRoute(state.ID.Value)
+	result, err := r.p.client.GetStreamRoute(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -146,7 +144,7 @@ func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.Updat
 		return
 	}
 
-	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&state)
+	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&state, true)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -155,7 +153,7 @@ func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.Updat
 		return
 	}
 
-	result, err := r.client.UpdateStreamRoute(state.ID.Value, requestObjectJsonBytes)
+	result, err := r.p.client.UpdateStreamRoute(state.ID.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(

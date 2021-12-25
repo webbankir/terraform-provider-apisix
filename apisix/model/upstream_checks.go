@@ -348,32 +348,42 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 	if v := state.Active; v != nil {
 		valueActive := make(map[string]interface{})
 
-		if !v.Type.Null {
-			valueActive["type"] = v.Type.Value
-		}
+		utils.ValueToMap(v.Type, valueActive, "type", false)
 
 		if !v.Timeout.Null {
 			valueActive["timeout"] = utils.TypeNumberToInt(v.Timeout)
+		} else {
+			valueActive["timeout"] = nil
 		}
 
 		if !v.Concurrency.Null {
 			valueActive["concurrency"] = utils.TypeNumberToInt(v.Concurrency)
+		} else {
+			valueActive["concurrency"] = nil
 		}
 
 		if !v.HTTPPath.Null {
 			valueActive["http_path"] = v.HTTPPath.Value
+		} else {
+			valueActive["http_path"] = nil
 		}
 
 		if !v.Host.Null {
 			valueActive["host"] = v.Host.Value
+		} else {
+			valueActive["host"] = nil
 		}
 
 		if !v.Port.Null {
 			valueActive["port"] = utils.TypeNumberToInt(v.Port)
+		} else {
+			valueActive["port"] = nil
 		}
 
 		if !v.HTTPSVerifyCertificate.Null {
 			valueActive["https_verify_certificate"] = v.HTTPSVerifyCertificate.Value
+		} else {
+			valueActive["https_verify_certificate"] = nil
 		}
 
 		if !v.ReqHeaders.Null {
@@ -386,6 +396,8 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 			}
 
 			valueActive["req_headers"] = values
+		} else {
+			valueActive["req_headers"] = nil
 		}
 
 		if healthy := v.Healthy; healthy != nil {
@@ -393,6 +405,8 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 
 			if !healthy.Interval.Null {
 				valueActiveHealthy["interval"] = utils.TypeNumberToInt(healthy.Interval)
+			} else {
+				valueActiveHealthy["interval"] = nil
 			}
 
 			if !healthy.HTTPStatuses.Null {
@@ -405,13 +419,19 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 				}
 
 				valueActive["http_statuses"] = values
+			} else {
+				valueActive["http_statuses"] = nil
 			}
 
 			if !healthy.Successes.Null {
 				valueActiveHealthy["successes"] = utils.TypeNumberToInt(healthy.Successes)
+			} else {
+				valueActiveHealthy["successes"] = nil
 			}
 
 			valueActive["healthy"] = valueActiveHealthy
+		} else {
+			valueActive["healthy"] = nil
 		}
 
 		if unhealthy := v.Unhealthy; unhealthy != nil {
@@ -419,18 +439,26 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 
 			if !unhealthy.Interval.Null {
 				valueActiveUnhealthy["interval"] = utils.TypeNumberToInt(unhealthy.Interval)
+			} else {
+				valueActiveUnhealthy["interval"] = nil
 			}
 
 			if !unhealthy.TCPFailures.Null {
 				valueActiveUnhealthy["tcp_failures"] = utils.TypeNumberToInt(unhealthy.TCPFailures)
+			} else {
+				valueActiveUnhealthy["tcp_failures"] = nil
 			}
 
 			if !unhealthy.Timeouts.Null {
 				valueActiveUnhealthy["timeouts"] = utils.TypeNumberToInt(unhealthy.Timeouts)
+			} else {
+				valueActiveUnhealthy["timeouts"] = nil
 			}
 
 			if !unhealthy.HTTPFailures.Null {
 				valueActiveUnhealthy["http_failures"] = utils.TypeNumberToInt(unhealthy.HTTPFailures)
+			} else {
+				valueActiveUnhealthy["http_failures"] = nil
 			}
 
 			if !unhealthy.HTTPStatuses.Null {
@@ -443,12 +471,18 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 				}
 
 				valueActiveUnhealthy["http_statuses"] = values
+			} else {
+				valueActiveUnhealthy["http_statuses"] = nil
 			}
 
 			valueActive["unhealthy"] = valueActiveUnhealthy
+		} else {
+			valueActive["unhealthy"] = nil
 		}
 
 		result["active"] = valueActive
+	} else {
+		result["active"] = nil
 	}
 
 	if v := state.Passive; v != nil {
@@ -467,13 +501,19 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 				}
 
 				valuePassiveHealthy["http_statuses"] = values
+			} else {
+				valuePassiveHealthy["http_statuses"] = nil
 			}
 
 			if !healthy.Successes.Null {
 				valuePassiveHealthy["successes"] = utils.TypeNumberToInt(healthy.Successes)
+			} else {
+				valuePassiveHealthy["successes"] = nil
 			}
 
 			valuePassive["healthy"] = valuePassiveHealthy
+		} else {
+			valuePassive["healthy"] = nil
 		}
 
 		if unhealthy := v.Unhealthy; unhealthy != nil {
@@ -481,14 +521,20 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 
 			if !unhealthy.TCPFailures.Null {
 				valuePassiveUnhealthy["tcp_failures"] = utils.TypeNumberToInt(unhealthy.TCPFailures)
+			} else {
+				valuePassiveUnhealthy["tcp_failures"] = nil
 			}
 
 			if !unhealthy.Timeouts.Null {
 				valuePassiveUnhealthy["timeouts"] = utils.TypeNumberToInt(unhealthy.Timeouts)
+			} else {
+				valuePassiveUnhealthy["timeouts"] = nil
 			}
 
 			if !unhealthy.HTTPFailures.Null {
 				valuePassiveUnhealthy["http_failures"] = utils.TypeNumberToInt(unhealthy.HTTPFailures)
+			} else {
+				valuePassiveUnhealthy["http_failures"] = nil
 			}
 
 			if !unhealthy.HTTPStatuses.Null {
@@ -501,12 +547,18 @@ func UpstreamChecksStateToMap(state *UpstreamChecksType) *map[string]interface{}
 				}
 
 				valuePassiveUnhealthy["http_statuses"] = values
+			} else {
+				valuePassiveUnhealthy["http_statuses"] = nil
 			}
 
 			valuePassive["unhealthy"] = valuePassiveUnhealthy
+		} else {
+			valuePassive["unhealthy"] = nil
 		}
 
 		result["passive"] = valuePassive
+	} else {
+		result["passive"] = nil
 	}
 
 	return &result

@@ -8,14 +8,13 @@ import (
 )
 
 type ResourceUpstreamType struct {
-	p      provider
-	client ApiClient
+	p provider
 }
 
 func (r ResourceUpstreamType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
+
 	return ResourceUpstreamType{
-		p:      *(p.(*provider)),
-		client: getCl(),
+		p: *(p.(*provider)),
 	}, nil
 }
 
@@ -33,7 +32,7 @@ func (r ResourceUpstreamType) Create(ctx context.Context, request tfsdk.CreateRe
 		return
 	}
 
-	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&plan)
+	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&plan, false)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -42,7 +41,7 @@ func (r ResourceUpstreamType) Create(ctx context.Context, request tfsdk.CreateRe
 		return
 	}
 
-	result, err := r.client.CreateUpstream(requestObjectJsonBytes)
+	result, err := r.p.client.CreateUpstream(requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -86,7 +85,7 @@ func (r ResourceUpstreamType) Read(ctx context.Context, request tfsdk.ReadResour
 		)
 		return
 	}
-	result, err := r.client.GetUpstream(state.ID.Value)
+	result, err := r.p.client.GetUpstream(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -122,7 +121,7 @@ func (r ResourceUpstreamType) Update(ctx context.Context, request tfsdk.UpdateRe
 		return
 	}
 
-	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&state)
+	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&state, true)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -131,7 +130,7 @@ func (r ResourceUpstreamType) Update(ctx context.Context, request tfsdk.UpdateRe
 		return
 	}
 
-	result, err := r.client.UpdateUpstream(state.ID.Value, requestObjectJsonBytes)
+	result, err := r.p.client.UpdateUpstream(state.ID.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -167,7 +166,7 @@ func (r ResourceUpstreamType) Delete(ctx context.Context, request tfsdk.DeleteRe
 		return
 	}
 
-	err := r.client.DeleteUpstream(state.ID.Value)
+	err := r.p.client.DeleteUpstream(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(

@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/common"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"github.com/webbankir/terraform-provider-apisix/apisix/validator"
 )
 
@@ -64,8 +65,10 @@ var PluginProxyRewriteSchemaAttribute = tfsdk.Attribute{
 	}),
 }
 
+func (s PluginProxyRewriteType) Name() string { return "proxy-rewrite" }
+
 func (s PluginProxyRewriteType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v["proxy-rewrite"]; v != nil {
+	if v := v[s.Name()]; v != nil {
 		jsonData := v.(map[string]interface{})
 		item := PluginProxyRewriteType{}
 
@@ -134,32 +137,17 @@ func (s PluginProxyRewriteType) EncodeToMap(m map[string]interface{}) {
 		"disable": s.Disable.Value,
 	}
 
-	if !s.Scheme.Null {
-		pluginValue["scheme"] = s.Scheme.Value
-	}
+	utils.ValueToMap(s.Scheme, pluginValue, "scheme", true)
+	utils.ValueToMap(s.Uri, pluginValue, "uri", true)
+	utils.ValueToMap(s.Headers, pluginValue, "headers", true)
+	utils.ValueToMap(s.Host, pluginValue, "host", true)
+	utils.ValueToMap(s.Method, pluginValue, "method", true)
 
-	if !s.Uri.Null {
-		pluginValue["uri"] = s.Uri.Value
-	}
-
-	if !s.Headers.Null {
-		values := make(map[string]interface{})
-		for k, v := range s.Headers.Elems {
-			values[k] = v.(types.String).Value
-		}
-		pluginValue["headers"] = values
-	}
-
-	if !s.Host.Null {
-		pluginValue["host"] = s.Host.Value
-	}
-
-	if !s.Method.Null {
-		pluginValue["method"] = s.Method.Value
-	}
 	if s.RegexUri != nil {
 		pluginValue["regex_uri"] = []string{s.RegexUri.Regex.Value, s.RegexUri.Replacement.Value}
+	} else {
+		pluginValue["regex_uri"] = nil
 	}
 
-	m["proxy-rewrite"] = pluginValue
+	m[s.Name()] = pluginValue
 }

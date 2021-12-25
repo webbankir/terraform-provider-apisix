@@ -363,73 +363,20 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 	return &newState, nil
 }
 
-func RouteTypeStateToMap(state RouteType) (map[string]interface{}, error) {
+func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}, error) {
 
 	routeRequestObject := make(map[string]interface{})
 
-	if !state.Name.Null {
-		routeRequestObject["name"] = state.Name.Value
-	}
-
-	if !state.Description.Null {
-		routeRequestObject["desc"] = state.Description.Value
-	} else {
-		routeRequestObject["desc"] = "Managed by terraform"
-	}
-
-	if state.IsEnabled.Value {
-		routeRequestObject["status"] = 1
-	} else {
-		routeRequestObject["status"] = 0
-	}
-
-	if !state.Uri.Null {
-		routeRequestObject["uri"] = state.Uri.Value
-	}
-
-	if !state.Uris.Null {
-		var values []string
-		for _, v := range state.Uris.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		routeRequestObject["uris"] = values
-	}
-
-	if !state.Host.Null {
-		routeRequestObject["host"] = state.Host.Value
-	}
-
-	if !state.Hosts.Null {
-		var values []string
-		for _, v := range state.Hosts.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		routeRequestObject["host"] = values
-	}
-
-	if !state.RemoteAddr.Null {
-		routeRequestObject["remote_addr"] = state.RemoteAddr.Value
-	}
-
-	if !state.RemoteAddrs.Null {
-		var values []string
-		for _, v := range state.RemoteAddrs.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		routeRequestObject["remote_addrs"] = values
-	}
-
-	if !state.Methods.Null {
-		var values []string
-		for _, v := range state.Methods.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		routeRequestObject["methods"] = values
-	}
-
-	if !state.Priority.Null {
-		routeRequestObject["priority"] = utils.TypeNumberToInt(state.Priority)
-	}
+	utils.ValueToMap(state.Name, routeRequestObject, "name", isUpdate)
+	utils.ValueToMap(state.Description, routeRequestObject, "desc", isUpdate)
+	utils.ValueToMap(state.Uri, routeRequestObject, "uri", isUpdate)
+	utils.ValueToMap(state.Uris, routeRequestObject, "uris", isUpdate)
+	utils.ValueToMap(state.Host, routeRequestObject, "host", isUpdate)
+	utils.ValueToMap(state.Hosts, routeRequestObject, "hosts", isUpdate)
+	utils.ValueToMap(state.RemoteAddr, routeRequestObject, "remote_addr", isUpdate)
+	utils.ValueToMap(state.RemoteAddrs, routeRequestObject, "remote_addrs", isUpdate)
+	utils.ValueToMap(state.Methods, routeRequestObject, "methods", isUpdate)
+	utils.ValueToMap(state.Priority, routeRequestObject, "priority", isUpdate)
 
 	if !state.IsEnabled.Null {
 		if state.IsEnabled.Value {
@@ -437,48 +384,29 @@ func RouteTypeStateToMap(state RouteType) (map[string]interface{}, error) {
 		} else {
 			routeRequestObject["status"] = 0
 		}
+	} else if isUpdate {
+		routeRequestObject["status"] = nil
 	}
 
-	if !state.EnableWebsocket.Null {
-		routeRequestObject["enable_websocket"] = state.EnableWebsocket.Value
-	}
-
-	if !state.ServiceId.Null {
-		routeRequestObject["service_id"] = state.ServiceId.Value
-	}
-
-	if !state.UpstreamId.Null {
-		routeRequestObject["upstream_id"] = state.UpstreamId.Value
-	}
-
-	if !state.Labels.Null {
-		values := make(map[string]interface{})
-		for k, v := range state.Labels.Elems {
-			values[k] = v.(types.String).Value
-		}
-		routeRequestObject["labels"] = values
-	}
+	utils.ValueToMap(state.EnableWebsocket, routeRequestObject, "enable_websocket", isUpdate)
+	utils.ValueToMap(state.ServiceId, routeRequestObject, "service_id", isUpdate)
+	utils.ValueToMap(state.UpstreamId, routeRequestObject, "upstream_id", isUpdate)
+	utils.ValueToMap(state.Labels, routeRequestObject, "labels", isUpdate)
 
 	if state.Timeout != nil {
+		// TODO: FIXME
 		routeRequestObject["timeout"] = map[string]interface{}{
 			"connect": utils.TypeNumberToInt(state.Timeout.Connect),
 			"send":    utils.TypeNumberToInt(state.Timeout.Send),
 			"read":    utils.TypeNumberToInt(state.Timeout.Read),
 		}
-
+	} else if isUpdate {
+		routeRequestObject["timeout"] = nil
 	}
 
-	if !state.Script.Null {
-		routeRequestObject["script"] = state.Script.Value
-	}
-
-	if !state.PluginConfigId.Null {
-		routeRequestObject["plugin_config_id"] = state.PluginConfigId.Value
-	}
-
-	if !state.FilterFunc.Null {
-		routeRequestObject["filter_func"] = state.FilterFunc.Value
-	}
+	utils.ValueToMap(state.Script, routeRequestObject, "script", isUpdate)
+	utils.ValueToMap(state.PluginConfigId, routeRequestObject, "plugin_config_id", isUpdate)
+	utils.ValueToMap(state.FilterFunc, routeRequestObject, "filter_func", isUpdate)
 
 	plugins := make(map[string]interface{})
 	if state.Plugins != nil {
@@ -493,15 +421,13 @@ func RouteTypeStateToMap(state RouteType) (map[string]interface{}, error) {
 		routeRequestObject["plugins"] = plugins
 	}
 
-	upstream, err := UpstreamTypeStateToMap(state.Upstream)
+	upstream, err := UpstreamTypeStateToMap(state.Upstream, isUpdate)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if upstream != nil {
-		routeRequestObject["upstream"] = upstream
-	}
+	routeRequestObject["upstream"] = upstream
 
 	return routeRequestObject, nil
 }

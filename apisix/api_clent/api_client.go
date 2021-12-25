@@ -1,4 +1,4 @@
-package apisix
+package api_clent
 
 import (
 	"bytes"
@@ -23,16 +23,16 @@ func (h AddHeadersRoundtripper) RoundTrip(r *http.Request) (*http.Response, erro
 	return h.Nested.RoundTrip(r)
 }
 
-func getCl() ApiClient {
+func GetCl(apiKey string, endpoint string) ApiClient {
 	apiClient := http.DefaultClient
 	headers := make(http.Header, 0)
-	headers.Add("X-API-KEY", "edd1c9f034335f136f87ad84b625c8f1")
+	headers.Add("X-API-KEY", apiKey)
 	apiClient.Transport = AddHeadersRoundtripper{
 		Headers: headers,
 		Nested:  http.DefaultTransport,
 	}
 	return ApiClient{
-		Endpoint: "http://172.16.104.3/apisix/admin",
+		Endpoint: endpoint,
 		HTTP:     http.DefaultClient,
 	}
 }
@@ -84,6 +84,7 @@ func (client ApiClient) Get(path string) (int, []byte, error) {
 func (client ApiClient) Post(path string, jsonBytes []byte) (int, []byte, error) {
 	apiUrl := client.Endpoint + path
 
+	log.Printf("[DEBUG] SEND -> %v", string(jsonBytes))
 	res, err := client.HTTP.Post(apiUrl, "application/json; charset=utf-8", bytes.NewReader(jsonBytes))
 
 	if err != nil {
@@ -183,6 +184,13 @@ func (client ApiClient) RunObject(method string, url string, data *map[string]in
 		b, errA := json.Marshal(*data)
 		if errA == nil {
 			statusCode, body, err = client.Put(url, b)
+		}
+		err = errA
+
+	case "PATCH":
+		b, errA := json.Marshal(*data)
+		if errA == nil {
+			statusCode, body, err = client.Patch(url, b)
 		}
 		err = errA
 	}

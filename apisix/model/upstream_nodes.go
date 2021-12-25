@@ -42,24 +42,6 @@ var UpstreamNodesSchemaAttribute = tfsdk.Attribute{
 	},
 }
 
-func UpstreamNodesStateToMap(state *[]UpstreamNodeType) *[]map[string]interface{} {
-	if state == nil {
-		return nil
-	}
-
-	var result []map[string]interface{}
-
-	for _, v := range *state {
-		result = append(result, map[string]interface{}{
-			"host":   v.Host.Value,
-			"port":   utils.TypeNumberToInt(v.Port),
-			"weight": utils.TypeNumberToInt(v.Weight),
-		})
-	}
-
-	return &result
-}
-
 func UpstreamNodesMapToState(data map[string]interface{}) *[]UpstreamNodeType {
 	v := data["nodes"]
 
@@ -109,6 +91,28 @@ func UpstreamNodesMapToState(data map[string]interface{}) *[]UpstreamNodeType {
 	default:
 		return nil
 
+	}
+
+	return &result
+}
+
+func UpstreamNodesStateToMap(state *[]UpstreamNodeType) *[]map[string]interface{} {
+	if state == nil {
+		return nil
+	}
+
+	var result []map[string]interface{}
+
+	for _, v := range *state {
+		item := map[string]interface{}{}
+		utils.ValueToMap(v.Host, item, "host", false)
+		utils.ValueToMap(v.Port, item, "port", false)
+		utils.ValueToMap(v.Weight, item, "weight", false)
+		result = append(result, item)
+	}
+
+	if len(result) == 0 {
+		return nil
 	}
 
 	return &result

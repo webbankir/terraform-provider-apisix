@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 )
 
 type SslCertificateType struct {
@@ -91,16 +92,9 @@ func SslCertificateTypeStateToMap(state SslCertificateType) (map[string]interfac
 
 	requestObject := make(map[string]interface{})
 
-	requestObject["cert"] = state.Certificate.Value
-	requestObject["key"] = state.PrivateKey.Value
-
-	if !state.Snis.Null {
-		var values []string
-		for _, v := range state.Snis.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		requestObject["snis"] = values
-	}
+	utils.ValueToMap(state.Certificate, requestObject, "cert", true)
+	utils.ValueToMap(state.PrivateKey, requestObject, "key", true)
+	utils.ValueToMap(state.Snis, requestObject, "snis", true)
 
 	return requestObject, nil
 }

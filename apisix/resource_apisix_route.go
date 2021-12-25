@@ -8,14 +8,12 @@ import (
 )
 
 type ResourceRouteType struct {
-	p      provider
-	client ApiClient
+	p provider
 }
 
 func (r ResourceRouteType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
 	return ResourceRouteType{
-		p:      *(p.(*provider)),
-		client: getCl(),
+		p: *(p.(*provider)),
 	}, nil
 }
 
@@ -31,7 +29,7 @@ func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResou
 		return
 	}
 
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan)
+	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, false)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -40,7 +38,7 @@ func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResou
 		return
 	}
 
-	result, err := r.client.CreateRoute(requestObjectJsonBytes)
+	result, err := r.p.client.CreateRoute(requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -84,7 +82,7 @@ func (r ResourceRouteType) Read(ctx context.Context, request tfsdk.ReadResourceR
 		)
 		return
 	}
-	result, err := r.client.GetRoute(state.ID.Value)
+	result, err := r.p.client.GetRoute(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -120,7 +118,7 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 		return
 	}
 
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(state)
+	requestObjectJsonBytes, err := model.RouteTypeStateToMap(state, true)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -129,7 +127,7 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 		return
 	}
 
-	result, err := r.client.UpdateRoute(state.ID.Value, requestObjectJsonBytes)
+	result, err := r.p.client.UpdateRoute(state.ID.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -165,7 +163,7 @@ func (r ResourceRouteType) Delete(ctx context.Context, request tfsdk.DeleteResou
 		return
 	}
 
-	err := r.client.DeleteRoute(state.ID.Value)
+	err := r.p.client.DeleteRoute(state.ID.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(

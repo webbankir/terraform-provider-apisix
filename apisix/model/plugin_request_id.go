@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"github.com/webbankir/terraform-provider-apisix/apisix/validator"
 )
 
@@ -55,8 +56,10 @@ var PluginRequestIdSchemaAttribute = tfsdk.Attribute{
 	}),
 }
 
+func (s PluginRequestIdType) Name() string { return "request-id" }
+
 func (s PluginRequestIdType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v["request-id"]; v != nil {
+	if v := v[s.Name()]; v != nil {
 		jsonData := v.(map[string]interface{})
 		item := PluginRequestIdType{}
 
@@ -95,17 +98,9 @@ func (s PluginRequestIdType) EncodeToMap(m map[string]interface{}) {
 		"disable": s.Disable.Value,
 	}
 
-	if !s.HeaderName.Null {
-		pluginValue["header_name"] = s.HeaderName.Value
-	}
+	utils.ValueToMap(s.HeaderName, pluginValue, "header_name", true)
+	utils.ValueToMap(s.IncludeInResponse, pluginValue, "include_in_response", true)
+	utils.ValueToMap(s.Algorithm, pluginValue, "algorithm", true)
 
-	if !s.IncludeInResponse.Null {
-		pluginValue["include_in_response"] = s.IncludeInResponse.Value
-	}
-
-	if !s.Algorithm.Null {
-		pluginValue["algorithm"] = s.Algorithm.Value
-	}
-
-	m["request-id"] = pluginValue
+	m[s.Name()] = pluginValue
 }

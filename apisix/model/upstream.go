@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
@@ -148,81 +147,28 @@ func UpstreamTypeMapToState(data map[string]interface{}) (*UpstreamType, error) 
 		newState.ID = types.String{Value: v.(string)}
 	}
 
-	if v := jsonMap["type"]; v != nil {
-		newState.Type = types.String{Value: v.(string)}
-	} else {
-		newState.Type = types.String{Null: true}
-	}
+	utils.MapValueToValue(jsonMap, "type", &newState.Type)
+	utils.MapValueToValue(jsonMap, "service_name", &newState.ServiceName)
+	utils.MapValueToValue(jsonMap, "discovery_type", &newState.DiscoveryType)
+	utils.MapValueToValue(jsonMap, "name", &newState.Name)
+	utils.MapValueToValue(jsonMap, "desc", &newState.Desc)
+	utils.MapValueToValue(jsonMap, "pass_host", &newState.PassHost)
+	utils.MapValueToValue(jsonMap, "scheme", &newState.Scheme)
+	utils.MapValueToValue(jsonMap, "upstream_host", &newState.UpstreamHost)
+	utils.MapValueToValue(jsonMap, "hash_on", &newState.HashOn)
+	utils.MapValueToValue(jsonMap, "retries", &newState.Retries)
+	utils.MapValueToValue(jsonMap, "retry_timeout", &newState.RetryTimeout)
+	utils.MapValueToValue(jsonMap, "labels", &newState.Labels)
 
-	if v := jsonMap["service_name"]; v != nil {
-		newState.ServiceName = types.String{Value: v.(string)}
-	} else {
-		newState.ServiceName = types.String{Null: true}
-	}
-
-	if v := jsonMap["discovery_type"]; v != nil {
-		newState.DiscoveryType = types.String{Value: v.(string)}
-	} else {
-		newState.DiscoveryType = types.String{Null: true}
-	}
-
-	if v := jsonMap["name"]; v != nil {
-		newState.Name = types.String{Value: v.(string)}
-	} else {
-		newState.Name = types.String{Null: true}
-	}
-
-	if v := jsonMap["desc"]; v != nil {
-		newState.Desc = types.String{Value: v.(string)}
-	} else {
-		newState.Desc = types.String{Null: true}
-	}
-
-	if v := jsonMap["pass_host"]; v != nil {
-		newState.PassHost = types.String{Value: v.(string)}
-	} else {
-		newState.PassHost = types.String{Null: true}
-	}
-
-	if v := jsonMap["scheme"]; v != nil {
-		newState.Scheme = types.String{Value: v.(string)}
-	} else {
-		newState.Scheme = types.String{Null: true}
-	}
-
-	if v := jsonMap["upstream_host"]; v != nil {
-		newState.UpstreamHost = types.String{Value: v.(string)}
-	} else {
-		newState.UpstreamHost = types.String{Null: true}
-	}
-
-	if v := jsonMap["hash_on"]; v != nil {
-		newState.HashOn = types.String{Value: v.(string)}
-	} else {
-		newState.HashOn = types.String{Null: true}
-	}
-
-	if v := jsonMap["retries"]; v != nil {
-		newState.Retries = types.Number{Value: big.NewFloat(v.(float64))}
-	} else {
-		newState.Retries = types.Number{Null: true}
-	}
-
-	if v := jsonMap["retry_timeout"]; v != nil {
-		newState.RetryTimeout = types.Number{Value: big.NewFloat(v.(float64))}
-	} else {
-		newState.RetryTimeout = types.Number{Null: true}
-	}
-
-	if v := jsonMap["labels"]; v != nil {
-		values := make(map[string]attr.Value)
-		for key, value := range v.(map[string]interface{}) {
-			values[key] = types.String{Value: value.(string)}
-		}
-		newState.Labels = types.Map{ElemType: types.StringType, Elems: values}
-	} else {
-		newState.Labels = types.Map{Null: true}
-	}
+	//if v := jsonMap["labels"]; v != nil {
+	//	values := make(map[string]attr.Value)
+	//	for key, value := range v.(map[string]interface{}) {
+	//		values[key] = types.String{Value: value.(string)}
+	//	}
+	//	newState.Labels = types.Map{ElemType: types.StringType, Elems: values}
+	//} else {
+	//	newState.Labels = types.Map{Null: true}
+	//}
 
 	if v := jsonMap["timeout"]; v != nil {
 		timeout := v.(map[string]interface{})
@@ -268,61 +214,24 @@ func UpstreamTypeMapToState(data map[string]interface{}) (*UpstreamType, error) 
 
 }
 
-func UpstreamTypeStateToMap(state *UpstreamType) (map[string]interface{}, error) {
+func UpstreamTypeStateToMap(state *UpstreamType, isUpdate bool) (map[string]interface{}, error) {
 	if state == nil {
 		return nil, nil
 	}
 	upstreamRequestObject := make(map[string]interface{})
 
-	if !state.Type.Null {
-		upstreamRequestObject["type"] = state.Type.Value
-	}
-
-	if !state.Name.Null {
-		upstreamRequestObject["name"] = state.Name.Value
-	}
-
-	if !state.ServiceName.Null {
-		upstreamRequestObject["service_name"] = state.ServiceName.Value
-	}
-
-	if !state.DiscoveryType.Null {
-		upstreamRequestObject["discovery_type"] = state.DiscoveryType.Value
-	}
-
-	if !state.Desc.Null {
-		upstreamRequestObject["desc"] = state.Desc.Value
-	}
-
-	if !state.PassHost.Null {
-		upstreamRequestObject["pass_host"] = state.PassHost.Value
-	}
-
-	if !state.Scheme.Null {
-		upstreamRequestObject["scheme"] = state.Scheme.Value
-	}
-
-	if !state.Retries.Null {
-		upstreamRequestObject["retries"] = utils.TypeNumberToInt(state.Retries)
-	}
-
-	if !state.RetryTimeout.Null {
-		upstreamRequestObject["retry_timeout"] = utils.TypeNumberToInt(state.RetryTimeout)
-	}
-
-	if !state.Labels.Null {
-		values := make(map[string]interface{})
-		for k, v := range state.Labels.Elems {
-			values[k] = v.(types.String).Value
-		}
-		upstreamRequestObject["labels"] = values
-	}
-
-	if !state.UpstreamHost.Null {
-		upstreamRequestObject["upstream_host"] = state.UpstreamHost.Value
-	}
-
-	upstreamRequestObject["hash_on"] = state.HashOn.Value
+	utils.ValueToMap(state.Type, upstreamRequestObject, "type", isUpdate)
+	utils.ValueToMap(state.Name, upstreamRequestObject, "name", isUpdate)
+	utils.ValueToMap(state.ServiceName, upstreamRequestObject, "service_name", isUpdate)
+	utils.ValueToMap(state.DiscoveryType, upstreamRequestObject, "discovery_type", isUpdate)
+	utils.ValueToMap(state.Desc, upstreamRequestObject, "desc", isUpdate)
+	utils.ValueToMap(state.PassHost, upstreamRequestObject, "pass_host", isUpdate)
+	utils.ValueToMap(state.Scheme, upstreamRequestObject, "scheme", isUpdate)
+	utils.ValueToMap(state.Retries, upstreamRequestObject, "retries", isUpdate)
+	utils.ValueToMap(state.RetryTimeout, upstreamRequestObject, "retry_timeout", isUpdate)
+	utils.ValueToMap(state.Labels, upstreamRequestObject, "labels", isUpdate)
+	utils.ValueToMap(state.UpstreamHost, upstreamRequestObject, "upstream_host", isUpdate)
+	utils.ValueToMap(state.HashOn, upstreamRequestObject, "hash_on", isUpdate)
 
 	if v := state.Timeout; v != nil {
 		upstreamRequestObject["timeout"] = map[string]interface{}{
@@ -330,6 +239,8 @@ func UpstreamTypeStateToMap(state *UpstreamType) (map[string]interface{}, error)
 			"send":    utils.TypeNumberToInt(v.Send),
 			"read":    utils.TypeNumberToInt(v.Read),
 		}
+	} else if isUpdate {
+		upstreamRequestObject["timeout"] = nil
 	}
 
 	if v := state.KeepalivePool; v != nil {
@@ -338,6 +249,8 @@ func UpstreamTypeStateToMap(state *UpstreamType) (map[string]interface{}, error)
 			"idle_timeout": utils.TypeNumberToInt(v.IdleTimeout),
 			"requests":     utils.TypeNumberToInt(v.Requests),
 		}
+	} else if isUpdate {
+		upstreamRequestObject["keepalive_pool"] = nil
 	}
 
 	if v := state.Tls; v != nil {
@@ -345,14 +258,20 @@ func UpstreamTypeStateToMap(state *UpstreamType) (map[string]interface{}, error)
 			"client_cert": v.ClientCert.Value,
 			"client_key":  v.ClientKey.Value,
 		}
+	} else if isUpdate {
+		upstreamRequestObject["tls"] = nil
 	}
 
 	if v := UpstreamChecksStateToMap(state.Checks); v != nil {
 		upstreamRequestObject["checks"] = v
+	} else if isUpdate {
+		upstreamRequestObject["checks"] = nil
 	}
 
 	if v := UpstreamNodesStateToMap(state.Nodes); v != nil {
 		upstreamRequestObject["nodes"] = v
+	} else if isUpdate {
+		upstreamRequestObject["nodes"] = nil
 	}
 
 	return upstreamRequestObject, nil

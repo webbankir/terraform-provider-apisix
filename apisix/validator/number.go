@@ -16,7 +16,7 @@ type NumberType struct {
 }
 
 func (j NumberType) Description(ctx context.Context) string {
-	return ""
+	return "Default value for types.Number attribute !!! "
 }
 
 func (j NumberType) MarkdownDescription(ctx context.Context) string {

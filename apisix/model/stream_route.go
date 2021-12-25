@@ -55,45 +55,6 @@ var StreamRouteTypeSchema = tfsdk.Schema{
 	},
 }
 
-func StreamRouteTypeStateToMap(state *StreamRouteType) (map[string]interface{}, error) {
-	if state == nil {
-		return nil, nil
-	}
-
-	var result = make(map[string]interface{})
-
-	if !state.RemoteAddr.Null {
-		result["remote_addr"] = state.RemoteAddr.Value
-	}
-
-	if !state.ServerAddr.Null {
-		result["remote_addr"] = state.ServerAddr.Value
-	}
-
-	if !state.ServerPort.Null {
-		result["server_port"] = utils.TypeNumberToInt(state.ServerPort)
-	}
-
-	if !state.UpstreamId.Null {
-		result["upstream_id"] = state.UpstreamId.Value
-	}
-
-	if !state.SNI.Null {
-		result["sni"] = state.SNI.Value
-	}
-
-	upstream, err := UpstreamTypeStateToMap(state.Upstream)
-	if err != nil {
-		return nil, err
-	}
-
-	if upstream != nil {
-		result["upstream"] = upstream
-	}
-
-	return result, nil
-}
-
 func StreamRouteTypeMapToState(data map[string]interface{}) (*StreamRouteType, error) {
 	var result StreamRouteType
 
@@ -139,4 +100,31 @@ func StreamRouteTypeMapToState(data map[string]interface{}) (*StreamRouteType, e
 	result.Upstream = upstream
 
 	return &result, nil
+}
+
+func StreamRouteTypeStateToMap(state *StreamRouteType, isUpdate bool) (map[string]interface{}, error) {
+	if state == nil {
+		return nil, nil
+	}
+
+	var result = make(map[string]interface{})
+
+	utils.ValueToMap(state.RemoteAddr, result, "remote_addr", isUpdate)
+	utils.ValueToMap(state.ServerAddr, result, "server_addr", isUpdate)
+	utils.ValueToMap(state.ServerPort, result, "server_port", isUpdate)
+	utils.ValueToMap(state.UpstreamId, result, "upstream_id", isUpdate)
+	utils.ValueToMap(state.SNI, result, "sni", isUpdate)
+
+	upstream, err := UpstreamTypeStateToMap(state.Upstream, isUpdate)
+	if err != nil {
+		return nil, err
+	}
+
+	if upstream != nil {
+		result["upstream"] = upstream
+	} else if isUpdate {
+		result["upstream"] = nil
+	}
+
+	return result, nil
 }

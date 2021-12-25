@@ -3,6 +3,7 @@ package model
 import "github.com/hashicorp/terraform-plugin-framework/tfsdk"
 
 type PluginCommonInterface interface {
+	Name() string
 	EncodeToMap(m map[string]interface{})
 	DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType)
 }

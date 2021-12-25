@@ -1,4 +1,4 @@
-package apisix
+package api_clent
 
 func (client ApiClient) GetUpstream(id string) (map[string]interface{}, error) {
 	return client.RunObject("GET", "/upstreams/"+id, nil)
@@ -9,7 +9,7 @@ func (client ApiClient) CreateUpstream(data map[string]interface{}) (map[string]
 }
 
 func (client ApiClient) UpdateUpstream(id string, data map[string]interface{}) (map[string]interface{}, error) {
-	return client.RunObject("PUT", "/upstreams/"+id, &data)
+	return client.RunObject("PATCH", "/upstreams/"+id, &data)
 }
 
 func (client ApiClient) DeleteUpstream(id string) (err error) {

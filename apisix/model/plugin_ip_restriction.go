@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"github.com/webbankir/terraform-provider-apisix/apisix/validator"
 )
 
@@ -51,8 +52,10 @@ var PluginIpRestrictionSchemaAttribute = tfsdk.Attribute{
 	}),
 }
 
+func (s PluginIpRestrictionType) Name() string { return "ip-restriction" }
+
 func (s PluginIpRestrictionType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v["ip-restriction"]; v != nil {
+	if v := v[s.Name()]; v != nil {
 		jsonData := v.(map[string]interface{})
 		item := PluginIpRestrictionType{}
 
@@ -98,6 +101,7 @@ func (s PluginIpRestrictionType) DecodeFomMap(v map[string]interface{}, pluginsT
 		pluginsType.IpRestriction = &item
 	}
 }
+
 func (s PluginIpRestrictionType) validate() error { return nil }
 
 func (s PluginIpRestrictionType) EncodeToMap(m map[string]interface{}) {
@@ -105,25 +109,9 @@ func (s PluginIpRestrictionType) EncodeToMap(m map[string]interface{}) {
 		"disable": s.Disable.Value,
 	}
 
-	if !s.BlackList.Null {
-		var values []string
-		for _, v := range s.BlackList.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		pluginValue["blacklist"] = values
-	}
+	utils.ValueToMap(s.BlackList, pluginValue, "blacklist", true)
+	utils.ValueToMap(s.WhiteList, pluginValue, "whitelist", true)
+	utils.ValueToMap(s.Message, pluginValue, "message", true)
 
-	if !s.WhiteList.Null {
-		var values []string
-		for _, v := range s.WhiteList.Elems {
-			values = append(values, v.(types.String).Value)
-		}
-		pluginValue["whitelist"] = values
-	}
-
-	if !s.Message.Null {
-		pluginValue["message"] = s.Message.Value
-	}
-
-	m["ip-restriction"] = pluginValue
+	m[s.Name()] = pluginValue
 }

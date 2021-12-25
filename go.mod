@@ -6,6 +6,7 @@ go 1.12
 
 require (
 	github.com/clarketm/json v1.17.1
+	github.com/hashicorp/terraform-plugin-docs v0.5.1 // indirect
 	github.com/hashicorp/terraform-plugin-framework v0.5.0
 	github.com/hashicorp/terraform-plugin-go v0.5.0 // indirect
 	github.com/hashicorp/terraform-plugin-log v0.2.0 // indirect
