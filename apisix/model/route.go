@@ -406,7 +406,7 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 		for i := 0; i < e.NumField(); i++ {
 			if !e.Field(i).IsNil() {
 				e.Field(i).Interface().(PluginCommonInterface).StateToMap(plugins, isUpdate)
-			} else {
+			} else if isUpdate {
 				plugins[reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).Name()] = nil
 			}
 		}
