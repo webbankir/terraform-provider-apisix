@@ -103,9 +103,9 @@ func (s PluginCorsType) MapToState(data map[string]interface{}, pluginsType *Plu
 	jsonData := v.(map[string]interface{})
 	item := PluginCorsType{}
 
-	utils.MapValueToValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToValue(jsonData, "max_age", &item.MaxAge)
-	utils.MapValueToValue(jsonData, "allow_credential", &item.AllowCredential)
+	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToNumberTypeValue(jsonData, "max_age", &item.MaxAge)
+	utils.MapValueToBoolTypeValue(jsonData, "allow_credential", &item.AllowCredential)
 
 	if v := jsonData["allow_origins_by_regex"]; v != nil {
 		var values []attr.Value
@@ -178,7 +178,7 @@ func (s PluginCorsType) MapToState(data map[string]interface{}, pluginsType *Plu
 func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	pluginValue := map[string]interface{}{}
 
-	utils.ValueToMap(s.Disable, pluginValue, "disable", isUpdate)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
 
 	log.Printf("[DEBUG] got state: %v", s)
 	if !s.AllowOrigins.Null {
@@ -229,8 +229,8 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 		pluginValue["allow_origins_by_regex"] = values
 	}
 
-	utils.ValueToMap(s.MaxAge, pluginValue, "max_age", isUpdate)
-	utils.ValueToMap(s.AllowCredential, pluginValue, "allow_credential", isUpdate)
+	utils.NumberTypeValueToMap(s.MaxAge, pluginValue, "max_age", false)
+	utils.BoolTypeValueToMap(s.AllowCredential, pluginValue, "allow_credential", false)
 
 	m[s.Name()] = pluginValue
 }

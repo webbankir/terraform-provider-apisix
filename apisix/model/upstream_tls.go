@@ -34,8 +34,8 @@ func UpstreamTLSMapToState(data map[string]interface{}) *UpstreamTLSType {
 	value := v.(map[string]interface{})
 	output := UpstreamTLSType{}
 
-	utils.MapValueToValue(value, "client_cert", &output.ClientCert)
-	utils.MapValueToValue(value, "client_key", &output.ClientKey)
+	utils.MapValueToStringTypeValue(value, "client_cert", &output.ClientCert)
+	utils.MapValueToStringTypeValue(value, "client_key", &output.ClientKey)
 
 	return &output
 }
@@ -49,8 +49,8 @@ func UpstreamTLSStateToMap(state *UpstreamTLSType, dMap map[string]interface{}, 
 	}
 
 	output := make(map[string]interface{})
-	utils.ValueToMap(state.ClientCert, output, "client_cert", isUpdate)
-	utils.ValueToMap(state.ClientKey, output, "client_key", isUpdate)
+	utils.StringTypeValueToMap(state.ClientCert, output, "client_cert", isUpdate)
+	utils.StringTypeValueToMap(state.ClientKey, output, "client_key", isUpdate)
 
 	dMap["tls"] = output
 }

@@ -367,16 +367,16 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 
 	output := make(map[string]interface{})
 
-	utils.ValueToMap(state.Name, output, "name", isUpdate)
-	utils.ValueToMap(state.Description, output, "desc", isUpdate)
-	utils.ValueToMap(state.Uri, output, "uri", isUpdate)
-	utils.ValueToMap(state.Uris, output, "uris", isUpdate)
-	utils.ValueToMap(state.Host, output, "host", isUpdate)
-	utils.ValueToMap(state.Hosts, output, "hosts", isUpdate)
-	utils.ValueToMap(state.RemoteAddr, output, "remote_addr", isUpdate)
-	utils.ValueToMap(state.RemoteAddrs, output, "remote_addrs", isUpdate)
-	utils.ValueToMap(state.Methods, output, "methods", isUpdate)
-	utils.ValueToMap(state.Priority, output, "priority", isUpdate)
+	utils.StringTypeValueToMap(state.Name, output, "name", isUpdate)
+	utils.StringTypeValueToMap(state.Description, output, "desc", isUpdate)
+	utils.StringTypeValueToMap(state.Uri, output, "uri", isUpdate)
+	utils.ListTypeValueToMap(state.Uris, output, "uris", isUpdate)
+	utils.StringTypeValueToMap(state.Host, output, "host", isUpdate)
+	utils.ListTypeValueToMap(state.Hosts, output, "hosts", isUpdate)
+	utils.StringTypeValueToMap(state.RemoteAddr, output, "remote_addr", isUpdate)
+	utils.ListTypeValueToMap(state.RemoteAddrs, output, "remote_addrs", isUpdate)
+	utils.ListTypeValueToMap(state.Methods, output, "methods", isUpdate)
+	utils.NumberTypeValueToMap(state.Priority, output, "priority", isUpdate)
 
 	if !state.IsEnabled.Null {
 		if state.IsEnabled.Value {
@@ -388,15 +388,15 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 		output["status"] = nil
 	}
 
-	utils.ValueToMap(state.EnableWebsocket, output, "enable_websocket", isUpdate)
-	utils.ValueToMap(state.ServiceId, output, "service_id", isUpdate)
-	utils.ValueToMap(state.UpstreamId, output, "upstream_id", isUpdate)
-	utils.ValueToMap(state.Labels, output, "labels", isUpdate)
+	utils.BoolTypeValueToMap(state.EnableWebsocket, output, "enable_websocket", isUpdate)
+	utils.StringTypeValueToMap(state.ServiceId, output, "service_id", isUpdate)
+	utils.StringTypeValueToMap(state.UpstreamId, output, "upstream_id", isUpdate)
+	utils.MapTypeValueToMap(state.Labels, output, "labels", isUpdate)
 
 	TimeoutStateToMap(state.Timeout, output, isUpdate)
-	utils.ValueToMap(state.Script, output, "script", isUpdate)
-	utils.ValueToMap(state.PluginConfigId, output, "plugin_config_id", isUpdate)
-	utils.ValueToMap(state.FilterFunc, output, "filter_func", isUpdate)
+	utils.StringTypeValueToMap(state.Script, output, "script", isUpdate)
+	utils.StringTypeValueToMap(state.PluginConfigId, output, "plugin_config_id", isUpdate)
+	utils.StringTypeValueToMap(state.FilterFunc, output, "filter_func", isUpdate)
 
 	plugins := make(map[string]interface{})
 	if state.Plugins != nil {
@@ -406,6 +406,8 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 		for i := 0; i < e.NumField(); i++ {
 			if !e.Field(i).IsNil() {
 				e.Field(i).Interface().(PluginCommonInterface).StateToMap(plugins, isUpdate)
+			} else {
+				plugins[reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).Name()] = nil
 			}
 		}
 		output["plugins"] = plugins

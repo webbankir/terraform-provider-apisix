@@ -4,55 +4,59 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-func ValueToMap(value interface{}, dMap map[string]interface{}, mapKey string, bindAsNil bool) {
-	switch d := value.(type) {
-	case types.String:
-		if !d.Null {
-			dMap[mapKey] = d.Value
-		} else if bindAsNil {
-			dMap[mapKey] = nil
-		}
-	case types.Number:
-		if !d.Null {
-			dMap[mapKey] = TypeNumberToInt(d)
-		} else if bindAsNil {
-			dMap[mapKey] = nil
-		}
-	case types.Bool:
-		if !d.Null {
-			dMap[mapKey] = d.Value
-		} else if bindAsNil {
-			dMap[mapKey] = nil
-		}
-	case types.List:
-		switch d.ElemType {
-		case types.StringType:
-			if !d.Null {
-				var values []string
-				for _, v := range d.Elems {
-					values = append(values, v.(types.String).Value)
-				}
-				dMap[mapKey] = values
-			} else if bindAsNil {
-				dMap[mapKey] = nil
+func StringTypeValueToMap(value types.String, dMap map[string]interface{}, mapKey string, bindAsNil bool) {
+	if !value.Null {
+		dMap[mapKey] = value.Value
+	} else if bindAsNil {
+		dMap[mapKey] = nil
+	}
+}
+
+func BoolTypeValueToMap(value types.Bool, dMap map[string]interface{}, mapKey string, bindAsNil bool) {
+	if !value.Null {
+		dMap[mapKey] = value.Value
+	} else if bindAsNil {
+		dMap[mapKey] = nil
+	}
+}
+
+func NumberTypeValueToMap(value types.Number, dMap map[string]interface{}, mapKey string, bindAsNil bool) {
+	if !value.Null {
+		dMap[mapKey] = TypeNumberToInt(value)
+	} else if bindAsNil {
+		dMap[mapKey] = nil
+	}
+}
+
+func ListTypeValueToMap(value types.List, dMap map[string]interface{}, mapKey string, bindAsNil bool) {
+
+	switch value.ElemType {
+	case types.StringType:
+		if !value.Null {
+			var values []string
+			for _, v := range value.Elems {
+				values = append(values, v.(types.String).Value)
 			}
-		default:
-			panic("WTF")
+			dMap[mapKey] = values
+		} else if bindAsNil {
+			dMap[mapKey] = nil
 		}
-	case types.Map:
-		switch d.ElemType {
-		case types.StringType:
-			if !d.Null {
-				values := make(map[string]interface{})
-				for k, v := range d.Elems {
-					values[k] = v.(types.String).Value
-				}
-				dMap[mapKey] = values
-			} else if bindAsNil {
-				dMap[mapKey] = nil
+	default:
+		panic("WTF")
+	}
+}
+
+func MapTypeValueToMap(value types.Map, dMap map[string]interface{}, mapKey string, bindAsNil bool) {
+	switch value.ElemType {
+	case types.StringType:
+		if !value.Null {
+			values := make(map[string]interface{})
+			for k, v := range value.Elems {
+				values[k] = v.(types.String).Value
 			}
-		default:
-			panic("WTF")
+			dMap[mapKey] = values
+		} else if bindAsNil {
+			dMap[mapKey] = nil
 		}
 	default:
 		panic("WTF")

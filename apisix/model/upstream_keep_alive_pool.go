@@ -57,9 +57,9 @@ func UpstreamKeepAlivePoolMapToState(data map[string]interface{}) *UpstreamKeepA
 	value := v.(map[string]interface{})
 	output := UpstreamKeepAlivePoolType{}
 
-	utils.MapValueToValue(value, "size", &output.Size)
-	utils.MapValueToValue(value, "idle_timeout", &output.IdleTimeout)
-	utils.MapValueToValue(value, "requests", &output.Requests)
+	utils.MapValueToNumberTypeValue(value, "size", &output.Size)
+	utils.MapValueToNumberTypeValue(value, "idle_timeout", &output.IdleTimeout)
+	utils.MapValueToNumberTypeValue(value, "requests", &output.Requests)
 
 	return &output
 }
@@ -73,9 +73,9 @@ func UpstreamKeepAlivePoolStateToMap(state *UpstreamKeepAlivePoolType, dMap map[
 	}
 
 	output := make(map[string]interface{})
-	utils.ValueToMap(state.Size, output, "size", isUpdate)
-	utils.ValueToMap(state.IdleTimeout, output, "idle_timeout", isUpdate)
-	utils.ValueToMap(state.Requests, output, "requests", isUpdate)
+	utils.NumberTypeValueToMap(state.Size, output, "size", false)
+	utils.NumberTypeValueToMap(state.IdleTimeout, output, "idle_timeout", false)
+	utils.NumberTypeValueToMap(state.Requests, output, "requests", false)
 
 	dMap["keepalive_pool"] = output
 }

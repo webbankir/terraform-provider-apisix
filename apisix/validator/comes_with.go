@@ -13,11 +13,11 @@ type ComesWithType struct {
 	Keys []string
 }
 
-func (j ComesWithType) Description(ctx context.Context) string {
+func (j ComesWithType) Description(_ context.Context) string {
 	return ""
 }
 
-func (j ComesWithType) MarkdownDescription(ctx context.Context) string {
+func (j ComesWithType) MarkdownDescription(_ context.Context) string {
 	return ""
 
 }

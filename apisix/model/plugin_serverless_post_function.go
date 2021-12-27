@@ -53,9 +53,9 @@ func (s PluginServerlessPostFunctionType) MapToState(data map[string]interface{}
 	jsonData := v.(map[string]interface{})
 	item := PluginServerlessPostFunctionType{}
 
-	utils.MapValueToValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToValue(jsonData, "phase", &item.Phase)
-	utils.MapValueToValue(jsonData, "functions", &item.Functions)
+	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToStringTypeValue(jsonData, "phase", &item.Phase)
+	utils.MapValueToListTypeValue(jsonData, "functions", &item.Functions)
 
 	pluginsType.ServerlessPostFunction = &item
 
@@ -66,8 +66,8 @@ func (s PluginServerlessPostFunctionType) StateToMap(m map[string]interface{}, i
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.Phase, pluginValue, "phase", isUpdate)
-	utils.ValueToMap(s.Functions, pluginValue, "functions", isUpdate)
+	utils.StringTypeValueToMap(s.Phase, pluginValue, "phase", false)
+	utils.ListTypeValueToMap(s.Functions, pluginValue, "functions", false)
 
 	m[s.Name()] = pluginValue
 }

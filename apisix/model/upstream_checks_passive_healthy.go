@@ -51,8 +51,8 @@ func UpstreamChecksPassiveHealthyMapToState(data map[string]interface{}) *Upstre
 	value := v.(map[string]interface{})
 	output := UpstreamChecksPassiveHealthyType{}
 
-	utils.MapValueToValue(value, "successes", &output.Successes)
-	utils.MapValueToValue(value, "http_statuses", &output.HTTPStatuses)
+	utils.MapValueToNumberTypeValue(value, "successes", &output.Successes)
+	utils.MapValueToListTypeValue(value, "http_statuses", &output.HTTPStatuses)
 
 	return &output
 }
@@ -67,8 +67,8 @@ func UpstreamChecksPassiveHealthyStateToMap(state *UpstreamChecksPassiveHealthyT
 
 	output := make(map[string]interface{})
 
-	utils.ValueToMap(state.HTTPStatuses, output, "http_statuses", isUpdate)
-	utils.ValueToMap(state.Successes, output, "successes", isUpdate)
+	utils.ListTypeValueToMap(state.HTTPStatuses, output, "http_statuses", isUpdate)
+	utils.NumberTypeValueToMap(state.Successes, output, "successes", isUpdate)
 
 	dMap["healthy"] = output
 

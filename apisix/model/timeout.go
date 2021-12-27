@@ -57,9 +57,9 @@ func TimeoutMapToState(data map[string]interface{}) *TimeoutType {
 	value := v.(map[string]interface{})
 	output := TimeoutType{}
 
-	utils.MapValueToValue(value, "connect", &output.Connect)
-	utils.MapValueToValue(value, "send", &output.Send)
-	utils.MapValueToValue(value, "read", &output.Read)
+	utils.MapValueToNumberTypeValue(value, "connect", &output.Connect)
+	utils.MapValueToNumberTypeValue(value, "send", &output.Send)
+	utils.MapValueToNumberTypeValue(value, "read", &output.Read)
 
 	return &output
 }
@@ -73,9 +73,9 @@ func TimeoutStateToMap(state *TimeoutType, dMap map[string]interface{}, isUpdate
 	}
 
 	output := make(map[string]interface{})
-	utils.ValueToMap(state.Connect, output, "connect", isUpdate)
-	utils.ValueToMap(state.Send, output, "send", isUpdate)
-	utils.ValueToMap(state.Read, output, "read", isUpdate)
+	utils.NumberTypeValueToMap(state.Connect, output, "connect", isUpdate)
+	utils.NumberTypeValueToMap(state.Send, output, "send", isUpdate)
+	utils.NumberTypeValueToMap(state.Read, output, "read", isUpdate)
 
 	dMap["timeout"] = output
 }

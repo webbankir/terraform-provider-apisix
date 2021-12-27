@@ -61,22 +61,22 @@ func (s PluginIpRestrictionType) MapToState(data map[string]interface{}, plugins
 	jsonData := v.(map[string]interface{})
 	item := PluginIpRestrictionType{}
 
-	utils.MapValueToValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToValue(jsonData, "message", &item.Message)
-	utils.MapValueToValue(jsonData, "whitelist", &item.WhiteList)
-	utils.MapValueToValue(jsonData, "blacklist", &item.BlackList)
+	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToStringTypeValue(jsonData, "message", &item.Message)
+	utils.MapValueToListTypeValue(jsonData, "whitelist", &item.WhiteList)
+	utils.MapValueToListTypeValue(jsonData, "blacklist", &item.BlackList)
 
 	pluginsType.IpRestriction = &item
 }
 
-func (s PluginIpRestrictionType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginIpRestrictionType) StateToMap(m map[string]interface{}, _ bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.BlackList, pluginValue, "blacklist", isUpdate)
-	utils.ValueToMap(s.WhiteList, pluginValue, "whitelist", isUpdate)
-	utils.ValueToMap(s.Message, pluginValue, "message", isUpdate)
+	utils.ListTypeValueToMap(s.BlackList, pluginValue, "blacklist", false)
+	utils.ListTypeValueToMap(s.WhiteList, pluginValue, "whitelist", false)
+	utils.StringTypeValueToMap(s.Message, pluginValue, "message", false)
 
 	m[s.Name()] = pluginValue
 }

@@ -45,7 +45,10 @@ var PluginRedirectSchemaAttribute = tfsdk.Attribute{
 			},
 			Description: "New URL which can contain Nginx variable, eg: /test/index.html, $uri/index.html. You can refer to variables in a way similar to ${xxx} to avoid ambiguity, eg: ${uri}foo/index.html. If you just need the original $ character, add \\ in front of it, like this one: /\\$foo/index.html. If you refer to a variable name that does not exist, this will not produce an error, and it will be used as an empty string",
 		},
-		"regex_uri": RegexUriSchemaAttribute,
+		"regex_uri": {
+			Optional: true,
+			Type:     types.ListType{ElemType: types.StringType},
+		},
 
 		"ret_code": {
 			Optional:    true,
@@ -89,13 +92,13 @@ func (s PluginRedirectType) MapToState(data map[string]interface{}, pluginsType 
 	jsonData := v.(map[string]interface{})
 	item := PluginRedirectType{}
 
-	utils.MapValueToValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToValue(jsonData, "http_to_https", &item.HTTPToHTTPS)
-	utils.MapValueToValue(jsonData, "uri", &item.URI)
-	utils.MapValueToValue(jsonData, "ret_code", &item.RetCode)
-	utils.MapValueToValue(jsonData, "encode_uri", &item.EncodeURI)
-	utils.MapValueToValue(jsonData, "append_query_string", &item.AppendQueryString)
-	utils.MapValueToValue(jsonData, "regex_uri", &item.RegexUri)
+	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToBoolTypeValue(jsonData, "http_to_https", &item.HTTPToHTTPS)
+	utils.MapValueToStringTypeValue(jsonData, "uri", &item.URI)
+	utils.MapValueToNumberTypeValue(jsonData, "ret_code", &item.RetCode)
+	utils.MapValueToBoolTypeValue(jsonData, "encode_uri", &item.EncodeURI)
+	utils.MapValueToBoolTypeValue(jsonData, "append_query_string", &item.AppendQueryString)
+	utils.MapValueToListTypeValue(jsonData, "regex_uri", &item.RegexUri)
 
 	pluginsType.Redirect = &item
 }
@@ -105,12 +108,12 @@ func (s PluginRedirectType) StateToMap(m map[string]interface{}, isUpdate bool) 
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.HTTPToHTTPS, pluginValue, "http_to_https", isUpdate)
-	utils.ValueToMap(s.URI, pluginValue, "uri", isUpdate)
-	utils.ValueToMap(s.EncodeURI, pluginValue, "encode_uri", isUpdate)
-	utils.ValueToMap(s.AppendQueryString, pluginValue, "append_query_string", isUpdate)
-	utils.ValueToMap(s.RetCode, pluginValue, "ret_code", isUpdate)
-	utils.ValueToMap(s.RegexUri, pluginValue, "regex_uri", isUpdate)
+	utils.BoolTypeValueToMap(s.HTTPToHTTPS, pluginValue, "http_to_https", false)
+	utils.StringTypeValueToMap(s.URI, pluginValue, "uri", false)
+	utils.BoolTypeValueToMap(s.EncodeURI, pluginValue, "encode_uri", false)
+	utils.BoolTypeValueToMap(s.AppendQueryString, pluginValue, "append_query_string", false)
+	utils.NumberTypeValueToMap(s.RetCode, pluginValue, "ret_code", false)
+	utils.ListTypeValueToMap(s.RegexUri, pluginValue, "regex_uri", false)
 
 	m[s.Name()] = pluginValue
 }

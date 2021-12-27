@@ -8,8 +8,8 @@ import (
 )
 
 type PluginPrometheusType struct {
-	Disable    types.Bool `tfsdk:"disable"`
-	PreferName types.Bool `tfsdk:"prefer_name"`
+	Disable    types.Bool   `tfsdk:"disable"`
+	PreferName types.String `tfsdk:"prefer_name"`
 }
 
 var PluginPrometheusSchemaAttribute = tfsdk.Attribute{
@@ -44,18 +44,18 @@ func (s PluginPrometheusType) MapToState(data map[string]interface{}, pluginsTyp
 	jsonData := v.(map[string]interface{})
 	item := PluginPrometheusType{}
 
-	utils.MapValueToValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToValue(jsonData, "prefer_name", &item.PreferName)
+	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToStringTypeValue(jsonData, "prefer_name", &item.PreferName)
 
 	pluginsType.Prometheus = &item
 }
 
-func (s PluginPrometheusType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginPrometheusType) StateToMap(m map[string]interface{}, _ bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.PreferName, pluginValue, "prefer_name", isUpdate)
+	utils.StringTypeValueToMap(s.PreferName, pluginValue, "prefer_name", false)
 
 	m[s.Name()] = pluginValue
 }

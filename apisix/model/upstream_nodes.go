@@ -108,9 +108,9 @@ func UpstreamNodesStateToMap(state *[]UpstreamNodeType, dMap map[string]interfac
 
 	for _, v := range *state {
 		item := map[string]interface{}{}
-		utils.ValueToMap(v.Host, item, "host", isUpdate)
-		utils.ValueToMap(v.Port, item, "port", isUpdate)
-		utils.ValueToMap(v.Weight, item, "weight", isUpdate)
+		utils.StringTypeValueToMap(v.Host, item, "host", isUpdate)
+		utils.NumberTypeValueToMap(v.Port, item, "port", isUpdate)
+		utils.NumberTypeValueToMap(v.Weight, item, "weight", isUpdate)
 		result = append(result, item)
 	}
 

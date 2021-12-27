@@ -54,9 +54,9 @@ func (s PluginServerlessPreFunctionType) MapToState(data map[string]interface{},
 	jsonData := v.(map[string]interface{})
 	item := PluginServerlessPreFunctionType{}
 
-	utils.MapValueToValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToValue(jsonData, "phase", &item.Phase)
-	utils.MapValueToValue(jsonData, "functions", &item.Functions)
+	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToStringTypeValue(jsonData, "phase", &item.Phase)
+	utils.MapValueToListTypeValue(jsonData, "functions", &item.Functions)
 
 	pluginsType.ServerlessPreFunction = &item
 }
@@ -66,8 +66,8 @@ func (s PluginServerlessPreFunctionType) StateToMap(m map[string]interface{}, is
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.Phase, pluginValue, "phase", isUpdate)
-	utils.ValueToMap(s.Functions, pluginValue, "functions", isUpdate)
+	utils.StringTypeValueToMap(s.Phase, pluginValue, "phase", false)
+	utils.ListTypeValueToMap(s.Functions, pluginValue, "functions", false)
 
 	m[s.Name()] = pluginValue
 }

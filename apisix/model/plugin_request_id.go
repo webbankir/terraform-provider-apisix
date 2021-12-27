@@ -66,10 +66,10 @@ func (s PluginRequestIdType) MapToState(data map[string]interface{}, pluginsType
 	jsonData := v.(map[string]interface{})
 	item := PluginRequestIdType{}
 
-	utils.MapValueToValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToValue(jsonData, "header_name", &item.HeaderName)
-	utils.MapValueToValue(jsonData, "include_in_response", &item.IncludeInResponse)
-	utils.MapValueToValue(jsonData, "algorithm", &item.Algorithm)
+	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToStringTypeValue(jsonData, "header_name", &item.HeaderName)
+	utils.MapValueToBoolTypeValue(jsonData, "include_in_response", &item.IncludeInResponse)
+	utils.MapValueToStringTypeValue(jsonData, "algorithm", &item.Algorithm)
 
 	pluginsType.RequestId = &item
 }
@@ -79,9 +79,9 @@ func (s PluginRequestIdType) StateToMap(m map[string]interface{}, isUpdate bool)
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.HeaderName, pluginValue, "header_name", isUpdate)
-	utils.ValueToMap(s.IncludeInResponse, pluginValue, "include_in_response", isUpdate)
-	utils.ValueToMap(s.Algorithm, pluginValue, "algorithm", isUpdate)
+	utils.StringTypeValueToMap(s.HeaderName, pluginValue, "header_name", false)
+	utils.BoolTypeValueToMap(s.IncludeInResponse, pluginValue, "include_in_response", false)
+	utils.StringTypeValueToMap(s.Algorithm, pluginValue, "algorithm", false)
 
 	m[s.Name()] = pluginValue
 }

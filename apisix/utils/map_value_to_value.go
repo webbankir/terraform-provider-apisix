@@ -3,76 +3,76 @@ package utils
 import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"log"
 	"math/big"
 )
 
-func MapValueToValue(sMap map[string]interface{}, mapKey string, value interface{}) {
+func MapValueToStringTypeValue(sMap map[string]interface{}, mapKey string, value *types.String) {
 	v := sMap[mapKey]
 
-	switch d := value.(type) {
-	case *types.String:
-		if v == nil {
-			d.Null = true
-			log.Printf("[DEBUG] JOPAAAAAAAAAAA")
-		} else {
-			d.Value = v.(string)
-		}
-
-	case *types.Number:
-		if v == nil {
-			d.Null = true
-		} else {
-			d.Value = big.NewFloat(v.(float64))
-		}
-	case *types.Bool:
-		if v == nil {
-			d.Null = true
-		} else {
-			d.Value = v.(bool)
-		}
-	//case types.List:
-	//	switch d.ElemType {
-	//	case types.StringType:
-	//		if !d.Null {
-	//			var values []string
-	//			for _, v := range d.Elems {
-	//				values = append(values, v.(types.String).Value)
-	//			}
-	//			dMap[mapKey] = values
-	//		} else if bindAsNil {
-	//			dMap[mapKey] = nil
-	//		}
-	//	default:
-	//		panic("WTF")
-	//	}
-
-	//if v := jsonMap["labels"]; v != nil {
-
-	//	} else {
-	//		newState.Labels = types.Map{Null: true}
-	//	}
-	case *types.Map:
-		if v == nil {
-			d.Null = true
-		} else {
-			values := make(map[string]attr.Value)
-			for key, value := range v.(map[string]interface{}) {
-				switch dd := value.(type) {
-				case string:
-					d.ElemType = types.StringType
-					values[key] = types.String{Value: dd}
-				default:
-					panic("WTF")
-				}
-
-			}
-			d.Elems = values
-		}
-
-	default:
-		panic(d)
+	if v == nil {
+		value.Null = true
+	} else {
+		value.Value = v.(string)
 	}
+}
 
-	log.Printf("[DEBUG] dd: %v %v", mapKey, value)
+func MapValueToBoolTypeValue(sMap map[string]interface{}, mapKey string, value *types.Bool) {
+	v := sMap[mapKey]
+
+	if v == nil {
+		value.Null = true
+	} else {
+		value.Value = v.(bool)
+	}
+}
+
+func MapValueToNumberTypeValue(sMap map[string]interface{}, mapKey string, value *types.Number) {
+	v := sMap[mapKey]
+
+	if v == nil {
+		value.Null = true
+	} else {
+		value.Value = big.NewFloat(v.(float64))
+	}
+}
+
+func MapValueToListTypeValue(sMap map[string]interface{}, mapKey string, value *types.List) {
+	v := sMap[mapKey]
+
+	if v == nil {
+		value.Null = true
+	} else {
+		var values []attr.Value
+		for _, vv := range v.([]interface{}) {
+			switch dd := vv.(type) {
+			case string:
+				value.ElemType = types.StringType
+				values = append(values, types.String{Value: dd})
+			default:
+				panic("WTF")
+			}
+		}
+		value.Elems = values
+	}
+}
+
+func MapValueToMapTypeValue(sMap map[string]interface{}, mapKey string, value *types.Map) {
+	v := sMap[mapKey]
+
+	if v == nil {
+		value.Null = true
+	} else {
+		values := make(map[string]attr.Value)
+		for key, vv := range v.(map[string]interface{}) {
+			switch dd := vv.(type) {
+			case string:
+				value.ElemType = types.StringType
+				values[key] = types.String{Value: dd}
+			default:
+				panic("WTF")
+			}
+
+		}
+		value.Elems = values
+	}
 }

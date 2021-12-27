@@ -94,11 +94,11 @@ func UpstreamChecksActiveUnhealthyMapToState(data map[string]interface{}) *Upstr
 	value := v.(map[string]interface{})
 	output := UpstreamChecksActiveUnhealthyType{}
 
-	utils.MapValueToValue(value, "interval", &output.Interval)
-	utils.MapValueToValue(value, "tcp_failures", &output.TCPFailures)
-	utils.MapValueToValue(value, "timeouts", &output.Timeouts)
-	utils.MapValueToValue(value, "http_failures", &output.HTTPFailures)
-	utils.MapValueToValue(value, "http_statuses", &output.HTTPStatuses)
+	utils.MapValueToNumberTypeValue(value, "interval", &output.Interval)
+	utils.MapValueToNumberTypeValue(value, "tcp_failures", &output.TCPFailures)
+	utils.MapValueToNumberTypeValue(value, "timeouts", &output.Timeouts)
+	utils.MapValueToNumberTypeValue(value, "http_failures", &output.HTTPFailures)
+	utils.MapValueToListTypeValue(value, "http_statuses", &output.HTTPStatuses)
 
 	return &output
 }
@@ -112,11 +112,11 @@ func UpstreamChecksActiveUnhealthyStateToMap(state *UpstreamChecksActiveUnhealth
 	}
 
 	output := make(map[string]interface{})
-	utils.ValueToMap(state.Interval, output, "interval", isUpdate)
-	utils.ValueToMap(state.TCPFailures, output, "tcp_failures", isUpdate)
-	utils.ValueToMap(state.Timeouts, output, "timeouts", isUpdate)
-	utils.ValueToMap(state.HTTPFailures, output, "http_failures", isUpdate)
-	utils.ValueToMap(state.HTTPStatuses, output, "http_statuses", isUpdate)
+	utils.NumberTypeValueToMap(state.Interval, output, "interval", isUpdate)
+	utils.NumberTypeValueToMap(state.TCPFailures, output, "tcp_failures", isUpdate)
+	utils.NumberTypeValueToMap(state.Timeouts, output, "timeouts", isUpdate)
+	utils.NumberTypeValueToMap(state.HTTPFailures, output, "http_failures", isUpdate)
+	utils.ListTypeValueToMap(state.HTTPStatuses, output, "http_statuses", isUpdate)
 
 	dMap["unhealthy"] = output
 }
