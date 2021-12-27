@@ -13,28 +13,28 @@ import (
 )
 
 type RouteType struct {
-	ID              types.String  `tfsdk:"id"`
-	Description     types.String  `tfsdk:"desc"`
-	EnableWebsocket types.Bool    `tfsdk:"enable_websocket"`
-	FilterFunc      types.String  `tfsdk:"filter_func"`
-	Host            types.String  `tfsdk:"host"`
-	Hosts           types.List    `tfsdk:"hosts"`
-	IsEnabled       types.Bool    `tfsdk:"is_enabled"`
-	Labels          types.Map     `tfsdk:"labels"`
-	Methods         types.List    `tfsdk:"methods"`
-	Name            types.String  `tfsdk:"name"`
-	Plugins         *PluginsType  `tfsdk:"plugins"`
-	PluginConfigId  types.String  `tfsdk:"plugin_config_id"`
-	Priority        types.Number  `tfsdk:"priority"`
-	RemoteAddr      types.String  `tfsdk:"remote_addr"`
-	RemoteAddrs     types.List    `tfsdk:"remote_addrs"`
-	Script          types.String  `tfsdk:"script"`
-	ServiceId       types.String  `tfsdk:"service_id"`
-	Timeout         *TimeoutType  `tfsdk:"timeout"`
-	Upstream        *UpstreamType `tfsdk:"upstream"`
-	UpstreamId      types.String  `tfsdk:"upstream_id"`
-	Uri             types.String  `tfsdk:"uri"`
-	Uris            types.List    `tfsdk:"uris"`
+	ID              types.String `tfsdk:"id"`
+	Description     types.String `tfsdk:"desc"`
+	EnableWebsocket types.Bool   `tfsdk:"enable_websocket"`
+	FilterFunc      types.String `tfsdk:"filter_func"`
+	Host            types.String `tfsdk:"host"`
+	Hosts           types.List   `tfsdk:"hosts"`
+	IsEnabled       types.Bool   `tfsdk:"is_enabled"`
+	Labels          types.Map    `tfsdk:"labels"`
+	Methods         types.List   `tfsdk:"methods"`
+	Name            types.String `tfsdk:"name"`
+	Plugins         *PluginsType `tfsdk:"plugins"`
+	PluginConfigId  types.String `tfsdk:"plugin_config_id"`
+	Priority        types.Number `tfsdk:"priority"`
+	RemoteAddr      types.String `tfsdk:"remote_addr"`
+	RemoteAddrs     types.List   `tfsdk:"remote_addrs"`
+	Script          types.String `tfsdk:"script"`
+	ServiceId       types.String `tfsdk:"service_id"`
+	//Timeout         *TimeoutType  `tfsdk:"timeout"`
+	Upstream   *UpstreamType `tfsdk:"upstream"`
+	UpstreamId types.String  `tfsdk:"upstream_id"`
+	Uri        types.String  `tfsdk:"uri"`
+	Uris       types.List    `tfsdk:"uris"`
 }
 
 var RouteSchema = tfsdk.Schema{
@@ -150,7 +150,7 @@ var RouteSchema = tfsdk.Schema{
 			Type:     types.MapType{ElemType: types.StringType},
 		},
 
-		"timeout": TimeoutSchemaAttribute,
+		//"timeout": TimeoutSchemaAttribute,
 		"script": {
 			Optional: true,
 			Type:     types.StringType,
@@ -335,17 +335,17 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 
 	newState.Upstream = upstream
 
-	if v := jsonMap["timeout"]; v != nil {
-		timeout := v.(map[string]interface{})
-
-		newState.Timeout = &TimeoutType{
-			Connect: types.Number{Value: big.NewFloat(timeout["connect"].(float64))},
-			Send:    types.Number{Value: big.NewFloat(timeout["send"].(float64))},
-			Read:    types.Number{Value: big.NewFloat(timeout["read"].(float64))},
-		}
-	} else {
-		newState.Timeout = nil
-	}
+	//if v := jsonMap["timeout"]; v != nil {
+	//	timeout := v.(map[string]interface{})
+	//
+	//	newState.Timeout = &TimeoutType{
+	//		Connect: types.Number{Value: big.NewFloat(timeout["connect"].(float64))},
+	//		Send:    types.Number{Value: big.NewFloat(timeout["send"].(float64))},
+	//		Read:    types.Number{Value: big.NewFloat(timeout["read"].(float64))},
+	//	}
+	//} else {
+	//	newState.Timeout = nil
+	//}
 
 	if v := jsonMap["plugins"]; v != nil {
 		value := v.(map[string]interface{})
@@ -393,7 +393,7 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 	utils.StringTypeValueToMap(state.UpstreamId, output, "upstream_id", isUpdate)
 	utils.MapTypeValueToMap(state.Labels, output, "labels", isUpdate)
 
-	TimeoutStateToMap(state.Timeout, output, isUpdate)
+	//TimeoutStateToMap(state.Timeout, output, isUpdate)
 	utils.StringTypeValueToMap(state.Script, output, "script", isUpdate)
 	utils.StringTypeValueToMap(state.PluginConfigId, output, "plugin_config_id", isUpdate)
 	utils.StringTypeValueToMap(state.FilterFunc, output, "filter_func", isUpdate)

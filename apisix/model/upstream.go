@@ -113,9 +113,9 @@ var UpstreamSchemaAttribute = tfsdk.Attribute{
 			Type:     types.StringType,
 			Optional: true,
 			Computed: true,
-			PlanModifiers: []tfsdk.AttributePlanModifier{
-				plan_modifier.DefaultString("vars"),
-			},
+			//PlanModifiers: []tfsdk.AttributePlanModifier{
+			//	plan_modifier.DefaultString("vars"),
+			//},
 		},
 		"labels": {
 			Type:     types.MapType{ElemType: types.StringType},
