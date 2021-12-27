@@ -47,7 +47,7 @@ func (s PluginServerlessPostFunctionType) Name() string { return "serverless-pos
 
 func (s PluginServerlessPostFunctionType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
 	v := data[s.Name()]
-	if v != nil {
+	if v == nil {
 		return
 	}
 	jsonData := v.(map[string]interface{})

@@ -47,7 +47,7 @@ func (s PluginServerlessPreFunctionType) Name() string { return "serverless-pre-
 
 func (s PluginServerlessPreFunctionType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
 	v := data[s.Name()]
-	if v != nil {
+	if v == nil {
 		return
 	}
 

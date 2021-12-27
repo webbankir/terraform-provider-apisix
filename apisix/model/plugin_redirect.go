@@ -82,7 +82,7 @@ func (s PluginRedirectType) Name() string { return "redirect" }
 
 func (s PluginRedirectType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
 	v := data[s.Name()]
-	if v != nil {
+	if v == nil {
 		return
 	}
 

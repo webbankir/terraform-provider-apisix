@@ -60,7 +60,7 @@ func (s PluginRequestIdType) Name() string { return "request-id" }
 
 func (s PluginRequestIdType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
 	v := data[s.Name()]
-	if v != nil {
+	if v == nil {
 		return
 	}
 	jsonData := v.(map[string]interface{})
