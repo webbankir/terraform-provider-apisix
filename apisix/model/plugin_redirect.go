@@ -103,7 +103,7 @@ func (s PluginRedirectType) MapToState(data map[string]interface{}, pluginsType 
 	pluginsType.Redirect = &item
 }
 
-func (s PluginRedirectType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginRedirectType) StateToMap(m map[string]interface{}, _ bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}

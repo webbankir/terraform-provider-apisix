@@ -61,7 +61,7 @@ func (s PluginServerlessPreFunctionType) MapToState(data map[string]interface{},
 	pluginsType.ServerlessPreFunction = &item
 }
 
-func (s PluginServerlessPreFunctionType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginServerlessPreFunctionType) StateToMap(m map[string]interface{}, _ bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}

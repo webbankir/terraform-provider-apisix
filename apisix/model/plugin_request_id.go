@@ -74,7 +74,7 @@ func (s PluginRequestIdType) MapToState(data map[string]interface{}, pluginsType
 	pluginsType.RequestId = &item
 }
 
-func (s PluginRequestIdType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginRequestIdType) StateToMap(m map[string]interface{}, _ bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}

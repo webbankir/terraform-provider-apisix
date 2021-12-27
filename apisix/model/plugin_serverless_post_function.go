@@ -61,7 +61,7 @@ func (s PluginServerlessPostFunctionType) MapToState(data map[string]interface{}
 
 }
 
-func (s PluginServerlessPostFunctionType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginServerlessPostFunctionType) StateToMap(m map[string]interface{}, _ bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
