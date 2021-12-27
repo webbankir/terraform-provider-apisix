@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 )
 
 type UpstreamTLSType struct {
@@ -22,4 +23,34 @@ var UpstreamTLSSchemaAttribute = tfsdk.Attribute{
 			Required: true,
 		},
 	}),
+}
+
+func UpstreamTLSMapToState(data map[string]interface{}) *UpstreamTLSType {
+	v := data["tls"]
+
+	if v == nil {
+		return nil
+	}
+	value := v.(map[string]interface{})
+	output := UpstreamTLSType{}
+
+	utils.MapValueToValue(value, "client_cert", &output.ClientCert)
+	utils.MapValueToValue(value, "client_key", &output.ClientKey)
+
+	return &output
+}
+
+func UpstreamTLSStateToMap(state *UpstreamTLSType, dMap map[string]interface{}, isUpdate bool) {
+	if state == nil {
+		if isUpdate {
+			dMap["tls"] = nil
+		}
+		return
+	}
+
+	output := make(map[string]interface{})
+	utils.ValueToMap(state.ClientCert, output, "client_cert", isUpdate)
+	utils.ValueToMap(state.ClientKey, output, "client_key", isUpdate)
+
+	dMap["tls"] = output
 }

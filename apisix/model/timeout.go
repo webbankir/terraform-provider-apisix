@@ -5,6 +5,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"math/big"
 )
 
@@ -45,4 +46,36 @@ var TimeoutSchemaAttribute = tfsdk.Attribute{
 			},
 		),
 	},
+}
+
+func TimeoutMapToState(data map[string]interface{}) *TimeoutType {
+	v := data["timeout"]
+
+	if v == nil {
+		return nil
+	}
+	value := v.(map[string]interface{})
+	output := TimeoutType{}
+
+	utils.MapValueToValue(value, "connect", &output.Connect)
+	utils.MapValueToValue(value, "send", &output.Send)
+	utils.MapValueToValue(value, "read", &output.Read)
+
+	return &output
+}
+
+func TimeoutStateToMap(state *TimeoutType, dMap map[string]interface{}, isUpdate bool) {
+	if state == nil {
+		if isUpdate {
+			dMap["timeout"] = nil
+		}
+		return
+	}
+
+	output := make(map[string]interface{})
+	utils.ValueToMap(state.Connect, output, "connect", isUpdate)
+	utils.ValueToMap(state.Send, output, "send", isUpdate)
+	utils.ValueToMap(state.Read, output, "read", isUpdate)
+
+	dMap["timeout"] = output
 }
