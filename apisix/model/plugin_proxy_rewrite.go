@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/common"
@@ -11,13 +10,13 @@ import (
 )
 
 type PluginProxyRewriteType struct {
-	Disable  types.Bool    `tfsdk:"disable"`
-	Scheme   types.String  `tfsdk:"scheme"`
-	Method   types.String  `tfsdk:"method"`
-	Uri      types.String  `tfsdk:"uri"`
-	Host     types.String  `tfsdk:"host"`
-	Headers  types.Map     `tfsdk:"headers"`
-	RegexUri *RegexUriType `tfsdk:"regex_uri"`
+	Disable  types.Bool   `tfsdk:"disable"`
+	Scheme   types.String `tfsdk:"scheme"`
+	Method   types.String `tfsdk:"method"`
+	Uri      types.String `tfsdk:"uri"`
+	Host     types.String `tfsdk:"host"`
+	Headers  types.Map    `tfsdk:"headers"`
+	RegexUri types.List   `tfsdk:"regex_uri"`
 }
 
 var PluginProxyRewriteSchemaAttribute = tfsdk.Attribute{
@@ -61,93 +60,46 @@ var PluginProxyRewriteSchemaAttribute = tfsdk.Attribute{
 			Optional: true,
 			Type:     types.MapType{ElemType: types.StringType},
 		},
-		"regex_uri": RegexUriSchemaAttribute,
+		"regex_uri": {
+			Optional: true,
+			Type:     types.ListType{ElemType: types.StringType},
+		},
 	}),
 }
 
 func (s PluginProxyRewriteType) Name() string { return "proxy-rewrite" }
 
-func (s PluginProxyRewriteType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v[s.Name()]; v != nil {
-		jsonData := v.(map[string]interface{})
-		item := PluginProxyRewriteType{}
-
-		if v := jsonData["disable"]; v != nil {
-			item.Disable = types.Bool{Value: v.(bool)}
-		} else {
-			item.Disable = types.Bool{Value: true}
-		}
-
-		if v := jsonData["scheme"]; v != nil {
-			item.Scheme = types.String{Value: v.(string)}
-		} else {
-			item.Scheme = types.String{Null: true}
-		}
-
-		if v := jsonData["method"]; v != nil {
-			item.Method = types.String{Value: v.(string)}
-		} else {
-			item.Method = types.String{Null: true}
-		}
-
-		if v := jsonData["uri"]; v != nil {
-			item.Uri = types.String{Value: v.(string)}
-		} else {
-			item.Uri = types.String{Null: true}
-		}
-
-		if v := jsonData["host"]; v != nil {
-			item.Host = types.String{Value: v.(string)}
-		} else {
-			item.Host = types.String{Null: true}
-		}
-
-		if v := jsonData["headers"]; v != nil {
-			items := make(map[string]attr.Value)
-
-			for k, v := range v.(map[string]interface{}) {
-				items[k] = types.String{Value: v.(string)}
-			}
-
-			item.Headers = types.Map{
-				ElemType: types.StringType,
-				Elems:    items,
-			}
-		} else {
-			item.Headers = types.Map{Null: true}
-		}
-
-		if v := jsonData["regex_uri"]; v != nil {
-			item.RegexUri = &RegexUriType{
-				Regex:       types.String{Value: v.([]interface{})[0].(string)},
-				Replacement: types.String{Value: v.([]interface{})[1].(string)},
-			}
-		} else {
-			item.RegexUri = nil
-		}
-
-		pluginsType.ProxyRewrite = &item
+func (s PluginProxyRewriteType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
+	v := data[s.Name()]
+	if v == nil {
+		return
 	}
+
+	jsonData := v.(map[string]interface{})
+	item := PluginProxyRewriteType{}
+
+	utils.MapValueToValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToValue(jsonData, "scheme", &item.Scheme)
+	utils.MapValueToValue(jsonData, "method", &item.Method)
+	utils.MapValueToValue(jsonData, "uri", &item.Uri)
+	utils.MapValueToValue(jsonData, "host", &item.Host)
+	utils.MapValueToValue(jsonData, "headers", &item.Headers)
+	utils.MapValueToValue(jsonData, "regex_uri", &item.RegexUri)
+
+	pluginsType.ProxyRewrite = &item
 }
 
-func (s PluginProxyRewriteType) validate() error { return nil }
-
-func (s PluginProxyRewriteType) EncodeToMap(m map[string]interface{}) {
+func (s PluginProxyRewriteType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.Scheme, pluginValue, "scheme", true)
-	utils.ValueToMap(s.Uri, pluginValue, "uri", true)
-	utils.ValueToMap(s.Headers, pluginValue, "headers", true)
-	utils.ValueToMap(s.Host, pluginValue, "host", true)
-	utils.ValueToMap(s.Method, pluginValue, "method", true)
-
-	if s.RegexUri != nil {
-		pluginValue["regex_uri"] = []string{s.RegexUri.Regex.Value, s.RegexUri.Replacement.Value}
-	} else {
-		pluginValue["regex_uri"] = nil
-	}
+	utils.ValueToMap(s.Scheme, pluginValue, "scheme", isUpdate)
+	utils.ValueToMap(s.Uri, pluginValue, "uri", isUpdate)
+	utils.ValueToMap(s.Headers, pluginValue, "headers", isUpdate)
+	utils.ValueToMap(s.Host, pluginValue, "host", isUpdate)
+	utils.ValueToMap(s.Method, pluginValue, "method", isUpdate)
+	utils.ValueToMap(s.RegexUri, pluginValue, "regex_uri", isUpdate)
 
 	m[s.Name()] = pluginValue
 }

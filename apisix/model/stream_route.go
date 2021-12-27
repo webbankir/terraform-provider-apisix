@@ -4,7 +4,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
-	"math/big"
 )
 
 type StreamRouteType struct {
@@ -56,41 +55,14 @@ var StreamRouteTypeSchema = tfsdk.Schema{
 }
 
 func StreamRouteTypeMapToState(data map[string]interface{}) (*StreamRouteType, error) {
-	var result StreamRouteType
+	result := StreamRouteType{}
 
-	if v := data["id"]; v != nil {
-		result.ID = types.String{Value: v.(string)}
-	}
-
-	if v := data["remote_addr"]; v != nil {
-		result.RemoteAddr = types.String{Value: v.(string)}
-	} else {
-		result.RemoteAddr = types.String{Null: true}
-	}
-
-	if v := data["server_addr"]; v != nil {
-		result.ServerAddr = types.String{Value: v.(string)}
-	} else {
-		result.ServerAddr = types.String{Null: true}
-	}
-
-	if v := data["sni"]; v != nil {
-		result.SNI = types.String{Value: v.(string)}
-	} else {
-		result.SNI = types.String{Null: true}
-	}
-
-	if v := data["upstream_id"]; v != nil {
-		result.UpstreamId = types.String{Value: v.(string)}
-	} else {
-		result.UpstreamId = types.String{Null: true}
-	}
-
-	if v := data["server_port"]; v != nil {
-		result.ServerPort = types.Number{Value: big.NewFloat(v.(float64))}
-	} else {
-		result.ServerPort = types.Number{Null: true}
-	}
+	utils.MapValueToValue(data, "id", &result.ID)
+	utils.MapValueToValue(data, "remote_addr", &result.RemoteAddr)
+	utils.MapValueToValue(data, "server_addr", &result.ServerAddr)
+	utils.MapValueToValue(data, "sni", &result.SNI)
+	utils.MapValueToValue(data, "upstream_id", &result.UpstreamId)
+	utils.MapValueToValue(data, "server_port", &result.ServerPort)
 
 	upstream, err := UpstreamTypeMapToState(data)
 	if err != nil {
@@ -102,10 +74,7 @@ func StreamRouteTypeMapToState(data map[string]interface{}) (*StreamRouteType, e
 	return &result, nil
 }
 
-func StreamRouteTypeStateToMap(state *StreamRouteType, isUpdate bool) (map[string]interface{}, error) {
-	if state == nil {
-		return nil, nil
-	}
+func StreamRouteTypeStateToMap(state StreamRouteType, isUpdate bool) (map[string]interface{}, error) {
 
 	var result = make(map[string]interface{})
 

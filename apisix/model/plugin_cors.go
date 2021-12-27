@@ -96,7 +96,7 @@ var PluginCorsSchemaAttribute = tfsdk.Attribute{
 
 func (s PluginCorsType) Name() string { return "cors" }
 
-func (s PluginCorsType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
+func (s PluginCorsType) MapToState(v map[string]interface{}, pluginsType *PluginsType) {
 	if v := v[s.Name()]; v != nil {
 		jsonData := v.(map[string]interface{})
 		item := PluginCorsType{}
@@ -187,9 +187,8 @@ func (s PluginCorsType) DecodeFomMap(v map[string]interface{}, pluginsType *Plug
 		pluginsType.Cors = &item
 	}
 }
-func (s PluginCorsType) validate() error { return nil }
 
-func (s PluginCorsType) EncodeToMap(m map[string]interface{}) {
+func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}

@@ -6,17 +6,16 @@ import (
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
 	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"github.com/webbankir/terraform-provider-apisix/apisix/validator"
-	"math/big"
 )
 
 type PluginRedirectType struct {
-	Disable           types.Bool    `tfsdk:"disable"`
-	HTTPToHTTPS       types.Bool    `tfsdk:"http_to_https"`
-	URI               types.String  `tfsdk:"uri"`
-	RegexUri          *RegexUriType `tfsdk:"regex_uri"`
-	RetCode           types.Number  `tfsdk:"ret_code"`
-	EncodeURI         types.Bool    `tfsdk:"encode_uri"`
-	AppendQueryString types.Bool    `tfsdk:"append_query_string"`
+	Disable           types.Bool   `tfsdk:"disable"`
+	HTTPToHTTPS       types.Bool   `tfsdk:"http_to_https"`
+	URI               types.String `tfsdk:"uri"`
+	RegexUri          types.List   `tfsdk:"regex_uri"`
+	RetCode           types.Number `tfsdk:"ret_code"`
+	EncodeURI         types.Bool   `tfsdk:"encode_uri"`
+	AppendQueryString types.Bool   `tfsdk:"append_query_string"`
 }
 
 var PluginRedirectSchemaAttribute = tfsdk.Attribute{
@@ -81,78 +80,37 @@ var PluginRedirectSchemaAttribute = tfsdk.Attribute{
 
 func (s PluginRedirectType) Name() string { return "redirect" }
 
-func (s PluginRedirectType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v[s.Name()]; v != nil {
-		jsonData := v.(map[string]interface{})
-		item := PluginRedirectType{}
-
-		if v := jsonData["disable"]; v != nil {
-			item.Disable = types.Bool{Value: v.(bool)}
-		} else {
-			item.Disable = types.Bool{Value: true}
-		}
-
-		if v := jsonData["http_to_https"]; v != nil {
-			item.HTTPToHTTPS = types.Bool{Value: v.(bool)}
-		} else {
-			item.HTTPToHTTPS = types.Bool{Null: true}
-		}
-
-		if v := jsonData["uri"]; v != nil {
-			item.URI = types.String{Value: v.(string)}
-		} else {
-			item.URI = types.String{Null: true}
-		}
-
-		if v := jsonData["ret_code"]; v != nil {
-			item.RetCode = types.Number{Value: big.NewFloat(v.(float64))}
-		} else {
-			item.RetCode = types.Number{Null: true}
-		}
-
-		if v := jsonData["encode_uri"]; v != nil {
-			item.EncodeURI = types.Bool{Value: v.(bool)}
-		} else {
-			item.EncodeURI = types.Bool{Null: true}
-		}
-
-		if v := jsonData["append_query_string"]; v != nil {
-			item.AppendQueryString = types.Bool{Value: v.(bool)}
-		} else {
-			item.AppendQueryString = types.Bool{Null: true}
-		}
-
-		if v := jsonData["regex_uri"]; v != nil {
-			item.RegexUri = &RegexUriType{
-				Regex:       types.String{Value: v.([]interface{})[0].(string)},
-				Replacement: types.String{Value: v.([]interface{})[1].(string)},
-			}
-		} else {
-			item.RegexUri = nil
-		}
-
-		pluginsType.Redirect = &item
+func (s PluginRedirectType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
+	v := data[s.Name()]
+	if v != nil {
+		return
 	}
+
+	jsonData := v.(map[string]interface{})
+	item := PluginRedirectType{}
+
+	utils.MapValueToValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToValue(jsonData, "http_to_https", &item.HTTPToHTTPS)
+	utils.MapValueToValue(jsonData, "uri", &item.URI)
+	utils.MapValueToValue(jsonData, "ret_code", &item.RetCode)
+	utils.MapValueToValue(jsonData, "encode_uri", &item.EncodeURI)
+	utils.MapValueToValue(jsonData, "append_query_string", &item.AppendQueryString)
+	utils.MapValueToValue(jsonData, "regex_uri", &item.RegexUri)
+
+	pluginsType.Redirect = &item
 }
 
-func (s PluginRedirectType) validate() error { return nil }
-
-func (s PluginRedirectType) EncodeToMap(m map[string]interface{}) {
+func (s PluginRedirectType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.HTTPToHTTPS, pluginValue, "http_to_https", true)
-	utils.ValueToMap(s.URI, pluginValue, "uri", true)
-	utils.ValueToMap(s.EncodeURI, pluginValue, "encode_uri", true)
-	utils.ValueToMap(s.AppendQueryString, pluginValue, "append_query_string", true)
-	utils.ValueToMap(s.RetCode, pluginValue, "ret_code", true)
-
-	if s.RegexUri != nil {
-		pluginValue["regex_uri"] = []string{s.RegexUri.Regex.Value, s.RegexUri.Replacement.Value}
-	} else {
-		pluginValue["regex_uri"] = nil
-	}
+	utils.ValueToMap(s.HTTPToHTTPS, pluginValue, "http_to_https", isUpdate)
+	utils.ValueToMap(s.URI, pluginValue, "uri", isUpdate)
+	utils.ValueToMap(s.EncodeURI, pluginValue, "encode_uri", isUpdate)
+	utils.ValueToMap(s.AppendQueryString, pluginValue, "append_query_string", isUpdate)
+	utils.ValueToMap(s.RetCode, pluginValue, "ret_code", isUpdate)
+	utils.ValueToMap(s.RegexUri, pluginValue, "regex_uri", isUpdate)
 
 	m[s.Name()] = pluginValue
 }

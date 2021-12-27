@@ -30,7 +30,7 @@ func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.Creat
 		return
 	}
 
-	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&plan, false)
+	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(plan, false)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -144,7 +144,7 @@ func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.Updat
 		return
 	}
 
-	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(&state, true)
+	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(state, true)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",

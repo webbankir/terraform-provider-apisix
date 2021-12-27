@@ -4,8 +4,8 @@ import "github.com/hashicorp/terraform-plugin-framework/tfsdk"
 
 type PluginCommonInterface interface {
 	Name() string
-	EncodeToMap(m map[string]interface{})
-	DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType)
+	StateToMap(m map[string]interface{}, isUpdate bool)
+	MapToState(v map[string]interface{}, pluginsType *PluginsType)
 }
 
 type PluginsType struct {

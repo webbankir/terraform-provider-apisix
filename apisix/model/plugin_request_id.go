@@ -58,49 +58,30 @@ var PluginRequestIdSchemaAttribute = tfsdk.Attribute{
 
 func (s PluginRequestIdType) Name() string { return "request-id" }
 
-func (s PluginRequestIdType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v[s.Name()]; v != nil {
-		jsonData := v.(map[string]interface{})
-		item := PluginRequestIdType{}
-
-		if v := jsonData["disable"]; v != nil {
-			item.Disable = types.Bool{Value: v.(bool)}
-		} else {
-			item.Disable = types.Bool{Value: true}
-		}
-
-		if v := jsonData["header_name"]; v != nil {
-			item.HeaderName = types.String{Value: v.(string)}
-		} else {
-			item.HeaderName = types.String{Null: true}
-		}
-
-		if v := jsonData["include_in_response"]; v != nil {
-			item.IncludeInResponse = types.Bool{Value: v.(bool)}
-		} else {
-			item.IncludeInResponse = types.Bool{Null: true}
-		}
-
-		if v := jsonData["algorithm"]; v != nil {
-			item.Algorithm = types.String{Value: v.(string)}
-		} else {
-			item.Algorithm = types.String{Null: true}
-		}
-
-		pluginsType.RequestId = &item
+func (s PluginRequestIdType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
+	v := data[s.Name()]
+	if v != nil {
+		return
 	}
+	jsonData := v.(map[string]interface{})
+	item := PluginRequestIdType{}
+
+	utils.MapValueToValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToValue(jsonData, "header_name", &item.HeaderName)
+	utils.MapValueToValue(jsonData, "include_in_response", &item.IncludeInResponse)
+	utils.MapValueToValue(jsonData, "algorithm", &item.Algorithm)
+
+	pluginsType.RequestId = &item
 }
 
-func (s PluginRequestIdType) validate() error { return nil }
-
-func (s PluginRequestIdType) EncodeToMap(m map[string]interface{}) {
+func (s PluginRequestIdType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.HeaderName, pluginValue, "header_name", true)
-	utils.ValueToMap(s.IncludeInResponse, pluginValue, "include_in_response", true)
-	utils.ValueToMap(s.Algorithm, pluginValue, "algorithm", true)
+	utils.ValueToMap(s.HeaderName, pluginValue, "header_name", isUpdate)
+	utils.ValueToMap(s.IncludeInResponse, pluginValue, "include_in_response", isUpdate)
+	utils.ValueToMap(s.Algorithm, pluginValue, "algorithm", isUpdate)
 
 	m[s.Name()] = pluginValue
 }

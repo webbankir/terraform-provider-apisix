@@ -353,7 +353,7 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 
 		e := reflect.ValueOf(&pluginsType).Elem()
 		for i := 0; i < e.NumField(); i++ {
-			reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).DecodeFomMap(value, &pluginsType)
+			reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).MapToState(value, &pluginsType)
 		}
 		newState.Plugins = &pluginsType
 	} else {
@@ -365,48 +365,38 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 
 func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}, error) {
 
-	routeRequestObject := make(map[string]interface{})
+	output := make(map[string]interface{})
 
-	utils.ValueToMap(state.Name, routeRequestObject, "name", isUpdate)
-	utils.ValueToMap(state.Description, routeRequestObject, "desc", isUpdate)
-	utils.ValueToMap(state.Uri, routeRequestObject, "uri", isUpdate)
-	utils.ValueToMap(state.Uris, routeRequestObject, "uris", isUpdate)
-	utils.ValueToMap(state.Host, routeRequestObject, "host", isUpdate)
-	utils.ValueToMap(state.Hosts, routeRequestObject, "hosts", isUpdate)
-	utils.ValueToMap(state.RemoteAddr, routeRequestObject, "remote_addr", isUpdate)
-	utils.ValueToMap(state.RemoteAddrs, routeRequestObject, "remote_addrs", isUpdate)
-	utils.ValueToMap(state.Methods, routeRequestObject, "methods", isUpdate)
-	utils.ValueToMap(state.Priority, routeRequestObject, "priority", isUpdate)
+	utils.ValueToMap(state.Name, output, "name", isUpdate)
+	utils.ValueToMap(state.Description, output, "desc", isUpdate)
+	utils.ValueToMap(state.Uri, output, "uri", isUpdate)
+	utils.ValueToMap(state.Uris, output, "uris", isUpdate)
+	utils.ValueToMap(state.Host, output, "host", isUpdate)
+	utils.ValueToMap(state.Hosts, output, "hosts", isUpdate)
+	utils.ValueToMap(state.RemoteAddr, output, "remote_addr", isUpdate)
+	utils.ValueToMap(state.RemoteAddrs, output, "remote_addrs", isUpdate)
+	utils.ValueToMap(state.Methods, output, "methods", isUpdate)
+	utils.ValueToMap(state.Priority, output, "priority", isUpdate)
 
 	if !state.IsEnabled.Null {
 		if state.IsEnabled.Value {
-			routeRequestObject["status"] = 1
+			output["status"] = 1
 		} else {
-			routeRequestObject["status"] = 0
+			output["status"] = 0
 		}
 	} else if isUpdate {
-		routeRequestObject["status"] = nil
+		output["status"] = nil
 	}
 
-	utils.ValueToMap(state.EnableWebsocket, routeRequestObject, "enable_websocket", isUpdate)
-	utils.ValueToMap(state.ServiceId, routeRequestObject, "service_id", isUpdate)
-	utils.ValueToMap(state.UpstreamId, routeRequestObject, "upstream_id", isUpdate)
-	utils.ValueToMap(state.Labels, routeRequestObject, "labels", isUpdate)
+	utils.ValueToMap(state.EnableWebsocket, output, "enable_websocket", isUpdate)
+	utils.ValueToMap(state.ServiceId, output, "service_id", isUpdate)
+	utils.ValueToMap(state.UpstreamId, output, "upstream_id", isUpdate)
+	utils.ValueToMap(state.Labels, output, "labels", isUpdate)
 
-	if state.Timeout != nil {
-		// TODO: FIXME
-		routeRequestObject["timeout"] = map[string]interface{}{
-			"connect": utils.TypeNumberToInt(state.Timeout.Connect),
-			"send":    utils.TypeNumberToInt(state.Timeout.Send),
-			"read":    utils.TypeNumberToInt(state.Timeout.Read),
-		}
-	} else if isUpdate {
-		routeRequestObject["timeout"] = nil
-	}
-
-	utils.ValueToMap(state.Script, routeRequestObject, "script", isUpdate)
-	utils.ValueToMap(state.PluginConfigId, routeRequestObject, "plugin_config_id", isUpdate)
-	utils.ValueToMap(state.FilterFunc, routeRequestObject, "filter_func", isUpdate)
+	TimeoutStateToMap(state.Timeout, output, isUpdate)
+	utils.ValueToMap(state.Script, output, "script", isUpdate)
+	utils.ValueToMap(state.PluginConfigId, output, "plugin_config_id", isUpdate)
+	utils.ValueToMap(state.FilterFunc, output, "filter_func", isUpdate)
 
 	plugins := make(map[string]interface{})
 	if state.Plugins != nil {
@@ -415,10 +405,10 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 		e := reflect.ValueOf(planPlugins).Elem()
 		for i := 0; i < e.NumField(); i++ {
 			if !e.Field(i).IsNil() {
-				e.Field(i).Interface().(PluginCommonInterface).EncodeToMap(plugins)
+				e.Field(i).Interface().(PluginCommonInterface).StateToMap(plugins, isUpdate)
 			}
 		}
-		routeRequestObject["plugins"] = plugins
+		output["plugins"] = plugins
 	}
 
 	upstream, err := UpstreamTypeStateToMap(state.Upstream, isUpdate)
@@ -427,7 +417,7 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 		return nil, err
 	}
 
-	routeRequestObject["upstream"] = upstream
+	output["upstream"] = upstream
 
-	return routeRequestObject, nil
+	return output, nil
 }

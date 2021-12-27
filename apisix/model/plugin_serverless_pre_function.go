@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
@@ -46,50 +45,29 @@ var PluginServerlessPreFunctionSchemaAttribute = tfsdk.Attribute{
 
 func (s PluginServerlessPreFunctionType) Name() string { return "serverless-pre-function" }
 
-func (s PluginServerlessPreFunctionType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v[s.Name()]; v != nil {
-		jsonData := v.(map[string]interface{})
-		item := PluginServerlessPreFunctionType{}
-
-		if v := jsonData["disable"]; v != nil {
-			item.Disable = types.Bool{Value: v.(bool)}
-		} else {
-			item.Disable = types.Bool{Value: true}
-		}
-
-		if v := jsonData["phase"]; v != nil {
-			item.Phase = types.String{Value: v.(string)}
-		} else {
-			item.Phase = types.String{Null: true}
-		}
-
-		if v := jsonData["functions"]; v != nil {
-			var values []attr.Value
-			for _, value := range v.([]interface{}) {
-				values = append(values, types.String{Value: value.(string)})
-			}
-
-			item.Functions = types.List{
-				ElemType: types.StringType,
-				Elems:    values,
-			}
-		} else {
-			item.Functions = types.List{Null: true}
-		}
-
-		pluginsType.ServerlessPreFunction = &item
+func (s PluginServerlessPreFunctionType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
+	v := data[s.Name()]
+	if v != nil {
+		return
 	}
+
+	jsonData := v.(map[string]interface{})
+	item := PluginServerlessPreFunctionType{}
+
+	utils.MapValueToValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToValue(jsonData, "phase", &item.Phase)
+	utils.MapValueToValue(jsonData, "functions", &item.Functions)
+
+	pluginsType.ServerlessPreFunction = &item
 }
 
-func (s PluginServerlessPreFunctionType) validate() error { return nil }
-
-func (s PluginServerlessPreFunctionType) EncodeToMap(m map[string]interface{}) {
+func (s PluginServerlessPreFunctionType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.Phase, pluginValue, "phase", true)
-	utils.ValueToMap(s.Functions, pluginValue, "functions", true)
+	utils.ValueToMap(s.Phase, pluginValue, "phase", isUpdate)
+	utils.ValueToMap(s.Functions, pluginValue, "functions", isUpdate)
 
 	m[s.Name()] = pluginValue
 }

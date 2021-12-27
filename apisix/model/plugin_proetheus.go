@@ -36,35 +36,26 @@ var PluginPrometheusSchemaAttribute = tfsdk.Attribute{
 
 func (s PluginPrometheusType) Name() string { return "prometheus" }
 
-func (s PluginPrometheusType) DecodeFomMap(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v[s.Name()]; v != nil {
-		jsonData := v.(map[string]interface{})
-		item := PluginPrometheusType{}
-
-		if v := jsonData["disable"]; v != nil {
-			item.Disable = types.Bool{Value: v.(bool)}
-		} else {
-			item.Disable = types.Bool{Value: true}
-		}
-
-		if v := jsonData["prefer_name"]; v != nil {
-			item.PreferName = types.Bool{Value: v.(bool)}
-		} else {
-			item.PreferName = types.Bool{Null: true}
-		}
-
-		pluginsType.Prometheus = &item
+func (s PluginPrometheusType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
+	v := data[s.Name()]
+	if v == nil {
+		return
 	}
+	jsonData := v.(map[string]interface{})
+	item := PluginPrometheusType{}
+
+	utils.MapValueToValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToValue(jsonData, "prefer_name", &item.PreferName)
+
+	pluginsType.Prometheus = &item
 }
 
-func (s PluginPrometheusType) validate() error { return nil }
-
-func (s PluginPrometheusType) EncodeToMap(m map[string]interface{}) {
+func (s PluginPrometheusType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ValueToMap(s.PreferName, pluginValue, "prefer_name", true)
+	utils.ValueToMap(s.PreferName, pluginValue, "prefer_name", isUpdate)
 
 	m[s.Name()] = pluginValue
 }
