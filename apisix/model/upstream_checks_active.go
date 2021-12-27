@@ -101,7 +101,7 @@ var UpstreamChecksActiveSchemaAttribute = tfsdk.Attribute{
 
 func UpstreamChecksActiveMapToState(data map[string]interface{}) *UpstreamChecksActiveType {
 	v := data["active"]
-	if v != nil {
+	if v == nil {
 		return nil
 	}
 

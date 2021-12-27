@@ -44,7 +44,7 @@ var UpstreamChecksPassiveHealthySchemaAttribute = tfsdk.Attribute{
 
 func UpstreamChecksPassiveHealthyMapToState(data map[string]interface{}) *UpstreamChecksPassiveHealthyType {
 	v := data["healthy"]
-	if v != nil {
+	if v == nil {
 		return nil
 	}
 
@@ -55,7 +55,6 @@ func UpstreamChecksPassiveHealthyMapToState(data map[string]interface{}) *Upstre
 	utils.MapValueToValue(value, "http_statuses", &output.HTTPStatuses)
 
 	return &output
-
 }
 
 func UpstreamChecksPassiveHealthyStateToMap(state *UpstreamChecksPassiveHealthyType, dMap map[string]interface{}, isUpdate bool) {

@@ -57,7 +57,7 @@ var UpstreamChecksActiveHealthySchemaAttribute = tfsdk.Attribute{
 
 func UpstreamChecksActiveHealthyMapToState(data map[string]interface{}) *UpstreamChecksActiveHealthyType {
 	v := data["healthy"]
-	if v != nil {
+	if v == nil {
 		return nil
 	}
 
@@ -70,7 +70,6 @@ func UpstreamChecksActiveHealthyMapToState(data map[string]interface{}) *Upstrea
 	utils.MapValueToValue(value, "interval", &output.Interval)
 
 	return &output
-
 }
 
 func UpstreamChecksActiveHealthyStateToMap(state *UpstreamChecksActiveHealthyType, dMap map[string]interface{}, isUpdate bool) {

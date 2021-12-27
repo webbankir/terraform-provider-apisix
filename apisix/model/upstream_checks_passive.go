@@ -19,7 +19,7 @@ var UpstreamChecksPassiveSchemaAttribute = tfsdk.Attribute{
 
 func UpstreamChecksPassiveMapToState(data map[string]interface{}) *UpstreamChecksPassiveType {
 	v := data["passive"]
-	if v != nil {
+	if v == nil {
 		return nil
 	}
 

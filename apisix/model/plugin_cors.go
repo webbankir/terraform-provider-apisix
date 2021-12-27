@@ -7,7 +7,6 @@ import (
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
 	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"log"
-	"math/big"
 	"strings"
 )
 
@@ -96,102 +95,90 @@ var PluginCorsSchemaAttribute = tfsdk.Attribute{
 
 func (s PluginCorsType) Name() string { return "cors" }
 
-func (s PluginCorsType) MapToState(v map[string]interface{}, pluginsType *PluginsType) {
-	if v := v[s.Name()]; v != nil {
-		jsonData := v.(map[string]interface{})
-		item := PluginCorsType{}
-
-		if v := jsonData["disable"]; v != nil {
-			item.Disable = types.Bool{Value: v.(bool)}
-		} else {
-			item.Disable = types.Bool{Value: true}
-		}
-
-		if v := jsonData["max_age"]; v != nil {
-			item.MaxAge = types.Number{Value: big.NewFloat(v.(float64))}
-		} else {
-			item.MaxAge = types.Number{Null: true}
-		}
-
-		if v := jsonData["allow_credential"]; v != nil {
-			item.AllowCredential = types.Bool{Value: v.(bool)}
-		} else {
-			item.AllowCredential = types.Bool{Null: true}
-		}
-
-		if v := jsonData["allow_origins_by_regex"]; v != nil {
-			var values []attr.Value
-			for _, value := range v.([]interface{}) {
-				values = append(values, types.String{Value: value.(string)})
-			}
-			item.AllowOriginsByRegex = types.List{
-				ElemType: types.StringType,
-				Elems:    values,
-			}
-		} else {
-			item.AllowOriginsByRegex = types.List{Null: true}
-		}
-
-		if v := jsonData["expose_headers"]; v != nil {
-			var values []attr.Value
-			for _, value := range strings.Split(v.(string), ",") {
-				values = append(values, types.String{Value: value})
-			}
-			item.ExposeHeaders = types.List{
-				ElemType: types.StringType,
-				Elems:    values,
-			}
-		} else {
-			item.ExposeHeaders = types.List{Null: true}
-		}
-
-		if v := jsonData["allow_headers"]; v != nil {
-			var values []attr.Value
-			for _, value := range strings.Split(v.(string), ",") {
-				values = append(values, types.String{Value: value})
-			}
-			item.AllowHeaders = types.List{
-				ElemType: types.StringType,
-				Elems:    values,
-			}
-		} else {
-			item.AllowHeaders = types.List{Null: true}
-		}
-
-		if v := jsonData["allow_origins"]; v != nil {
-			var values []attr.Value
-			for _, value := range strings.Split(v.(string), ",") {
-				values = append(values, types.String{Value: value})
-			}
-			item.AllowOrigins = types.List{
-				ElemType: types.StringType,
-				Elems:    values,
-			}
-		} else {
-			item.AllowOrigins = types.List{Null: true}
-		}
-
-		if v := jsonData["allow_methods"]; v != nil {
-			var values []attr.Value
-			for _, value := range strings.Split(v.(string), ",") {
-				values = append(values, types.String{Value: value})
-			}
-			item.AllowMethods = types.List{
-				ElemType: types.StringType,
-				Elems:    values,
-			}
-		} else {
-			item.AllowMethods = types.List{Null: true}
-		}
-
-		pluginsType.Cors = &item
+func (s PluginCorsType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
+	v := data[s.Name()]
+	if v == nil {
+		return
 	}
+	jsonData := v.(map[string]interface{})
+	item := PluginCorsType{}
+
+	utils.MapValueToValue(jsonData, "disable", &item.Disable)
+	utils.MapValueToValue(jsonData, "max_age", &item.MaxAge)
+	utils.MapValueToValue(jsonData, "allow_credential", &item.AllowCredential)
+
+	if v := jsonData["allow_origins_by_regex"]; v != nil {
+		var values []attr.Value
+		for _, value := range v.([]interface{}) {
+			values = append(values, types.String{Value: value.(string)})
+		}
+		item.AllowOriginsByRegex = types.List{
+			ElemType: types.StringType,
+			Elems:    values,
+		}
+	} else {
+		item.AllowOriginsByRegex = types.List{Null: true}
+	}
+
+	if v := jsonData["expose_headers"]; v != nil {
+		var values []attr.Value
+		for _, value := range strings.Split(v.(string), ",") {
+			values = append(values, types.String{Value: value})
+		}
+		item.ExposeHeaders = types.List{
+			ElemType: types.StringType,
+			Elems:    values,
+		}
+	} else {
+		item.ExposeHeaders = types.List{Null: true}
+	}
+
+	if v := jsonData["allow_headers"]; v != nil {
+		var values []attr.Value
+		for _, value := range strings.Split(v.(string), ",") {
+			values = append(values, types.String{Value: value})
+		}
+		item.AllowHeaders = types.List{
+			ElemType: types.StringType,
+			Elems:    values,
+		}
+	} else {
+		item.AllowHeaders = types.List{Null: true}
+	}
+
+	if v := jsonData["allow_origins"]; v != nil {
+		var values []attr.Value
+		for _, value := range strings.Split(v.(string), ",") {
+			values = append(values, types.String{Value: value})
+		}
+		item.AllowOrigins = types.List{
+			ElemType: types.StringType,
+			Elems:    values,
+		}
+	} else {
+		item.AllowOrigins = types.List{Null: true}
+	}
+
+	if v := jsonData["allow_methods"]; v != nil {
+		var values []attr.Value
+		for _, value := range strings.Split(v.(string), ",") {
+			values = append(values, types.String{Value: value})
+		}
+		item.AllowMethods = types.List{
+			ElemType: types.StringType,
+			Elems:    values,
+		}
+	} else {
+		item.AllowMethods = types.List{Null: true}
+	}
+
+	pluginsType.Cors = &item
 }
 
 func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
-	pluginValue := map[string]interface{}{
-		"disable": s.Disable.Value,
-	}
+	pluginValue := map[string]interface{}{}
+
+	utils.ValueToMap(s.Disable, pluginValue, "disable", isUpdate)
 
 	log.Printf("[DEBUG] got state: %v", s)
 	if !s.AllowOrigins.Null {
@@ -200,7 +187,7 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_origins"] = strings.Join(values, ",")
-	} else {
+	} else if isUpdate {
 		pluginValue["allow_origins"] = nil
 	}
 
@@ -210,7 +197,7 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_methods"] = strings.Join(values, ",")
-	} else {
+	} else if isUpdate {
 		pluginValue["allow_methods"] = nil
 	}
 
@@ -220,7 +207,7 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_headers"] = strings.Join(values, ",")
-	} else {
+	} else if isUpdate {
 		pluginValue["allow_headers"] = nil
 	}
 
@@ -230,7 +217,7 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["expose_headers"] = strings.Join(values, ",")
-	} else {
+	} else if isUpdate {
 		pluginValue["expose_headers"] = nil
 	}
 
@@ -242,17 +229,8 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 		pluginValue["allow_origins_by_regex"] = values
 	}
 
-	if !s.MaxAge.Null {
-		pluginValue["max_age"] = utils.TypeNumberToInt(s.MaxAge)
-	} else {
-		pluginValue["max_age"] = nil
-	}
-
-	if !s.AllowCredential.Null {
-		pluginValue["allow_credential"] = s.AllowCredential.Value
-	} else {
-		pluginValue["allow_credential"] = nil
-	}
+	utils.ValueToMap(s.MaxAge, pluginValue, "max_age", isUpdate)
+	utils.ValueToMap(s.AllowCredential, pluginValue, "allow_credential", isUpdate)
 
 	m[s.Name()] = pluginValue
 }
