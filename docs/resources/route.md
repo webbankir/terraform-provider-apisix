@@ -104,18 +104,9 @@ Optional:
 - **headers** (Map of String)
 - **host** (String)
 - **method** (String)
-- **regex_uri** (Attributes) (see [below for nested schema](#nestedatt--plugins--proxy_rewrite--regex_uri))
+- **regex_uri** (List of String)
 - **scheme** (String)
 - **uri** (String)
-
-<a id="nestedatt--plugins--proxy_rewrite--regex_uri"></a>
-### Nested Schema for `plugins.proxy_rewrite.regex_uri`
-
-Optional:
-
-- **regex** (String)
-- **replacement** (String)
-
 
 
 <a id="nestedatt--plugins--redirect"></a>
@@ -127,18 +118,9 @@ Optional:
 - **disable** (Boolean)
 - **encode_uri** (Boolean) When set to true the uri in Location header will be encoded as per RFC3986
 - **http_to_https** (Boolean) When it is set to true and the request is HTTP, will be automatically redirected to HTTPS with 301 response code, and the URI will keep the same as client request
-- **regex_uri** (Attributes) (see [below for nested schema](#nestedatt--plugins--redirect--regex_uri))
+- **regex_uri** (List of String)
 - **ret_code** (Number) Response code
 - **uri** (String) New URL which can contain Nginx variable, eg: /test/index.html, $uri/index.html. You can refer to variables in a way similar to ${xxx} to avoid ambiguity, eg: ${uri}foo/index.html. If you just need the original $ character, add \ in front of it, like this one: /\$foo/index.html. If you refer to a variable name that does not exist, this will not produce an error, and it will be used as an empty string
-
-<a id="nestedatt--plugins--redirect--regex_uri"></a>
-### Nested Schema for `plugins.redirect.regex_uri`
-
-Optional:
-
-- **regex** (String)
-- **replacement** (String)
-
 
 
 <a id="nestedatt--plugins--request_id"></a>
