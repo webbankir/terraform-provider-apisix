@@ -17,6 +17,7 @@ type PluginsType struct {
 	Prometheus             *PluginPrometheusType             `tfsdk:"prometheus"`
 	Redirect               *PluginRedirectType               `tfsdk:"redirect"`
 	Cors                   *PluginCorsType                   `tfsdk:"cors"`
+	RedirectRegex          *PluginRedirectRegexType          `tfsdk:"redirect_regex"`
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
@@ -28,4 +29,5 @@ var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attri
 	"prometheus":               PluginPrometheusSchemaAttribute,
 	"redirect":                 PluginRedirectSchemaAttribute,
 	"cors":                     PluginCorsSchemaAttribute,
+	"redirect_regex":           PluginRedirectRegexSchemaAttribute,
 })
