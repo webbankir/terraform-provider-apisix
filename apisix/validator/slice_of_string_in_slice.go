@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"golang.org/x/net/context"
 )
 
@@ -29,7 +30,7 @@ func (j StringOfStringInSliceType) Validate(ctx context.Context, request tfsdk.V
 		}
 
 		for k, v := range values {
-			if !stringContainsInSlice(j.Slice, v) {
+			if !utils.StringContainsInSlice(j.Slice, v) {
 				response.Diagnostics.AddError(
 					fmt.Sprintf("Wrong value in field: %v", request.AttributePath.String()),
 					fmt.Sprintf("Wrong value %v in position %v. Values must be in: %v", v, k, j.Slice),

@@ -1,6 +1,8 @@
 package model
 
-import "github.com/hashicorp/terraform-plugin-framework/tfsdk"
+import (
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+)
 
 type PluginCommonInterface interface {
 	Name() string
@@ -18,6 +20,8 @@ type PluginsType struct {
 	Redirect               *PluginRedirectType               `tfsdk:"redirect"`
 	Cors                   *PluginCorsType                   `tfsdk:"cors"`
 	RedirectRegex          *PluginRedirectRegexType          `tfsdk:"redirect_regex"`
+	ResponseRewrite        *PluginResponseRewriteType        `tfsdk:"response_rewrite"`
+	//Custom                 *[]PluginCustomType               `tfsdk:"custom"`
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
@@ -30,4 +34,6 @@ var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attri
 	"redirect":                 PluginRedirectSchemaAttribute,
 	"cors":                     PluginCorsSchemaAttribute,
 	"redirect_regex":           PluginRedirectRegexSchemaAttribute,
+	//"custom":                   PluginCustomSchemaAttribute,
+	"response_rewrite": PluginResponseRewriteSchemaAttribute,
 })

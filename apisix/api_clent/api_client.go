@@ -55,7 +55,13 @@ func parseHttpResult(res *http.Response, body []byte) (int, []byte, error) {
 	}
 
 	if res.StatusCode >= 400 {
-		return res.StatusCode, []byte(result["error_msg"].(string)), fmt.Errorf("can't make request, cause: %v", result["error_msg"].(string))
+
+		errorMessage := "No message"
+		if result["error_msg"] != nil {
+			errorMessage = result["error_msg"].(string)
+		}
+
+		return res.StatusCode, []byte(errorMessage), fmt.Errorf("can't make request, cause: %v", errorMessage)
 	}
 
 	node := result["node"].(map[string]interface{})
@@ -84,7 +90,7 @@ func (client ApiClient) Get(path string) (int, []byte, error) {
 func (client ApiClient) Post(path string, jsonBytes []byte) (int, []byte, error) {
 	apiUrl := client.Endpoint + path
 
-	log.Printf("[DEBUG] SEND -> %v", string(jsonBytes))
+	log.Printf("[DEBUG] SEND POST -> %v ->  %v", path, string(jsonBytes))
 	res, err := client.HTTP.Post(apiUrl, "application/json; charset=utf-8", bytes.NewReader(jsonBytes))
 
 	if err != nil {
@@ -103,7 +109,7 @@ func (client ApiClient) Post(path string, jsonBytes []byte) (int, []byte, error)
 func (client ApiClient) Patch(path string, jsonBytes []byte) (int, []byte, error) {
 	apiUrl := client.Endpoint + path
 
-	log.Printf("[DEBUG] SEND -> %v", string(jsonBytes))
+	log.Printf("[DEBUG] PATCH SEND -> %v", string(jsonBytes))
 	req, err := http.NewRequest("PATCH", apiUrl, bytes.NewReader(jsonBytes))
 	if err != nil {
 		return 0, nil, err
@@ -127,7 +133,7 @@ func (client ApiClient) Patch(path string, jsonBytes []byte) (int, []byte, error
 func (client ApiClient) Put(path string, jsonBytes []byte) (int, []byte, error) {
 	apiUrl := client.Endpoint + path
 
-	log.Printf("[DEBUG] SEND -> %v", string(jsonBytes))
+	log.Printf("[DEBUG] SEND PUT -> %v", string(jsonBytes))
 	req, err := http.NewRequest("PUT", apiUrl, bytes.NewReader(jsonBytes))
 	if err != nil {
 		return 0, nil, err

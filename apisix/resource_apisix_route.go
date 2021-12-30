@@ -29,7 +29,7 @@ func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResou
 		return
 	}
 
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, false)
+	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, nil, false)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -48,7 +48,7 @@ func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResou
 		return
 	}
 
-	newState, err := model.RouteTypeMapToState(result)
+	newState, err := model.RouteTypeMapToState(result, &plan, nil)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -92,7 +92,7 @@ func (r ResourceRouteType) Read(ctx context.Context, request tfsdk.ReadResourceR
 		return
 	}
 
-	newState, err := model.RouteTypeMapToState(result)
+	newState, err := model.RouteTypeMapToState(result, nil, &state)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -110,15 +110,22 @@ func (r ResourceRouteType) Read(ctx context.Context, request tfsdk.ReadResourceR
 }
 
 func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResourceRequest, response *tfsdk.UpdateResourceResponse) {
-	var state model.RouteType
+	var plan model.RouteType
 
-	diags := request.Plan.Get(ctx, &state)
+	diags := request.Plan.Get(ctx, &plan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
 
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(state, true)
+	var state model.RouteType
+	diags = request.State.Get(ctx, &state)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
+
+	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, &state, true)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -127,7 +134,7 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 		return
 	}
 
-	result, err := r.p.client.UpdateRoute(state.ID.Value, requestObjectJsonBytes)
+	result, err := r.p.client.UpdateRoute(plan.ID.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -137,7 +144,7 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 		return
 	}
 
-	newState, err := model.RouteTypeMapToState(result)
+	newState, err := model.RouteTypeMapToState(result, &plan, &state)
 
 	if err != nil {
 		response.Diagnostics.AddError(

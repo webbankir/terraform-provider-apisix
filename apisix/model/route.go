@@ -1,40 +1,37 @@
 package model
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/common"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
 	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"github.com/webbankir/terraform-provider-apisix/apisix/validator"
-	"math/big"
 	"reflect"
 )
 
 type RouteType struct {
-	ID              types.String `tfsdk:"id"`
-	Description     types.String `tfsdk:"desc"`
-	EnableWebsocket types.Bool   `tfsdk:"enable_websocket"`
-	FilterFunc      types.String `tfsdk:"filter_func"`
-	Host            types.String `tfsdk:"host"`
-	Hosts           types.List   `tfsdk:"hosts"`
-	IsEnabled       types.Bool   `tfsdk:"is_enabled"`
-	Labels          types.Map    `tfsdk:"labels"`
-	Methods         types.List   `tfsdk:"methods"`
-	Name            types.String `tfsdk:"name"`
-	Plugins         *PluginsType `tfsdk:"plugins"`
-	PluginConfigId  types.String `tfsdk:"plugin_config_id"`
-	Priority        types.Number `tfsdk:"priority"`
-	RemoteAddr      types.String `tfsdk:"remote_addr"`
-	RemoteAddrs     types.List   `tfsdk:"remote_addrs"`
-	Script          types.String `tfsdk:"script"`
-	ServiceId       types.String `tfsdk:"service_id"`
-	//Timeout         *TimeoutType  `tfsdk:"timeout"`
-	Upstream   *UpstreamType `tfsdk:"upstream"`
-	UpstreamId types.String  `tfsdk:"upstream_id"`
-	Uri        types.String  `tfsdk:"uri"`
-	Uris       types.List    `tfsdk:"uris"`
+	ID              types.String  `tfsdk:"id"`
+	Description     types.String  `tfsdk:"desc"`
+	EnableWebsocket types.Bool    `tfsdk:"enable_websocket"`
+	FilterFunc      types.String  `tfsdk:"filter_func"`
+	Host            types.String  `tfsdk:"host"`
+	Hosts           types.List    `tfsdk:"hosts"`
+	IsEnabled       types.Bool    `tfsdk:"is_enabled"`
+	Labels          types.Map     `tfsdk:"labels"`
+	Methods         types.List    `tfsdk:"methods"`
+	Name            types.String  `tfsdk:"name"`
+	Plugins         *PluginsType  `tfsdk:"plugins"`
+	PluginConfigId  types.String  `tfsdk:"plugin_config_id"`
+	Priority        types.Number  `tfsdk:"priority"`
+	RemoteAddr      types.String  `tfsdk:"remote_addr"`
+	RemoteAddrs     types.List    `tfsdk:"remote_addrs"`
+	Script          types.String  `tfsdk:"script"`
+	ServiceId       types.String  `tfsdk:"service_id"`
+	Upstream        *UpstreamType `tfsdk:"upstream"`
+	UpstreamId      types.String  `tfsdk:"upstream_id"`
+	URI             types.String  `tfsdk:"uri"`
+	URIS            types.List    `tfsdk:"uris"`
 }
 
 var RouteSchema = tfsdk.Schema{
@@ -177,136 +174,26 @@ var RouteSchema = tfsdk.Schema{
 	},
 }
 
-func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
+func RouteTypeMapToState(jsonMap map[string]interface{}, plan *RouteType, state *RouteType) (*RouteType, error) {
 	newState := RouteType{}
 
-	if v := jsonMap["id"]; v != nil {
-		newState.ID = types.String{Value: v.(string)}
-	}
-
-	if v := jsonMap["status"]; v != nil {
-		if v.(float64) == 1 {
-			newState.IsEnabled = types.Bool{Value: true}
-		} else {
-			newState.IsEnabled = types.Bool{Value: false}
-		}
-	}
-
-	if v := jsonMap["name"]; v != nil {
-		newState.Name = types.String{Value: v.(string)}
-	} else {
-		newState.Name = types.String{Null: true}
-	}
-
-	if v := jsonMap["desc"]; v != nil {
-		newState.Description = types.String{Value: v.(string)}
-	} else {
-		newState.Description = types.String{Null: true}
-	}
-
-	if v := jsonMap["uri"]; v != nil {
-		newState.Uri = types.String{Value: v.(string)}
-	} else {
-		newState.Uri = types.String{Null: true}
-	}
-
-	if v := jsonMap["uris"]; v != nil {
-		var values []attr.Value
-		for _, value := range v.([]interface{}) {
-			values = append(values, types.String{Value: value.(string)})
-		}
-
-		newState.Uris = types.List{ElemType: types.StringType, Elems: values}
-	} else {
-		newState.Uris = types.List{Null: true}
-	}
-
-	if v := jsonMap["host"]; v != nil {
-		newState.Host = types.String{Value: v.(string)}
-	} else {
-		newState.Host = types.String{Null: true}
-	}
-
-	if v := jsonMap["hosts"]; v != nil {
-		var values []attr.Value
-		for _, value := range v.([]interface{}) {
-			values = append(values, types.String{Value: value.(string)})
-		}
-
-		newState.Hosts = types.List{ElemType: types.StringType, Elems: values}
-	} else {
-		newState.Hosts = types.List{Null: true}
-	}
-
-	if v := jsonMap["remote_addr"]; v != nil {
-		newState.RemoteAddr = types.String{Value: v.(string)}
-	} else {
-		newState.RemoteAddr = types.String{Null: true}
-	}
-
-	if v := jsonMap["remote_addrs"]; v != nil {
-		var values []attr.Value
-		for _, value := range v.([]interface{}) {
-			values = append(values, types.String{Value: value.(string)})
-		}
-
-		newState.RemoteAddrs = types.List{ElemType: types.StringType, Elems: values}
-	} else {
-		newState.RemoteAddrs = types.List{Null: true}
-	}
-
-	if v := jsonMap["methods"]; v != nil {
-		var values []attr.Value
-		for _, value := range v.([]interface{}) {
-			values = append(values, types.String{Value: value.(string)})
-		}
-
-		newState.Methods = types.List{ElemType: types.StringType, Elems: values}
-	} else {
-		newState.Methods = types.List{Null: true}
-	}
-
-	if v := jsonMap["priority"]; v != nil {
-		newState.Priority = types.Number{Value: big.NewFloat(v.(float64))}
-	} else {
-		newState.Priority = types.Number{Null: true}
-	}
-
-	if v := jsonMap["filter_func"]; v != nil {
-		newState.FilterFunc = types.String{Value: v.(string)}
-	} else {
-		newState.FilterFunc = types.String{Null: true}
-	}
-
-	if v := jsonMap["script"]; v != nil {
-		newState.Script = types.String{Value: v.(string)}
-	} else {
-		newState.Script = types.String{Null: true}
-	}
-
-	if v := jsonMap["upstream_id"]; v != nil {
-		newState.UpstreamId = types.String{Value: v.(string)}
-	} else {
-		newState.UpstreamId = types.String{Null: true}
-	}
-
-	if v := jsonMap["service_id"]; v != nil {
-		newState.ServiceId = types.String{Value: v.(string)}
-	} else {
-		newState.ServiceId = types.String{Null: true}
-	}
-
-	if v := jsonMap["plugin_config_id"]; v != nil {
-		newState.PluginConfigId = types.String{Value: v.(string)}
-	} else {
-		newState.PluginConfigId = types.String{Null: true}
-	}
-
-	if v := jsonMap["enable_websocket"]; v != nil {
-		newState.EnableWebsocket = types.Bool{Value: v.(bool)}
-	} else {
-		newState.EnableWebsocket = types.Bool{Null: true}
-	}
+	utils.MapValueToStringTypeValue(jsonMap, "id", &newState.ID)
+	utils.MapValueToStringTypeValue(jsonMap, "name", &newState.Name)
+	utils.MapValueToStringTypeValue(jsonMap, "desc", &newState.Description)
+	utils.MapValueToStringTypeValue(jsonMap, "uri", &newState.URI)
+	utils.MapValueToListTypeValue(jsonMap, "uris", &newState.URIS)
+	utils.MapValueToStringTypeValue(jsonMap, "host", &newState.Host)
+	utils.MapValueToListTypeValue(jsonMap, "hosts", &newState.Hosts)
+	utils.MapValueToStringTypeValue(jsonMap, "remote_addr", &newState.RemoteAddr)
+	utils.MapValueToListTypeValue(jsonMap, "remote_addrs", &newState.RemoteAddrs)
+	utils.MapValueToListTypeValue(jsonMap, "methods", &newState.Methods)
+	utils.MapValueToNumberTypeValue(jsonMap, "priority", &newState.Priority)
+	utils.MapValueToStringTypeValue(jsonMap, "filter_func", &newState.FilterFunc)
+	utils.MapValueToStringTypeValue(jsonMap, "script", &newState.Script)
+	utils.MapValueToStringTypeValue(jsonMap, "upstream_id", &newState.UpstreamId)
+	utils.MapValueToStringTypeValue(jsonMap, "service_id", &newState.ServiceId)
+	utils.MapValueToStringTypeValue(jsonMap, "plugin_config_id", &newState.PluginConfigId)
+	utils.MapValueToBoolTypeValue(jsonMap, "enable_websocket", &newState.EnableWebsocket)
 
 	if v := jsonMap["status"]; v != nil {
 		if v.(float64) == 1 {
@@ -318,34 +205,13 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 		newState.IsEnabled = types.Bool{Null: true}
 	}
 
-	if v := jsonMap["labels"]; v != nil {
-		values := make(map[string]attr.Value)
-		for key, value := range v.(map[string]interface{}) {
-			values[key] = types.String{Value: value.(string)}
-		}
-		newState.Labels = types.Map{ElemType: types.StringType, Elems: values}
-	} else {
-		newState.Labels = types.Map{Null: true}
-	}
+	utils.MapValueToMapTypeValue(jsonMap, "labels", &newState.Labels)
 
 	upstream, err := UpstreamTypeMapToState(jsonMap)
 	if err != nil {
 		return nil, err
 	}
-
 	newState.Upstream = upstream
-
-	//if v := jsonMap["timeout"]; v != nil {
-	//	timeout := v.(map[string]interface{})
-	//
-	//	newState.Timeout = &TimeoutType{
-	//		Connect: types.Number{Value: big.NewFloat(timeout["connect"].(float64))},
-	//		Send:    types.Number{Value: big.NewFloat(timeout["send"].(float64))},
-	//		Read:    types.Number{Value: big.NewFloat(timeout["read"].(float64))},
-	//	}
-	//} else {
-	//	newState.Timeout = nil
-	//}
 
 	if v := jsonMap["plugins"]; v != nil {
 		value := v.(map[string]interface{})
@@ -353,8 +219,15 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 
 		e := reflect.ValueOf(&pluginsType).Elem()
 		for i := 0; i < e.NumField(); i++ {
-			reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).MapToState(value, &pluginsType)
+			switch e.Field(i).Interface().(type) {
+			case PluginCommonInterface:
+				reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).MapToState(value, &pluginsType)
+			default:
+
+			}
 		}
+
+		//PluginCustomTypeMapToState(value, &pluginsType, plan, state)
 		newState.Plugins = &pluginsType
 	} else {
 		newState.Plugins = nil
@@ -363,23 +236,23 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 	return &newState, nil
 }
 
-func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}, error) {
+func RouteTypeStateToMap(plan RouteType, state *RouteType, isUpdate bool) (map[string]interface{}, error) {
 
 	output := make(map[string]interface{})
 
-	utils.StringTypeValueToMap(state.Name, output, "name", isUpdate)
-	utils.StringTypeValueToMap(state.Description, output, "desc", isUpdate)
-	utils.StringTypeValueToMap(state.Uri, output, "uri", isUpdate)
-	utils.ListTypeValueToMap(state.Uris, output, "uris", isUpdate)
-	utils.StringTypeValueToMap(state.Host, output, "host", isUpdate)
-	utils.ListTypeValueToMap(state.Hosts, output, "hosts", isUpdate)
-	utils.StringTypeValueToMap(state.RemoteAddr, output, "remote_addr", isUpdate)
-	utils.ListTypeValueToMap(state.RemoteAddrs, output, "remote_addrs", isUpdate)
-	utils.ListTypeValueToMap(state.Methods, output, "methods", isUpdate)
-	utils.NumberTypeValueToMap(state.Priority, output, "priority", isUpdate)
+	utils.StringTypeValueToMap(plan.Name, output, "name", isUpdate)
+	utils.StringTypeValueToMap(plan.Description, output, "desc", isUpdate)
+	utils.StringTypeValueToMap(plan.URI, output, "uri", isUpdate)
+	utils.ListTypeValueToMap(plan.URIS, output, "uris", isUpdate)
+	utils.StringTypeValueToMap(plan.Host, output, "host", isUpdate)
+	utils.ListTypeValueToMap(plan.Hosts, output, "hosts", isUpdate)
+	utils.StringTypeValueToMap(plan.RemoteAddr, output, "remote_addr", isUpdate)
+	utils.ListTypeValueToMap(plan.RemoteAddrs, output, "remote_addrs", isUpdate)
+	utils.ListTypeValueToMap(plan.Methods, output, "methods", isUpdate)
+	utils.NumberTypeValueToMap(plan.Priority, output, "priority", isUpdate)
 
-	if !state.IsEnabled.Null {
-		if state.IsEnabled.Value {
+	if !plan.IsEnabled.Null {
+		if plan.IsEnabled.Value {
 			output["status"] = 1
 		} else {
 			output["status"] = 0
@@ -388,32 +261,46 @@ func RouteTypeStateToMap(state RouteType, isUpdate bool) (map[string]interface{}
 		output["status"] = nil
 	}
 
-	utils.BoolTypeValueToMap(state.EnableWebsocket, output, "enable_websocket", isUpdate)
-	utils.StringTypeValueToMap(state.ServiceId, output, "service_id", isUpdate)
-	utils.StringTypeValueToMap(state.UpstreamId, output, "upstream_id", isUpdate)
-	utils.MapTypeValueToMap(state.Labels, output, "labels", isUpdate)
+	utils.BoolTypeValueToMap(plan.EnableWebsocket, output, "enable_websocket", isUpdate)
+	utils.StringTypeValueToMap(plan.ServiceId, output, "service_id", isUpdate)
+	utils.StringTypeValueToMap(plan.UpstreamId, output, "upstream_id", isUpdate)
+	utils.MapTypeValueToMap(plan.Labels, output, "labels", isUpdate)
 
 	//TimeoutStateToMap(state.Timeout, output, isUpdate)
-	utils.StringTypeValueToMap(state.Script, output, "script", isUpdate)
-	utils.StringTypeValueToMap(state.PluginConfigId, output, "plugin_config_id", isUpdate)
-	utils.StringTypeValueToMap(state.FilterFunc, output, "filter_func", isUpdate)
+	utils.StringTypeValueToMap(plan.Script, output, "script", isUpdate)
+	utils.StringTypeValueToMap(plan.PluginConfigId, output, "plugin_config_id", isUpdate)
+	utils.StringTypeValueToMap(plan.FilterFunc, output, "filter_func", isUpdate)
 
 	plugins := make(map[string]interface{})
-	if state.Plugins != nil {
-		planPlugins := state.Plugins
+	if plan.Plugins != nil {
+		planPlugins := plan.Plugins
 
 		e := reflect.ValueOf(planPlugins).Elem()
 		for i := 0; i < e.NumField(); i++ {
+
 			if !e.Field(i).IsNil() {
-				e.Field(i).Interface().(PluginCommonInterface).StateToMap(plugins, isUpdate)
+				switch e.Field(i).Interface().(type) {
+				case PluginCommonInterface:
+					e.Field(i).Interface().(PluginCommonInterface).StateToMap(plugins, isUpdate)
+				default:
+
+				}
+
 			} else if isUpdate {
-				plugins[reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).Name()] = nil
+				switch e.Field(i).Interface().(type) {
+				case PluginCommonInterface:
+					plugins[reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).Name()] = nil
+				default:
+				}
 			}
 		}
+
+		//PluginCustomTypeStateToMap(plugins, plan, state, isUpdate)
+
 		output["plugins"] = plugins
 	}
 
-	upstream, err := UpstreamTypeStateToMap(state.Upstream, isUpdate)
+	upstream, err := UpstreamTypeStateToMap(plan.Upstream, isUpdate)
 
 	if err != nil {
 		return nil, err
