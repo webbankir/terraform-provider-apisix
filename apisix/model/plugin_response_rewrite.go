@@ -79,7 +79,7 @@ func (s PluginResponseRewriteType) MapToState(data map[string]interface{}, plugi
 	utils.MapValueToStringTypeValue(jsonData, "body", &item.Body)
 	utils.MapValueToBoolTypeValue(jsonData, "body_base64", &item.BodyBase64)
 	utils.MapValueToMapTypeValue(jsonData, "headers", &item.Headers)
-	item.Vars = varsMapToState(data)
+	item.Vars = varsMapToState(jsonData)
 
 	pluginsType.ResponseRewrite = &item
 }

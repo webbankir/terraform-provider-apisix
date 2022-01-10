@@ -3,7 +3,6 @@ package model
 import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"log"
 )
 
 func varsMapToState(data map[string]interface{}) types.List {
@@ -12,10 +11,8 @@ func varsMapToState(data map[string]interface{}) types.List {
 
 		data, ok := v.([]interface{})
 		if !ok {
-			log.Printf("[DEBUG] KUKU22")
 			return types.List{Null: true, ElemType: types.ListType{ElemType: types.StringType}}
 		} else {
-			log.Printf("[DEBUG] KUKU333")
 			var values []attr.Value
 
 			for _, v := range data {
@@ -35,7 +32,7 @@ func varsMapToState(data map[string]interface{}) types.List {
 		}
 	}
 
-	log.Printf("[DEBUG] KUKU")
+	//log.Printf("[DEBUG] KUKU - %v", data["vars"])
 	return types.List{Null: true, ElemType: types.ListType{ElemType: types.StringType}}
 }
 
