@@ -72,7 +72,3 @@ func NumberLessThan(v float64) NumberType {
 func NumberLessOrEqualThan(v float64) NumberType {
 	return NumberType{Max: v, Type: "lte"}
 }
-
-//func NumberBetweenInclusive(min float64, max float64) NumberType {
-//	return NumberType{Min: min, Max: max,  Type: "bii"}
-//}

@@ -6,8 +6,6 @@ import (
 
 //batch-requests
 //echo
-//gzip
-//real-ip
 //server-info
 //ext-plugin-pre-req
 //ext-plugin-post-req
@@ -58,12 +56,14 @@ type PluginCommonInterface interface {
 }
 
 type PluginsType struct {
-	Custom                 *[]PluginCustomType               `tfsdk:"custom"`
 	Cors                   *PluginCorsType                   `tfsdk:"cors"`
+	Custom                 *[]PluginCustomType               `tfsdk:"custom"`
+	GZIP                   *PluginGZIPType                   `tfsdk:"gzip"`
 	IpRestriction          *PluginIpRestrictionType          `tfsdk:"ip_restriction"`
 	Prometheus             *PluginPrometheusType             `tfsdk:"prometheus"`
 	ProxyCache             *PluginProxyCacheType             `tfsdk:"proxy_cache"`
 	ProxyRewrite           *PluginProxyRewriteType           `tfsdk:"proxy_rewrite"`
+	RealIP                 *PluginRealIPType                 `tfsdk:"real_ip"`
 	Redirect               *PluginRedirectType               `tfsdk:"redirect"`
 	RedirectRegex          *PluginRedirectRegexType          `tfsdk:"redirect_regex"`
 	RequestId              *PluginRequestIdType              `tfsdk:"request_id"`
@@ -74,15 +74,17 @@ type PluginsType struct {
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
 	"cors":                     PluginCorsSchemaAttribute,
+	"custom":                   PluginCustomSchemaAttribute,
+	"gzip":                     PluginGZIPSchemaAttribute,
 	"ip_restriction":           PluginIpRestrictionSchemaAttribute,
 	"prometheus":               PluginPrometheusSchemaAttribute,
 	"proxy_cache":              PluginProxyCacheSchemaAttribute,
 	"proxy_rewrite":            PluginProxyRewriteSchemaAttribute,
+	"real_ip":                  PluginRealIPSchemaAttribute,
 	"redirect":                 PluginRedirectSchemaAttribute,
 	"redirect_regex":           PluginRedirectRegexSchemaAttribute,
 	"request_id":               PluginRequestIdSchemaAttribute,
 	"response_rewrite":         PluginResponseRewriteSchemaAttribute,
 	"serverless_post_function": PluginServerlessPostFunctionSchemaAttribute,
 	"serverless_pre_function":  PluginServerlessPreFunctionSchemaAttribute,
-	"custom":                   PluginCustomSchemaAttribute,
 })
