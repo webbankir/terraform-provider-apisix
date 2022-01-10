@@ -68,6 +68,7 @@ func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceTyp
 		"apisix_route":           ResourceRouteType{},
 		"apisix_upstream":        ResourceUpstreamType{},
 		"apisix_stream_route":    ResourceStreamRouteType{},
+		"apisix_consumer":        ResourceConsumerType{},
 	}, nil
 }
 

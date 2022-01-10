@@ -70,6 +70,8 @@ type PluginsType struct {
 	ResponseRewrite        *PluginResponseRewriteType        `tfsdk:"response_rewrite"`
 	ServerlessPostFunction *PluginServerlessPostFunctionType `tfsdk:"serverless_post_function"`
 	ServerlessPreFunction  *PluginServerlessPreFunctionType  `tfsdk:"serverless_pre_function"`
+	ConsumerRestriction    *PluginConsumerRestrictionType    `tfsdk:"consumer_restriction"`
+	BasicAuth              *PluginBasicAuthType              `tfsdk:"basic_auth"`
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
@@ -87,4 +89,6 @@ var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attri
 	"response_rewrite":         PluginResponseRewriteSchemaAttribute,
 	"serverless_post_function": PluginServerlessPostFunctionSchemaAttribute,
 	"serverless_pre_function":  PluginServerlessPreFunctionSchemaAttribute,
+	"consumer_restriction":     PluginConsumerRestrictionSchemaAttribute,
+	"basic_auth":               PluginBasicAuthSchemaAttribute,
 })

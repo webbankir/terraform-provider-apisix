@@ -30,7 +30,6 @@ type UpstreamType struct {
 }
 
 var UpstreamSchemaAttribute = tfsdk.Attribute{
-
 	Optional: true,
 	Attributes: tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
 		"id": {

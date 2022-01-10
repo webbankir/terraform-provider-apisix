@@ -180,7 +180,7 @@ var RouteSchema = tfsdk.Schema{
 	},
 }
 
-func RouteTypeMapToState(jsonMap map[string]interface{}, plan *RouteType, state *RouteType) (*RouteType, error) {
+func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 	newState := RouteType{}
 
 	utils.MapValueToStringTypeValue(jsonMap, "id", &newState.ID)
@@ -243,7 +243,7 @@ func RouteTypeMapToState(jsonMap map[string]interface{}, plan *RouteType, state 
 	return &newState, nil
 }
 
-func RouteTypeStateToMap(plan RouteType, state *RouteType, isUpdate bool) (map[string]interface{}, error) {
+func RouteTypeStateToMap(plan RouteType, isUpdate bool) (map[string]interface{}, error) {
 
 	output := make(map[string]interface{})
 

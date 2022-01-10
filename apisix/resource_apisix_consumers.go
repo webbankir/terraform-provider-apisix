@@ -7,29 +7,29 @@ import (
 	"github.com/webbankir/terraform-provider-apisix/apisix/model"
 )
 
-type ResourceRouteType struct {
+type ResourceConsumerType struct {
 	p provider
 }
 
-func (r ResourceRouteType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return ResourceRouteType{
+func (r ResourceConsumerType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
+	return ResourceConsumerType{
 		p: *(p.(*provider)),
 	}, nil
 }
 
-func (r ResourceRouteType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return model.RouteSchema, nil
+func (r ResourceConsumerType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+	return model.ConsumerSchema, nil
 }
 
-func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResourceRequest, response *tfsdk.CreateResourceResponse) {
-	var plan model.RouteType
+func (r ResourceConsumerType) Create(ctx context.Context, request tfsdk.CreateResourceRequest, response *tfsdk.CreateResourceResponse) {
+	var plan model.ConsumerType
 	diags := request.Plan.Get(ctx, &plan)
 	response.Diagnostics.Append(diags...)
 	if response.Diagnostics.HasError() {
 		return
 	}
 
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, false)
+	requestObjectJsonBytes, err := model.ConsumerTypeStateToMap(plan, false)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -38,17 +38,17 @@ func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResou
 		return
 	}
 
-	result, err := r.p.client.CreateRoute(requestObjectJsonBytes)
+	result, err := r.p.client.CreateConsumer(requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't create new route resource",
+			"Can't create new consumer resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	newState, err := model.RouteTypeMapToState(result)
+	newState, err := model.ConsumerTypeMapToState(result)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -65,9 +65,9 @@ func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResou
 	}
 }
 
-func (r ResourceRouteType) Read(ctx context.Context, request tfsdk.ReadResourceRequest, response *tfsdk.ReadResourceResponse) {
+func (r ResourceConsumerType) Read(ctx context.Context, request tfsdk.ReadResourceRequest, response *tfsdk.ReadResourceResponse) {
 
-	var state model.RouteType
+	var state model.ConsumerType
 
 	diags := request.State.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -75,24 +75,17 @@ func (r ResourceRouteType) Read(ctx context.Context, request tfsdk.ReadResourceR
 		return
 	}
 
-	if state.ID.Null {
-		response.Diagnostics.AddError(
-			"Can't read route resource, ID is null",
-			"Unexpected error",
-		)
-		return
-	}
-	result, err := r.p.client.GetRoute(state.ID.Value)
+	result, err := r.p.client.GetConsumer(state.Username.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't read route resource",
+			"Can't read consumer resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	newState, err := model.RouteTypeMapToState(result)
+	newState, err := model.ConsumerTypeMapToState(result)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -109,8 +102,8 @@ func (r ResourceRouteType) Read(ctx context.Context, request tfsdk.ReadResourceR
 	}
 }
 
-func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResourceRequest, response *tfsdk.UpdateResourceResponse) {
-	var plan model.RouteType
+func (r ResourceConsumerType) Update(ctx context.Context, request tfsdk.UpdateResourceRequest, response *tfsdk.UpdateResourceResponse) {
+	var plan model.ConsumerType
 
 	diags := request.Plan.Get(ctx, &plan)
 	response.Diagnostics.Append(diags...)
@@ -118,14 +111,7 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 		return
 	}
 
-	var state model.RouteType
-	diags = request.State.Get(ctx, &state)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
-
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, true)
+	requestObjectJsonBytes, err := model.ConsumerTypeStateToMap(plan, true)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -134,17 +120,17 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 		return
 	}
 
-	result, err := r.p.client.UpdateRoute(plan.ID.Value, requestObjectJsonBytes)
+	result, err := r.p.client.UpdateConsumer(requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't update route resource",
+			"Can't update consumer resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	newState, err := model.RouteTypeMapToState(result)
+	newState, err := model.ConsumerTypeMapToState(result)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -161,8 +147,8 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 	}
 }
 
-func (r ResourceRouteType) Delete(ctx context.Context, request tfsdk.DeleteResourceRequest, response *tfsdk.DeleteResourceResponse) {
-	var state model.RouteType
+func (r ResourceConsumerType) Delete(ctx context.Context, request tfsdk.DeleteResourceRequest, response *tfsdk.DeleteResourceResponse) {
+	var state model.ConsumerType
 
 	diags := request.State.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -170,11 +156,11 @@ func (r ResourceRouteType) Delete(ctx context.Context, request tfsdk.DeleteResou
 		return
 	}
 
-	err := r.p.client.DeleteRoute(state.ID.Value)
+	err := r.p.client.DeleteConsumer(state.Username.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't delete route resource",
+			"Can't delete consumer resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
@@ -187,7 +173,7 @@ func (r ResourceRouteType) Delete(ctx context.Context, request tfsdk.DeleteResou
 	}
 }
 
-func (r ResourceRouteType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
+func (r ResourceConsumerType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
+	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
 	"golang.org/x/net/context"
-	"log"
 )
 
 type CountOfElementsType struct {
@@ -25,35 +25,36 @@ func (j CountOfElementsType) MarkdownDescription(ctx context.Context) string {
 
 func (j CountOfElementsType) Validate(ctx context.Context, request tfsdk.ValidateAttributeRequest, response *tfsdk.ValidateAttributeResponse) {
 
-	if !request.AttributeConfig.(types.List).Null {
-		v := len(request.AttributeConfig.(types.List).Elems)
-		log.Printf("ss :%v, v:%v, vv2:%v", j, v, request.AttributeConfig.(types.List).Null)
+	if utils.IsAttributeIsNull(request.AttributeConfig) {
+		return
+	}
 
-		switch j.Type {
-		case "gt":
-			if v > j.Min {
-				return
-			}
-		case "gte":
-			if v >= j.Min {
-				return
-			}
-		case "lt":
-			if v < j.Max {
-				return
-			}
-		case "lte":
-			if v <= j.Max {
-				return
-			}
+	v := len(request.AttributeConfig.(types.List).Elems)
 
+	switch j.Type {
+	case "gt":
+		if v > j.Min {
+			return
+		}
+	case "gte":
+		if v >= j.Min {
+			return
+		}
+	case "lt":
+		if v < j.Max {
+			return
+		}
+	case "lte":
+		if v <= j.Max {
+			return
 		}
 
-		response.Diagnostics.AddError(
-			fmt.Sprintf("Wrong value total items in array, field: %v", request.AttributePath.String()),
-			fmt.Sprintf("Values must be more than: %v, or less than: %v", j.Min, j.Max),
-		)
 	}
+
+	response.Diagnostics.AddError(
+		fmt.Sprintf("Wrong value total items in array, field: %v", request.AttributePath.String()),
+		fmt.Sprintf("Values must be more than: %v, or less than: %v", j.Min, j.Max),
+	)
 }
 
 func ElementsGreatThan(v int) CountOfElementsType {

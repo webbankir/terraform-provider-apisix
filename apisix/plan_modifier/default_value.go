@@ -70,7 +70,7 @@ func DefaultObject(t map[string]attr.Type, v map[string]attr.Value) DefaultValue
 }
 
 func DefaultListOfNumbers(items ...float64) DefaultValue {
-	var values []attr.Value
+	values := make([]attr.Value, 0)
 
 	for _, v := range items {
 		values = append(values, types.Number{Value: big.NewFloat(v)})
@@ -84,7 +84,7 @@ func DefaultListOfNumbers(items ...float64) DefaultValue {
 }
 
 func DefaultListOfStrings(items ...string) DefaultValue {
-	var values []attr.Value
+	values := make([]attr.Value, 0)
 
 	for _, v := range items {
 		values = append(values, types.String{Value: v})
