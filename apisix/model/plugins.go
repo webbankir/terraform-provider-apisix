@@ -56,8 +56,8 @@ type PluginCommonInterface interface {
 }
 
 type PluginsType struct {
-	Cors                   *PluginCorsType                   `tfsdk:"cors"`
-	Custom                 *[]PluginCustomType               `tfsdk:"custom"`
+	Cors *PluginCorsType `tfsdk:"cors"`
+	//Custom                 *[]PluginCustomType               `tfsdk:"custom"`
 	GZIP                   *PluginGZIPType                   `tfsdk:"gzip"`
 	IpRestriction          *PluginIpRestrictionType          `tfsdk:"ip_restriction"`
 	Prometheus             *PluginPrometheusType             `tfsdk:"prometheus"`
@@ -73,8 +73,8 @@ type PluginsType struct {
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
-	"cors":                     PluginCorsSchemaAttribute,
-	"custom":                   PluginCustomSchemaAttribute,
+	"cors": PluginCorsSchemaAttribute,
+	//"custom":                   PluginCustomSchemaAttribute,
 	"gzip":                     PluginGZIPSchemaAttribute,
 	"ip_restriction":           PluginIpRestrictionSchemaAttribute,
 	"prometheus":               PluginPrometheusSchemaAttribute,

@@ -235,7 +235,7 @@ func RouteTypeMapToState(jsonMap map[string]interface{}, plan *RouteType, state 
 			}
 		}
 
-		PluginCustomTypeMapToState(value, &pluginsType, plan, state)
+		//PluginCustomTypeMapToState(value, &pluginsType, plan, state)
 		newState.Plugins = &pluginsType
 	} else {
 		newState.Plugins = nil
@@ -303,7 +303,7 @@ func RouteTypeStateToMap(plan RouteType, state *RouteType, isUpdate bool) (map[s
 			}
 		}
 
-		PluginCustomTypeStateToMap(plugins, plan, state, isUpdate)
+		//PluginCustomTypeStateToMap(plugins, plan, state, isUpdate)
 
 		output["plugins"] = plugins
 	}
