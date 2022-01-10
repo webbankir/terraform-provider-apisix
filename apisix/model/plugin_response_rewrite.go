@@ -14,7 +14,7 @@ type PluginResponseRewriteType struct {
 	Body       types.String `tfsdk:"body"`
 	BodyBase64 types.Bool   `tfsdk:"body_base64"`
 	Headers    types.Map    `tfsdk:"headers"`
-	//Vars       types.List   `tfsdk:"vars"`
+	Vars       types.List   `tfsdk:"vars"`
 }
 
 var PluginResponseRewriteSchemaAttribute = tfsdk.Attribute{
@@ -54,10 +54,13 @@ var PluginResponseRewriteSchemaAttribute = tfsdk.Attribute{
 			Type:     types.MapType{ElemType: types.StringType},
 		},
 
-		//"vars": {
-		//	Optional: true,
-		//	Type:     types.ListType{ElemType: types.StringType},
-		//},
+		"vars": {
+			Optional: true,
+			Type:     types.ListType{ElemType: types.ListType{ElemType: types.StringType}},
+			Validators: []tfsdk.AttributeValidator{
+				validator.ElementsGreatThan(0),
+			},
+		},
 	}),
 }
 
@@ -76,12 +79,12 @@ func (s PluginResponseRewriteType) MapToState(data map[string]interface{}, plugi
 	utils.MapValueToStringTypeValue(jsonData, "body", &item.Body)
 	utils.MapValueToBoolTypeValue(jsonData, "body_base64", &item.BodyBase64)
 	utils.MapValueToMapTypeValue(jsonData, "headers", &item.Headers)
-	//utils.MapValueToListTypeValue(jsonData, "vars", &item.Vars)
+	item.Vars = varsMapToState(data)
 
 	pluginsType.ResponseRewrite = &item
 }
 
-func (s PluginResponseRewriteType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginResponseRewriteType) StateToMap(m map[string]interface{}, isUpdate bool) {
 	var pluginValue = make(map[string]interface{})
 
 	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
@@ -89,7 +92,7 @@ func (s PluginResponseRewriteType) StateToMap(m map[string]interface{}, _ bool) 
 	utils.StringTypeValueToMap(s.Body, pluginValue, "body", false)
 	utils.BoolTypeValueToMap(s.BodyBase64, pluginValue, "body_base64", false)
 	utils.MapTypeValueToMap(s.Headers, pluginValue, "headers", false)
-	//utils.ListTypeValueToMap(s.Vars, pluginValue, "vars", false)
+	varsStateToMap(s.Vars, pluginValue, isUpdate)
 
 	m[s.Name()] = pluginValue
 }

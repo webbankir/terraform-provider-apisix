@@ -32,6 +32,7 @@ type RouteType struct {
 	UpstreamId      types.String  `tfsdk:"upstream_id"`
 	URI             types.String  `tfsdk:"uri"`
 	URIS            types.List    `tfsdk:"uris"`
+	Vars            types.List    `tfsdk:"vars"`
 }
 
 var RouteSchema = tfsdk.Schema{
@@ -171,6 +172,13 @@ var RouteSchema = tfsdk.Schema{
 			Attributes: PluginsSchemaAttribute,
 		},
 		"upstream": UpstreamSchemaAttribute,
+		"vars": {
+			Optional: true,
+			Type:     types.ListType{ElemType: types.ListType{ElemType: types.StringType}},
+			Validators: []tfsdk.AttributeValidator{
+				validator.ElementsGreatThan(0),
+			},
+		},
 	},
 }
 
@@ -194,7 +202,7 @@ func RouteTypeMapToState(jsonMap map[string]interface{}, plan *RouteType, state 
 	utils.MapValueToStringTypeValue(jsonMap, "service_id", &newState.ServiceId)
 	utils.MapValueToStringTypeValue(jsonMap, "plugin_config_id", &newState.PluginConfigId)
 	utils.MapValueToBoolTypeValue(jsonMap, "enable_websocket", &newState.EnableWebsocket)
-
+	newState.Vars = varsMapToState(jsonMap)
 	if v := jsonMap["status"]; v != nil {
 		if v.(float64) == 1 {
 			newState.IsEnabled = types.Bool{Value: true}
@@ -227,7 +235,7 @@ func RouteTypeMapToState(jsonMap map[string]interface{}, plan *RouteType, state 
 			}
 		}
 
-		//PluginCustomTypeMapToState(value, &pluginsType, plan, state)
+		PluginCustomTypeMapToState(value, &pluginsType, plan, state)
 		newState.Plugins = &pluginsType
 	} else {
 		newState.Plugins = nil
@@ -265,11 +273,11 @@ func RouteTypeStateToMap(plan RouteType, state *RouteType, isUpdate bool) (map[s
 	utils.StringTypeValueToMap(plan.ServiceId, output, "service_id", isUpdate)
 	utils.StringTypeValueToMap(plan.UpstreamId, output, "upstream_id", isUpdate)
 	utils.MapTypeValueToMap(plan.Labels, output, "labels", isUpdate)
-
-	//TimeoutStateToMap(state.Timeout, output, isUpdate)
 	utils.StringTypeValueToMap(plan.Script, output, "script", isUpdate)
 	utils.StringTypeValueToMap(plan.PluginConfigId, output, "plugin_config_id", isUpdate)
 	utils.StringTypeValueToMap(plan.FilterFunc, output, "filter_func", isUpdate)
+
+	varsStateToMap(plan.Vars, output, isUpdate)
 
 	plugins := make(map[string]interface{})
 	if plan.Plugins != nil {
@@ -295,7 +303,7 @@ func RouteTypeStateToMap(plan RouteType, state *RouteType, isUpdate bool) (map[s
 			}
 		}
 
-		//PluginCustomTypeStateToMap(plugins, plan, state, isUpdate)
+		PluginCustomTypeStateToMap(plugins, plan, state, isUpdate)
 
 		output["plugins"] = plugins
 	}

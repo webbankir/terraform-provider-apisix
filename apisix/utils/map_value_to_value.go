@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"math/big"
+	"reflect"
 )
 
 func MapValueToStringTypeValue(sMap map[string]interface{}, mapKey string, value *types.String) {
@@ -48,8 +49,19 @@ func MapValueToListTypeValue(sMap map[string]interface{}, mapKey string, value *
 			case string:
 				value.ElemType = types.StringType
 				values = append(values, types.String{Value: dd})
+			case int:
+			case int8:
+			case int16:
+			case int32:
+			case int64:
+				value.ElemType = types.NumberType
+				values = append(values, types.Number{Value: big.NewFloat(float64(dd))})
+			case float32:
+			case float64:
+				value.ElemType = types.NumberType
+				values = append(values, types.Number{Value: big.NewFloat(dd)})
 			default:
-				panic("WTF")
+				panic(reflect.TypeOf(dd))
 			}
 		}
 		value.Elems = values

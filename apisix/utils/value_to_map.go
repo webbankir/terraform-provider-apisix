@@ -41,8 +41,18 @@ func ListTypeValueToMap(value types.List, dMap map[string]interface{}, mapKey st
 		} else if bindAsNil {
 			dMap[mapKey] = nil
 		}
+	case types.NumberType:
+		if !value.Null {
+			var values []int
+			for _, v := range value.Elems {
+				values = append(values, TypeNumberToInt(v.(types.Number)))
+			}
+			dMap[mapKey] = values
+		} else if bindAsNil {
+			dMap[mapKey] = nil
+		}
 	default:
-		panic("WTF")
+		panic(value.ElemType)
 	}
 }
 
