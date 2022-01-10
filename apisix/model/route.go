@@ -32,7 +32,7 @@ type RouteType struct {
 	UpstreamId      types.String  `tfsdk:"upstream_id"`
 	URI             types.String  `tfsdk:"uri"`
 	URIS            types.List    `tfsdk:"uris"`
-	Vars            types.List    `tfsdk:"vars"`
+	Vars            types.String  `tfsdk:"vars"`
 }
 
 var RouteSchema = tfsdk.Schema{
@@ -172,12 +172,10 @@ var RouteSchema = tfsdk.Schema{
 			Attributes: PluginsSchemaAttribute,
 		},
 		"upstream": UpstreamSchemaAttribute,
+
 		"vars": {
 			Optional: true,
-			Type:     types.ListType{ElemType: types.ListType{ElemType: types.StringType}},
-			Validators: []tfsdk.AttributeValidator{
-				validator.ElementsGreatThan(0),
-			},
+			Type:     types.StringType,
 		},
 	},
 }
@@ -203,6 +201,7 @@ func RouteTypeMapToState(jsonMap map[string]interface{}, plan *RouteType, state 
 	utils.MapValueToStringTypeValue(jsonMap, "plugin_config_id", &newState.PluginConfigId)
 	utils.MapValueToBoolTypeValue(jsonMap, "enable_websocket", &newState.EnableWebsocket)
 	newState.Vars = varsMapToState(jsonMap)
+
 	if v := jsonMap["status"]; v != nil {
 		if v.(float64) == 1 {
 			newState.IsEnabled = types.Bool{Value: true}
