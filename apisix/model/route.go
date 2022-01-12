@@ -21,17 +21,17 @@ type RouteType struct {
 	Labels          types.Map     `tfsdk:"labels"`
 	Methods         types.List    `tfsdk:"methods"`
 	Name            types.String  `tfsdk:"name"`
-	Plugins         *PluginsType  `tfsdk:"plugins"`
 	PluginConfigId  types.String  `tfsdk:"plugin_config_id"`
+	Plugins         *PluginsType  `tfsdk:"plugins"`
 	Priority        types.Number  `tfsdk:"priority"`
 	RemoteAddr      types.String  `tfsdk:"remote_addr"`
 	RemoteAddrs     types.List    `tfsdk:"remote_addrs"`
 	Script          types.String  `tfsdk:"script"`
 	ServiceId       types.String  `tfsdk:"service_id"`
-	Upstream        *UpstreamType `tfsdk:"upstream"`
-	UpstreamId      types.String  `tfsdk:"upstream_id"`
 	URI             types.String  `tfsdk:"uri"`
 	URIS            types.List    `tfsdk:"uris"`
+	Upstream        *UpstreamType `tfsdk:"upstream"`
+	UpstreamId      types.String  `tfsdk:"upstream_id"`
 	Vars            types.String  `tfsdk:"vars"`
 }
 
@@ -312,7 +312,9 @@ func RouteTypeStateToMap(plan RouteType) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	output["upstream"] = upstream
+	if upstream != nil {
+		output["upstream"] = upstream
+	}
 
 	return output, nil
 }

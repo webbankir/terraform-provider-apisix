@@ -66,6 +66,7 @@ func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceTyp
 	return map[string]tfsdk.ResourceType{
 		"apisix_ssl_certificate":            ResourceSslCertificateType{},
 		"apisix_route":                      ResourceRouteType{},
+		"apisix_service":                    ResourceServiceType{},
 		"apisix_upstream":                   ResourceUpstreamType{},
 		"apisix_stream_route":               ResourceStreamRouteType{},
 		"apisix_consumer":                   ResourceConsumerType{},
