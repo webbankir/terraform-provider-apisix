@@ -36,7 +36,6 @@ import (
 //skywalking
 //node-status
 //datadog
-//http-logger
 //skywalking-logger
 //tcp-logger
 //kafka-logger
@@ -51,14 +50,17 @@ import (
 
 type PluginCommonInterface interface {
 	Name() string
-	StateToMap(m map[string]interface{}, isUpdate bool)
+	StateToMap(m map[string]interface{})
 	MapToState(v map[string]interface{}, pluginsType *PluginsType)
 }
 
 type PluginsType struct {
-	Cors *PluginCorsType `tfsdk:"cors"`
 	//Custom                 *[]PluginCustomType               `tfsdk:"custom"`
+	BasicAuth              *PluginBasicAuthType              `tfsdk:"basic_auth"`
+	ConsumerRestriction    *PluginConsumerRestrictionType    `tfsdk:"consumer_restriction"`
+	Cors                   *PluginCorsType                   `tfsdk:"cors"`
 	GZIP                   *PluginGZIPType                   `tfsdk:"gzip"`
+	HTTPLogger             *PluginHTTPLoggerType             `tfsdk:"http_logger"`
 	IpRestriction          *PluginIpRestrictionType          `tfsdk:"ip_restriction"`
 	Prometheus             *PluginPrometheusType             `tfsdk:"prometheus"`
 	ProxyCache             *PluginProxyCacheType             `tfsdk:"proxy_cache"`
@@ -70,14 +72,14 @@ type PluginsType struct {
 	ResponseRewrite        *PluginResponseRewriteType        `tfsdk:"response_rewrite"`
 	ServerlessPostFunction *PluginServerlessPostFunctionType `tfsdk:"serverless_post_function"`
 	ServerlessPreFunction  *PluginServerlessPreFunctionType  `tfsdk:"serverless_pre_function"`
-	ConsumerRestriction    *PluginConsumerRestrictionType    `tfsdk:"consumer_restriction"`
-	BasicAuth              *PluginBasicAuthType              `tfsdk:"basic_auth"`
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
-	"cors": PluginCorsSchemaAttribute,
-	//"custom":                   PluginCustomSchemaAttribute,
+	"basic_auth":               PluginBasicAuthSchemaAttribute,
+	"consumer_restriction":     PluginConsumerRestrictionSchemaAttribute,
+	"cors":                     PluginCorsSchemaAttribute,
 	"gzip":                     PluginGZIPSchemaAttribute,
+	"http_logger":              PluginHTTPLoggerSchemaAttribute,
 	"ip_restriction":           PluginIpRestrictionSchemaAttribute,
 	"prometheus":               PluginPrometheusSchemaAttribute,
 	"proxy_cache":              PluginProxyCacheSchemaAttribute,
@@ -89,6 +91,5 @@ var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attri
 	"response_rewrite":         PluginResponseRewriteSchemaAttribute,
 	"serverless_post_function": PluginServerlessPostFunctionSchemaAttribute,
 	"serverless_pre_function":  PluginServerlessPreFunctionSchemaAttribute,
-	"consumer_restriction":     PluginConsumerRestrictionSchemaAttribute,
-	"basic_auth":               PluginBasicAuthSchemaAttribute,
+	//"custom":                   PluginCustomSchemaAttribute,
 })

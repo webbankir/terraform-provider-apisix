@@ -141,20 +141,20 @@ func (s PluginProxyCacheType) MapToState(data map[string]interface{}, pluginsTyp
 	pluginsType.ProxyCache = &item
 }
 
-func (s PluginProxyCacheType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginProxyCacheType) StateToMap(m map[string]interface{}) {
 	var pluginValue = make(map[string]interface{})
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
-	utils.StringTypeValueToMap(s.CacheStrategy, pluginValue, "cache_strategy", false)
-	utils.StringTypeValueToMap(s.CacheZone, pluginValue, "cache_zone", false)
-	utils.ListTypeValueToMap(s.CacheKey, pluginValue, "cache_key", false)
-	utils.ListTypeValueToMap(s.CacheBypass, pluginValue, "cache_bypass", false)
-	utils.ListTypeValueToMap(s.CacheMethod, pluginValue, "cache_method", false)
-	utils.ListTypeValueToMap(s.CacheHTTPStatus, pluginValue, "cache_http_status", false)
-	utils.BoolTypeValueToMap(s.HideCacheHeaders, pluginValue, "hide_cache_headers", false)
-	utils.BoolTypeValueToMap(s.CacheControl, pluginValue, "cache_control", false)
-	utils.ListTypeValueToMap(s.NoCache, pluginValue, "no_cache", false)
-	utils.NumberTypeValueToMap(s.CacheTTL, pluginValue, "cache_ttl", false)
-	
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	utils.StringTypeValueToMap(s.CacheStrategy, pluginValue, "cache_strategy")
+	utils.StringTypeValueToMap(s.CacheZone, pluginValue, "cache_zone")
+	utils.ListTypeValueToMap(s.CacheKey, pluginValue, "cache_key")
+	utils.ListTypeValueToMap(s.CacheBypass, pluginValue, "cache_bypass")
+	utils.ListTypeValueToMap(s.CacheMethod, pluginValue, "cache_method")
+	utils.ListTypeValueToMap(s.CacheHTTPStatus, pluginValue, "cache_http_status")
+	utils.BoolTypeValueToMap(s.HideCacheHeaders, pluginValue, "hide_cache_headers")
+	utils.BoolTypeValueToMap(s.CacheControl, pluginValue, "cache_control")
+	utils.ListTypeValueToMap(s.NoCache, pluginValue, "no_cache")
+	utils.NumberTypeValueToMap(s.CacheTTL, pluginValue, "cache_ttl")
+
 	m[s.Name()] = pluginValue
 }

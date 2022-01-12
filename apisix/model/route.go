@@ -243,20 +243,20 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 	return &newState, nil
 }
 
-func RouteTypeStateToMap(plan RouteType, isUpdate bool) (map[string]interface{}, error) {
+func RouteTypeStateToMap(plan RouteType) (map[string]interface{}, error) {
 
 	output := make(map[string]interface{})
 
-	utils.StringTypeValueToMap(plan.Name, output, "name", isUpdate)
-	utils.StringTypeValueToMap(plan.Description, output, "desc", isUpdate)
-	utils.StringTypeValueToMap(plan.URI, output, "uri", isUpdate)
-	utils.ListTypeValueToMap(plan.URIS, output, "uris", isUpdate)
-	utils.StringTypeValueToMap(plan.Host, output, "host", isUpdate)
-	utils.ListTypeValueToMap(plan.Hosts, output, "hosts", isUpdate)
-	utils.StringTypeValueToMap(plan.RemoteAddr, output, "remote_addr", isUpdate)
-	utils.ListTypeValueToMap(plan.RemoteAddrs, output, "remote_addrs", isUpdate)
-	utils.ListTypeValueToMap(plan.Methods, output, "methods", isUpdate)
-	utils.NumberTypeValueToMap(plan.Priority, output, "priority", isUpdate)
+	utils.StringTypeValueToMap(plan.Name, output, "name")
+	utils.StringTypeValueToMap(plan.Description, output, "desc")
+	utils.StringTypeValueToMap(plan.URI, output, "uri")
+	utils.ListTypeValueToMap(plan.URIS, output, "uris")
+	utils.StringTypeValueToMap(plan.Host, output, "host")
+	utils.ListTypeValueToMap(plan.Hosts, output, "hosts")
+	utils.StringTypeValueToMap(plan.RemoteAddr, output, "remote_addr")
+	utils.ListTypeValueToMap(plan.RemoteAddrs, output, "remote_addrs")
+	utils.ListTypeValueToMap(plan.Methods, output, "methods")
+	utils.NumberTypeValueToMap(plan.Priority, output, "priority")
 
 	if !plan.IsEnabled.Null {
 		if plan.IsEnabled.Value {
@@ -264,19 +264,17 @@ func RouteTypeStateToMap(plan RouteType, isUpdate bool) (map[string]interface{},
 		} else {
 			output["status"] = 0
 		}
-	} else if isUpdate {
-		output["status"] = nil
 	}
 
-	utils.BoolTypeValueToMap(plan.EnableWebsocket, output, "enable_websocket", isUpdate)
-	utils.StringTypeValueToMap(plan.ServiceId, output, "service_id", isUpdate)
-	utils.StringTypeValueToMap(plan.UpstreamId, output, "upstream_id", isUpdate)
-	utils.MapTypeValueToMap(plan.Labels, output, "labels", isUpdate)
-	utils.StringTypeValueToMap(plan.Script, output, "script", isUpdate)
-	utils.StringTypeValueToMap(plan.PluginConfigId, output, "plugin_config_id", isUpdate)
-	utils.StringTypeValueToMap(plan.FilterFunc, output, "filter_func", isUpdate)
+	utils.BoolTypeValueToMap(plan.EnableWebsocket, output, "enable_websocket")
+	utils.StringTypeValueToMap(plan.ServiceId, output, "service_id")
+	utils.StringTypeValueToMap(plan.UpstreamId, output, "upstream_id")
+	utils.MapTypeValueToMap(plan.Labels, output, "labels")
+	utils.StringTypeValueToMap(plan.Script, output, "script")
+	utils.StringTypeValueToMap(plan.PluginConfigId, output, "plugin_config_id")
+	utils.StringTypeValueToMap(plan.FilterFunc, output, "filter_func")
 
-	varsStateToMap(plan.Vars, output, isUpdate)
+	varsStateToMap(plan.Vars, output)
 
 	plugins := make(map[string]interface{})
 	if plan.Plugins != nil {
@@ -288,18 +286,19 @@ func RouteTypeStateToMap(plan RouteType, isUpdate bool) (map[string]interface{},
 			if !e.Field(i).IsNil() {
 				switch e.Field(i).Interface().(type) {
 				case PluginCommonInterface:
-					e.Field(i).Interface().(PluginCommonInterface).StateToMap(plugins, isUpdate)
+					e.Field(i).Interface().(PluginCommonInterface).StateToMap(plugins)
 				default:
 
 				}
 
-			} else if isUpdate {
-				switch e.Field(i).Interface().(type) {
-				case PluginCommonInterface:
-					plugins[reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).Name()] = nil
-				default:
-				}
 			}
+			//else if isUpdate {
+			//	switch e.Field(i).Interface().(type) {
+			//	case PluginCommonInterface:
+			//		plugins[reflect.New(e.Type().Field(i).Type.Elem()).Interface().(PluginCommonInterface).Name()] = nil
+			//	default:
+			//	}
+			//}
 		}
 
 		//PluginCustomTypeStateToMap(plugins, plan, state, isUpdate)
@@ -307,7 +306,7 @@ func RouteTypeStateToMap(plan RouteType, isUpdate bool) (map[string]interface{},
 		output["plugins"] = plugins
 	}
 
-	upstream, err := UpstreamTypeStateToMap(plan.Upstream, isUpdate)
+	upstream, err := UpstreamTypeStateToMap(plan.Upstream)
 
 	if err != nil {
 		return nil, err

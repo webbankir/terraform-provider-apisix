@@ -166,30 +166,30 @@ func UpstreamTypeMapToState(data map[string]interface{}) (*UpstreamType, error) 
 
 }
 
-func UpstreamTypeStateToMap(state *UpstreamType, isUpdate bool) (map[string]interface{}, error) {
+func UpstreamTypeStateToMap(state *UpstreamType) (map[string]interface{}, error) {
 	if state == nil {
 		return nil, nil
 	}
 	upstreamRequestObject := make(map[string]interface{})
 
-	utils.StringTypeValueToMap(state.Type, upstreamRequestObject, "type", isUpdate)
-	utils.StringTypeValueToMap(state.Name, upstreamRequestObject, "name", isUpdate)
-	utils.StringTypeValueToMap(state.ServiceName, upstreamRequestObject, "service_name", isUpdate)
-	utils.StringTypeValueToMap(state.DiscoveryType, upstreamRequestObject, "discovery_type", isUpdate)
-	utils.StringTypeValueToMap(state.Desc, upstreamRequestObject, "desc", isUpdate)
-	utils.StringTypeValueToMap(state.PassHost, upstreamRequestObject, "pass_host", isUpdate)
-	utils.StringTypeValueToMap(state.Scheme, upstreamRequestObject, "scheme", isUpdate)
-	utils.NumberTypeValueToMap(state.Retries, upstreamRequestObject, "retries", isUpdate)
-	utils.NumberTypeValueToMap(state.RetryTimeout, upstreamRequestObject, "retry_timeout", isUpdate)
-	utils.MapTypeValueToMap(state.Labels, upstreamRequestObject, "labels", isUpdate)
-	utils.StringTypeValueToMap(state.UpstreamHost, upstreamRequestObject, "upstream_host", isUpdate)
-	utils.StringTypeValueToMap(state.HashOn, upstreamRequestObject, "hash_on", isUpdate)
+	utils.StringTypeValueToMap(state.Type, upstreamRequestObject, "type")
+	utils.StringTypeValueToMap(state.Name, upstreamRequestObject, "name")
+	utils.StringTypeValueToMap(state.ServiceName, upstreamRequestObject, "service_name")
+	utils.StringTypeValueToMap(state.DiscoveryType, upstreamRequestObject, "discovery_type")
+	utils.StringTypeValueToMap(state.Desc, upstreamRequestObject, "desc")
+	utils.StringTypeValueToMap(state.PassHost, upstreamRequestObject, "pass_host")
+	utils.StringTypeValueToMap(state.Scheme, upstreamRequestObject, "scheme")
+	utils.NumberTypeValueToMap(state.Retries, upstreamRequestObject, "retries")
+	utils.NumberTypeValueToMap(state.RetryTimeout, upstreamRequestObject, "retry_timeout")
+	utils.MapTypeValueToMap(state.Labels, upstreamRequestObject, "labels")
+	utils.StringTypeValueToMap(state.UpstreamHost, upstreamRequestObject, "upstream_host")
+	utils.StringTypeValueToMap(state.HashOn, upstreamRequestObject, "hash_on")
 
-	TimeoutStateToMap(state.Timeout, upstreamRequestObject, isUpdate)
-	UpstreamKeepAlivePoolStateToMap(state.KeepalivePool, upstreamRequestObject, isUpdate)
-	UpstreamTLSStateToMap(state.TLS, upstreamRequestObject, isUpdate)
-	UpstreamChecksStateToMap(state.Checks, upstreamRequestObject, isUpdate)
-	UpstreamNodesStateToMap(state.Nodes, upstreamRequestObject, isUpdate)
+	TimeoutStateToMap(state.Timeout, upstreamRequestObject)
+	UpstreamKeepAlivePoolStateToMap(state.KeepalivePool, upstreamRequestObject)
+	UpstreamTLSStateToMap(state.TLS, upstreamRequestObject)
+	UpstreamChecksStateToMap(state.Checks, upstreamRequestObject)
+	UpstreamNodesStateToMap(state.Nodes, upstreamRequestObject)
 
 	return upstreamRequestObject, nil
 }

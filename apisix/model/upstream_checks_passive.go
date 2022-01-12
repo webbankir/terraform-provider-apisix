@@ -32,18 +32,15 @@ func UpstreamChecksPassiveMapToState(data map[string]interface{}) *UpstreamCheck
 	return &output
 }
 
-func UpstreamChecksPassiveStateToMap(state *UpstreamChecksPassiveType, dMap map[string]interface{}, isUpdate bool) {
+func UpstreamChecksPassiveStateToMap(state *UpstreamChecksPassiveType, dMap map[string]interface{}) {
 	if state == nil {
-		if isUpdate {
-			dMap["passive"] = nil
-		}
 		return
 	}
 
 	output := make(map[string]interface{})
 
-	UpstreamChecksPassiveHealthyStateToMap(state.Healthy, output, isUpdate)
-	UpstreamChecksPassiveUnhealthyStateToMap(state.Unhealthy, output, isUpdate)
+	UpstreamChecksPassiveHealthyStateToMap(state.Healthy, output)
+	UpstreamChecksPassiveUnhealthyStateToMap(state.Unhealthy, output)
 
 	dMap["passive"] = output
 }

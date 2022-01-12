@@ -29,7 +29,7 @@ func (r ResourceRouteType) Create(ctx context.Context, request tfsdk.CreateResou
 		return
 	}
 
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, false)
+	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -125,7 +125,7 @@ func (r ResourceRouteType) Update(ctx context.Context, request tfsdk.UpdateResou
 		return
 	}
 
-	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan, true)
+	requestObjectJsonBytes, err := model.RouteTypeStateToMap(plan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",

@@ -4,25 +4,26 @@ import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/model"
 )
 
-type ResourceStreamRouteType struct {
+type ResourcePluginMetadataLogFormatType struct {
 	p provider
 }
 
-func (r ResourceStreamRouteType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
-	return ResourceStreamRouteType{
+func (r ResourcePluginMetadataLogFormatType) NewResource(_ context.Context, p tfsdk.Provider) (tfsdk.Resource, diag.Diagnostics) {
+	return ResourcePluginMetadataLogFormatType{
 		p: *(p.(*provider)),
 	}, nil
 }
 
-func (r ResourceStreamRouteType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return model.StreamRouteTypeSchema, nil
+func (r ResourcePluginMetadataLogFormatType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
+	return model.PluginMetadataHTTPLoggerSchema, nil
 }
 
-func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.CreateResourceRequest, response *tfsdk.CreateResourceResponse) {
-	var plan model.StreamRouteType
+func (r ResourcePluginMetadataLogFormatType) Create(ctx context.Context, request tfsdk.CreateResourceRequest, response *tfsdk.CreateResourceResponse) {
+	var plan model.PluginMetadataLogFormatType
 
 	diags := request.Plan.Get(ctx, &plan)
 	response.Diagnostics.Append(diags...)
@@ -30,7 +31,7 @@ func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.Creat
 		return
 	}
 
-	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(plan)
+	requestObjectJsonBytes, err := model.PluginMetadataHTTPLoggerTypeStateToMap(plan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -39,17 +40,18 @@ func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.Creat
 		return
 	}
 
-	result, err := r.p.client.CreateStreamRoute(requestObjectJsonBytes)
+	result, err := r.p.client.CreatePluginMetadataLogFormat(plan.Name.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't create new stream route resource",
+			"Can't create resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	newState, err := model.StreamRouteTypeMapToState(result)
+	newState, err := model.PluginMetadataHTTPLoggerTypeMapToState(result)
+	newState.Name = types.String{Value: plan.Name.Value}
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -65,8 +67,8 @@ func (r ResourceStreamRouteType) Create(ctx context.Context, request tfsdk.Creat
 	}
 }
 
-func (r ResourceStreamRouteType) Delete(ctx context.Context, request tfsdk.DeleteResourceRequest, response *tfsdk.DeleteResourceResponse) {
-	var state model.StreamRouteType
+func (r ResourcePluginMetadataLogFormatType) Delete(ctx context.Context, request tfsdk.DeleteResourceRequest, response *tfsdk.DeleteResourceResponse) {
+	var state model.PluginMetadataLogFormatType
 
 	diags := request.State.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -74,25 +76,21 @@ func (r ResourceStreamRouteType) Delete(ctx context.Context, request tfsdk.Delet
 		return
 	}
 
-	err := r.p.client.DeleteStreamRoute(state.ID.Value)
+	err := r.p.client.DeletePluginMetadataLogFormat(state.Name.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't delete stream route resource",
+			"Can't delete resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
 	response.State.RemoveResource(ctx)
-	response.Diagnostics.Append(diags...)
-	if response.Diagnostics.HasError() {
-		return
-	}
 }
 
-func (r ResourceStreamRouteType) Read(ctx context.Context, request tfsdk.ReadResourceRequest, response *tfsdk.ReadResourceResponse) {
-	var state model.StreamRouteType
+func (r ResourcePluginMetadataLogFormatType) Read(ctx context.Context, request tfsdk.ReadResourceRequest, response *tfsdk.ReadResourceResponse) {
+	var state model.PluginMetadataLogFormatType
 
 	diags := request.State.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -100,25 +98,18 @@ func (r ResourceStreamRouteType) Read(ctx context.Context, request tfsdk.ReadRes
 		return
 	}
 
-	if state.ID.Null {
-		response.Diagnostics.AddError(
-			"Can't read stream route resource, ID is null",
-			"Unexpected error",
-		)
-		return
-	}
-
-	result, err := r.p.client.GetStreamRoute(state.ID.Value)
+	result, err := r.p.client.GetPluginMetadataLogFormat(state.Name.Value)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't read ssl certificate resource",
+			"Can't read certificate resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	newState, err := model.StreamRouteTypeMapToState(result)
+	newState, err := model.PluginMetadataHTTPLoggerTypeMapToState(result)
+	newState.Name = types.String{Value: state.Name.Value}
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -135,8 +126,8 @@ func (r ResourceStreamRouteType) Read(ctx context.Context, request tfsdk.ReadRes
 	}
 }
 
-func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.UpdateResourceRequest, response *tfsdk.UpdateResourceResponse) {
-	var state model.StreamRouteType
+func (r ResourcePluginMetadataLogFormatType) Update(ctx context.Context, request tfsdk.UpdateResourceRequest, response *tfsdk.UpdateResourceResponse) {
+	var state model.PluginMetadataLogFormatType
 
 	diags := request.Plan.Get(ctx, &state)
 	response.Diagnostics.Append(diags...)
@@ -144,7 +135,7 @@ func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.Updat
 		return
 	}
 
-	requestObjectJsonBytes, err := model.StreamRouteTypeStateToMap(state)
+	requestObjectJsonBytes, err := model.PluginMetadataHTTPLoggerTypeStateToMap(state)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -153,18 +144,18 @@ func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.Updat
 		return
 	}
 
-	result, err := r.p.client.UpdateStreamRoute(state.ID.Value, requestObjectJsonBytes)
+	result, err := r.p.client.UpdatePluginMetadataLogFormat(state.Name.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(
-			"Can't update ssl certificate resource",
+			"Can't update resource",
 			"Unexpected error: "+err.Error(),
 		)
 		return
 	}
 
-	newState, err := model.StreamRouteTypeMapToState(result)
-
+	newState, err := model.PluginMetadataHTTPLoggerTypeMapToState(result)
+	newState.Name = types.String{Value: state.Name.Value}
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Can't convert json to state",
@@ -180,7 +171,7 @@ func (r ResourceStreamRouteType) Update(ctx context.Context, request tfsdk.Updat
 	}
 }
 
-func (r ResourceStreamRouteType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
+func (r ResourcePluginMetadataLogFormatType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
 	//TODO implement me
 	panic("implement me")
 }

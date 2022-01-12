@@ -96,11 +96,8 @@ func UpstreamNodesMapToState(data map[string]interface{}) *[]UpstreamNodeType {
 	return &result
 }
 
-func UpstreamNodesStateToMap(state *[]UpstreamNodeType, dMap map[string]interface{}, isUpdate bool) {
+func UpstreamNodesStateToMap(state *[]UpstreamNodeType, dMap map[string]interface{}) {
 	if state == nil {
-		if isUpdate {
-			dMap["nodes"] = nil
-		}
 		return
 	}
 
@@ -108,9 +105,9 @@ func UpstreamNodesStateToMap(state *[]UpstreamNodeType, dMap map[string]interfac
 
 	for _, v := range *state {
 		item := map[string]interface{}{}
-		utils.StringTypeValueToMap(v.Host, item, "host", isUpdate)
-		utils.NumberTypeValueToMap(v.Port, item, "port", isUpdate)
-		utils.NumberTypeValueToMap(v.Weight, item, "weight", isUpdate)
+		utils.StringTypeValueToMap(v.Host, item, "host")
+		utils.NumberTypeValueToMap(v.Port, item, "port")
+		utils.NumberTypeValueToMap(v.Weight, item, "weight")
 		result = append(result, item)
 	}
 

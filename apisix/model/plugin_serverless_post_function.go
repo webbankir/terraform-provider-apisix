@@ -61,13 +61,13 @@ func (s PluginServerlessPostFunctionType) MapToState(data map[string]interface{}
 
 }
 
-func (s PluginServerlessPostFunctionType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginServerlessPostFunctionType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.StringTypeValueToMap(s.Phase, pluginValue, "phase", false)
-	utils.ListTypeValueToMap(s.Functions, pluginValue, "functions", false)
+	utils.StringTypeValueToMap(s.Phase, pluginValue, "phase")
+	utils.ListTypeValueToMap(s.Functions, pluginValue, "functions")
 
 	m[s.Name()] = pluginValue
 }

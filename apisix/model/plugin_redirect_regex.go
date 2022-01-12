@@ -8,7 +8,11 @@ import (
 )
 
 type PluginRedirectRegexType struct {
-	Disable    types.Bool   `tfsdk:"disable"`
+	Disable  types.Bool                       `tfsdk:"disable"`
+	Variants []PluginRedirectRegexVariantType `tfsdk:"variants"`
+}
+
+type PluginRedirectRegexVariantType struct {
 	Pattern    types.String `tfsdk:"pattern"`
 	Replace    types.String `tfsdk:"replace"`
 	StatusCode types.Number `tfsdk:"status_code"`
@@ -25,21 +29,28 @@ var PluginRedirectRegexSchemaAttribute = tfsdk.Attribute{
 				plan_modifier.DefaultBool(false),
 			},
 		},
-		"pattern": {
+		"variants": {
 			Required: true,
-			Type:     types.StringType,
-		},
-		"replace": {
-			Required: true,
-			Type:     types.StringType,
-		},
-		"status_code": {
-			Optional: true,
-			Computed: true,
-			Type:     types.NumberType,
-			PlanModifiers: []tfsdk.AttributePlanModifier{
-				plan_modifier.DefaultNumber(301),
+			Attributes: tfsdk.ListNestedAttributes(map[string]tfsdk.Attribute{
+				"pattern": {
+					Required: true,
+					Type:     types.StringType,
+				},
+				"replace": {
+					Required: true,
+					Type:     types.StringType,
+				},
+				"status_code": {
+					Optional: true,
+					Computed: true,
+					Type:     types.NumberType,
+					PlanModifiers: []tfsdk.AttributePlanModifier{
+						plan_modifier.DefaultNumber(301),
+					},
+				},
 			},
+				tfsdk.ListNestedAttributesOptions{MinItems: 1},
+			),
 		},
 	}),
 }
@@ -55,21 +66,33 @@ func (s PluginRedirectRegexType) MapToState(data map[string]interface{}, plugins
 	item := PluginRedirectRegexType{}
 
 	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
-	utils.MapValueToStringTypeValue(jsonData, "pattern", &item.Pattern)
-	utils.MapValueToStringTypeValue(jsonData, "replace", &item.Replace)
-	utils.MapValueToNumberTypeValue(jsonData, "status_code", &item.StatusCode)
+
+	var subItems []PluginRedirectRegexVariantType
+
+	for _, variant := range jsonData["variants"].([]interface{}) {
+		subItem := PluginRedirectRegexVariantType{}
+		utils.MapValueToStringTypeValue(variant.(map[string]interface{}), "pattern", &subItem.Pattern)
+		utils.MapValueToStringTypeValue(variant.(map[string]interface{}), "replace", &subItem.Replace)
+		utils.MapValueToNumberTypeValue(variant.(map[string]interface{}), "status_code", &subItem.StatusCode)
+		subItems = append(subItems, subItem)
+	}
+	item.Variants = subItems
 
 	pluginsType.RedirectRegex = &item
 }
 
-func (s PluginRedirectRegexType) StateToMap(m map[string]interface{}, _ bool) {
-	pluginValue := map[string]interface{}{
-		"disable": s.Disable.Value,
+func (s PluginRedirectRegexType) StateToMap(m map[string]interface{}) {
+	pluginValue := map[string]interface{}{}
+	var variants []map[string]interface{}
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	for _, v := range s.Variants {
+		variant := map[string]interface{}{}
+		utils.StringTypeValueToMap(v.Pattern, variant, "pattern")
+		utils.StringTypeValueToMap(v.Replace, variant, "replace")
+		utils.NumberTypeValueToMap(v.StatusCode, variant, "status_code")
+		variants = append(variants, variant)
 	}
-
-	utils.StringTypeValueToMap(s.Pattern, pluginValue, "pattern", false)
-	utils.StringTypeValueToMap(s.Replace, pluginValue, "replace", false)
-	utils.NumberTypeValueToMap(s.StatusCode, pluginValue, "status_code", false)
+	pluginValue["variants"] = variants
 
 	m[s.Name()] = pluginValue
 }

@@ -74,25 +74,23 @@ func StreamRouteTypeMapToState(data map[string]interface{}) (*StreamRouteType, e
 	return &result, nil
 }
 
-func StreamRouteTypeStateToMap(state StreamRouteType, isUpdate bool) (map[string]interface{}, error) {
+func StreamRouteTypeStateToMap(state StreamRouteType) (map[string]interface{}, error) {
 
 	var result = make(map[string]interface{})
 
-	utils.StringTypeValueToMap(state.RemoteAddr, result, "remote_addr", isUpdate)
-	utils.StringTypeValueToMap(state.ServerAddr, result, "server_addr", isUpdate)
-	utils.NumberTypeValueToMap(state.ServerPort, result, "server_port", isUpdate)
-	utils.StringTypeValueToMap(state.UpstreamId, result, "upstream_id", isUpdate)
-	utils.StringTypeValueToMap(state.SNI, result, "sni", isUpdate)
+	utils.StringTypeValueToMap(state.RemoteAddr, result, "remote_addr")
+	utils.StringTypeValueToMap(state.ServerAddr, result, "server_addr")
+	utils.NumberTypeValueToMap(state.ServerPort, result, "server_port")
+	utils.StringTypeValueToMap(state.UpstreamId, result, "upstream_id")
+	utils.StringTypeValueToMap(state.SNI, result, "sni")
 
-	upstream, err := UpstreamTypeStateToMap(state.Upstream, isUpdate)
+	upstream, err := UpstreamTypeStateToMap(state.Upstream)
 	if err != nil {
 		return nil, err
 	}
 
 	if upstream != nil {
 		result["upstream"] = upstream
-	} else if isUpdate {
-		result["upstream"] = nil
 	}
 
 	return result, nil

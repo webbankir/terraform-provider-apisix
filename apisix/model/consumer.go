@@ -66,13 +66,13 @@ func ConsumerTypeMapToState(jsonMap map[string]interface{}) (*ConsumerType, erro
 	return &newState, nil
 }
 
-func ConsumerTypeStateToMap(state ConsumerType, isUpdate bool) (map[string]interface{}, error) {
+func ConsumerTypeStateToMap(state ConsumerType) (map[string]interface{}, error) {
 
 	output := make(map[string]interface{})
 
-	utils.StringTypeValueToMap(state.Username, output, "username", true)
-	utils.StringTypeValueToMap(state.Description, output, "desc", true)
-	utils.MapTypeValueToMap(state.Labels, output, "labels", true)
+	utils.StringTypeValueToMap(state.Username, output, "username")
+	utils.StringTypeValueToMap(state.Description, output, "desc")
+	utils.MapTypeValueToMap(state.Labels, output, "labels")
 
 	plugins := make(map[string]interface{})
 	if state.Plugins != nil {
@@ -84,17 +84,11 @@ func ConsumerTypeStateToMap(state ConsumerType, isUpdate bool) (map[string]inter
 			if !e.Field(i).IsNil() {
 				switch e.Field(i).Interface().(type) {
 				case ConsumerPluginCommonInterface:
-					e.Field(i).Interface().(ConsumerPluginCommonInterface).StateToMap(plugins, isUpdate)
+					e.Field(i).Interface().(ConsumerPluginCommonInterface).StateToMap(plugins)
 				default:
 
 				}
 
-			} else if isUpdate {
-				switch e.Field(i).Interface().(type) {
-				case ConsumerPluginCommonInterface:
-					plugins[reflect.New(e.Type().Field(i).Type.Elem()).Interface().(ConsumerPluginCommonInterface).Name()] = nil
-				default:
-				}
 			}
 		}
 

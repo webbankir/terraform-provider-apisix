@@ -131,21 +131,21 @@ func (s PluginConsumerRestrictionType) MapToState(data map[string]interface{}, p
 	pluginsType.ConsumerRestriction = &item
 }
 
-func (s PluginConsumerRestrictionType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginConsumerRestrictionType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{}
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
-	utils.StringTypeValueToMap(s.Type, pluginValue, "type", false)
-	utils.NumberTypeValueToMap(s.RejectedCode, pluginValue, "rejected_code", false)
-	utils.ListTypeValueToMap(s.BlackList, pluginValue, "blacklist", isUpdate)
-	utils.ListTypeValueToMap(s.WhiteList, pluginValue, "whitelist", isUpdate)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	utils.StringTypeValueToMap(s.Type, pluginValue, "type")
+	utils.NumberTypeValueToMap(s.RejectedCode, pluginValue, "rejected_code")
+	utils.ListTypeValueToMap(s.BlackList, pluginValue, "blacklist")
+	utils.ListTypeValueToMap(s.WhiteList, pluginValue, "whitelist")
 
 	if v := s.AllowedByMethods; v != nil {
 		var subItems []map[string]interface{}
 		for _, vv := range *v {
 			subItem := make(map[string]interface{})
-			utils.StringTypeValueToMap(vv.User, subItem, "user", false)
-			utils.ListTypeValueToMap(vv.Methods, subItem, "methods", false)
+			utils.StringTypeValueToMap(vv.User, subItem, "user")
+			utils.ListTypeValueToMap(vv.Methods, subItem, "methods")
 		}
 
 		pluginValue["allowed_by_methods"] = subItems

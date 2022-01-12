@@ -40,8 +40,8 @@ func (s PluginBasicAuthType) MapToState(data map[string]interface{}, pluginsType
 	pluginsType.BasicAuth = &item
 }
 
-func (s PluginBasicAuthType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginBasicAuthType) StateToMap(m map[string]interface{}) {
 	var pluginValue = make(map[string]interface{})
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
 	m[s.Name()] = pluginValue
 }

@@ -9,7 +9,7 @@ func (client ApiClient) CreateRoute(data map[string]interface{}) (map[string]int
 }
 
 func (client ApiClient) UpdateRoute(id string, data map[string]interface{}) (map[string]interface{}, error) {
-	return client.RunObject("PATCH", "/routes/"+id, &data)
+	return client.RunObject("PATCH", "/routes/"+id+"/__full__", &data)
 }
 
 func (client ApiClient) DeleteRoute(id string) (err error) {

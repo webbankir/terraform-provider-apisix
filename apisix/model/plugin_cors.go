@@ -175,10 +175,10 @@ func (s PluginCorsType) MapToState(data map[string]interface{}, pluginsType *Plu
 	pluginsType.Cors = &item
 }
 
-func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginCorsType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{}
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
 
 	log.Printf("[DEBUG] got state: %v", s)
 	if !s.AllowOrigins.Null {
@@ -187,8 +187,6 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_origins"] = strings.Join(values, ",")
-	} else if isUpdate {
-		pluginValue["allow_origins"] = nil
 	}
 
 	if !s.AllowMethods.Null {
@@ -197,8 +195,6 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_methods"] = strings.Join(values, ",")
-	} else if isUpdate {
-		pluginValue["allow_methods"] = nil
 	}
 
 	if !s.AllowHeaders.Null {
@@ -207,8 +203,6 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["allow_headers"] = strings.Join(values, ",")
-	} else if isUpdate {
-		pluginValue["allow_headers"] = nil
 	}
 
 	if !s.ExposeHeaders.Null {
@@ -217,8 +211,6 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 			values = append(values, v.(types.String).Value)
 		}
 		pluginValue["expose_headers"] = strings.Join(values, ",")
-	} else if isUpdate {
-		pluginValue["expose_headers"] = nil
 	}
 
 	if !s.AllowOriginsByRegex.Null {
@@ -229,8 +221,8 @@ func (s PluginCorsType) StateToMap(m map[string]interface{}, isUpdate bool) {
 		pluginValue["allow_origins_by_regex"] = values
 	}
 
-	utils.NumberTypeValueToMap(s.MaxAge, pluginValue, "max_age", false)
-	utils.BoolTypeValueToMap(s.AllowCredential, pluginValue, "allow_credential", false)
+	utils.NumberTypeValueToMap(s.MaxAge, pluginValue, "max_age")
+	utils.BoolTypeValueToMap(s.AllowCredential, pluginValue, "allow_credential")
 
 	m[s.Name()] = pluginValue
 }

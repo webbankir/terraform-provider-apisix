@@ -50,11 +50,11 @@ func (s PluginPrometheusType) MapToState(data map[string]interface{}, pluginsTyp
 	pluginsType.Prometheus = &item
 }
 
-func (s PluginPrometheusType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginPrometheusType) StateToMap(m map[string]interface{}) {
 	var pluginValue = make(map[string]interface{})
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
-	utils.BoolTypeValueToMap(s.PreferName, pluginValue, "prefer_name", false)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	utils.BoolTypeValueToMap(s.PreferName, pluginValue, "prefer_name")
 
 	m[s.Name()] = pluginValue
 }

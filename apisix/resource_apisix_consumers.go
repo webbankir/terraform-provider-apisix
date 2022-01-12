@@ -29,7 +29,7 @@ func (r ResourceConsumerType) Create(ctx context.Context, request tfsdk.CreateRe
 		return
 	}
 
-	requestObjectJsonBytes, err := model.ConsumerTypeStateToMap(plan, false)
+	requestObjectJsonBytes, err := model.ConsumerTypeStateToMap(plan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -111,7 +111,7 @@ func (r ResourceConsumerType) Update(ctx context.Context, request tfsdk.UpdateRe
 		return
 	}
 
-	requestObjectJsonBytes, err := model.ConsumerTypeStateToMap(plan, true)
+	requestObjectJsonBytes, err := model.ConsumerTypeStateToMap(plan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",

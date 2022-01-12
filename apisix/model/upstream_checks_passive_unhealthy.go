@@ -89,19 +89,16 @@ func UpstreamChecksPassiveUnhealthyMapToState(data map[string]interface{}) *Upst
 	return &output
 }
 
-func UpstreamChecksPassiveUnhealthyStateToMap(state *UpstreamChecksPassiveUnhealthyType, dMap map[string]interface{}, isUpdate bool) {
+func UpstreamChecksPassiveUnhealthyStateToMap(state *UpstreamChecksPassiveUnhealthyType, dMap map[string]interface{}) {
 	if state == nil {
-		if isUpdate {
-			dMap["unhealthy"] = nil
-		}
 		return
 	}
 
 	output := make(map[string]interface{})
-	utils.NumberTypeValueToMap(state.TCPFailures, output, "tcp_failures", isUpdate)
-	utils.NumberTypeValueToMap(state.Timeouts, output, "timeouts", isUpdate)
-	utils.NumberTypeValueToMap(state.HTTPFailures, output, "http_failures", isUpdate)
-	utils.ListTypeValueToMap(state.HTTPStatuses, output, "http_statuses", isUpdate)
+	utils.NumberTypeValueToMap(state.TCPFailures, output, "tcp_failures")
+	utils.NumberTypeValueToMap(state.Timeouts, output, "timeouts")
+	utils.NumberTypeValueToMap(state.HTTPFailures, output, "http_failures")
+	utils.ListTypeValueToMap(state.HTTPStatuses, output, "http_statuses")
 
 	dMap["unhealthy"] = output
 

@@ -83,16 +83,16 @@ func (s PluginResponseRewriteType) MapToState(data map[string]interface{}, plugi
 	pluginsType.ResponseRewrite = &item
 }
 
-func (s PluginResponseRewriteType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginResponseRewriteType) StateToMap(m map[string]interface{}) {
 	var pluginValue = make(map[string]interface{})
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
-	utils.NumberTypeValueToMap(s.StatusCode, pluginValue, "status_code", false)
-	utils.StringTypeValueToMap(s.Body, pluginValue, "body", false)
-	utils.BoolTypeValueToMap(s.BodyBase64, pluginValue, "body_base64", false)
-	utils.MapTypeValueToMap(s.Headers, pluginValue, "headers", false)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	utils.NumberTypeValueToMap(s.StatusCode, pluginValue, "status_code")
+	utils.StringTypeValueToMap(s.Body, pluginValue, "body")
+	utils.BoolTypeValueToMap(s.BodyBase64, pluginValue, "body_base64")
+	utils.MapTypeValueToMap(s.Headers, pluginValue, "headers")
 
-	varsStateToMap(s.Vars, pluginValue, isUpdate)
+	varsStateToMap(s.Vars, pluginValue)
 
 	m[s.Name()] = pluginValue
 }

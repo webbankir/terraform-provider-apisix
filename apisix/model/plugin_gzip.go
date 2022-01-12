@@ -160,25 +160,23 @@ func (s PluginGZIPType) MapToState(data map[string]interface{}, pluginsType *Plu
 	pluginsType.GZIP = &item
 }
 
-func (s PluginGZIPType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginGZIPType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{}
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
-	utils.ListTypeValueToMap(s.Types, pluginValue, "types", false)
-	utils.NumberTypeValueToMap(s.MinLength, pluginValue, "min_length", false)
-	utils.NumberTypeValueToMap(s.CompLevel, pluginValue, "comp_level", false)
-	utils.NumberTypeValueToMap(s.HttpVersion, pluginValue, "http_version", false)
-	utils.BoolTypeValueToMap(s.Vary, pluginValue, "vary", false)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	utils.ListTypeValueToMap(s.Types, pluginValue, "types")
+	utils.NumberTypeValueToMap(s.MinLength, pluginValue, "min_length")
+	utils.NumberTypeValueToMap(s.CompLevel, pluginValue, "comp_level")
+	utils.NumberTypeValueToMap(s.HttpVersion, pluginValue, "http_version")
+	utils.BoolTypeValueToMap(s.Vary, pluginValue, "vary")
 
 	if v := s.Buffers; v != nil {
 		subPluginValue := map[string]interface{}{}
 
-		utils.NumberTypeValueToMap(v.Number, subPluginValue, "number", false)
-		utils.NumberTypeValueToMap(v.Size, subPluginValue, "size", false)
+		utils.NumberTypeValueToMap(v.Number, subPluginValue, "number")
+		utils.NumberTypeValueToMap(v.Size, subPluginValue, "size")
 
 		pluginValue["buffers"] = subPluginValue
-	} else if isUpdate {
-		pluginValue["buffers"] = nil
 	}
 
 	m[s.Name()] = pluginValue

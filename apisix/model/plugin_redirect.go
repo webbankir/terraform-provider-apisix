@@ -103,17 +103,17 @@ func (s PluginRedirectType) MapToState(data map[string]interface{}, pluginsType 
 	pluginsType.Redirect = &item
 }
 
-func (s PluginRedirectType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginRedirectType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.BoolTypeValueToMap(s.HTTPToHTTPS, pluginValue, "http_to_https", false)
-	utils.StringTypeValueToMap(s.URI, pluginValue, "uri", false)
-	utils.BoolTypeValueToMap(s.EncodeURI, pluginValue, "encode_uri", false)
-	utils.BoolTypeValueToMap(s.AppendQueryString, pluginValue, "append_query_string", false)
-	utils.NumberTypeValueToMap(s.RetCode, pluginValue, "ret_code", false)
-	utils.ListTypeValueToMap(s.RegexUri, pluginValue, "regex_uri", false)
+	utils.BoolTypeValueToMap(s.HTTPToHTTPS, pluginValue, "http_to_https")
+	utils.StringTypeValueToMap(s.URI, pluginValue, "uri")
+	utils.BoolTypeValueToMap(s.EncodeURI, pluginValue, "encode_uri")
+	utils.BoolTypeValueToMap(s.AppendQueryString, pluginValue, "append_query_string")
+	utils.NumberTypeValueToMap(s.RetCode, pluginValue, "ret_code")
+	utils.ListTypeValueToMap(s.RegexUri, pluginValue, "regex_uri")
 
 	m[s.Name()] = pluginValue
 }

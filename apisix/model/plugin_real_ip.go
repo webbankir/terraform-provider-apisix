@@ -54,12 +54,12 @@ func (s PluginRealIPType) MapToState(data map[string]interface{}, pluginsType *P
 	pluginsType.RealIP = &item
 }
 
-func (s PluginRealIPType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginRealIPType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{}
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
-	utils.StringTypeValueToMap(s.Source, pluginValue, "source", false)
-	utils.ListTypeValueToMap(s.TrustedAddresses, pluginValue, "trusted_addresses", isUpdate)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	utils.StringTypeValueToMap(s.Source, pluginValue, "source")
+	utils.ListTypeValueToMap(s.TrustedAddresses, pluginValue, "trusted_addresses")
 
 	m[s.Name()] = pluginValue
 }

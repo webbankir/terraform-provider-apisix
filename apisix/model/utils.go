@@ -15,15 +15,12 @@ func varsMapToState(data map[string]interface{}) types.String {
 
 }
 
-func varsStateToMap(state types.String, jsonMap map[string]interface{}, isUpdate bool) {
-
+func varsStateToMap(state types.String, jsonMap map[string]interface{}) {
 	if !state.Null {
 		jj := make([]interface{}, 0)
 		//FIXME:
 		_ = json.Unmarshal([]byte(state.Value), &jj)
 
 		jsonMap["vars"] = jj
-	} else if isUpdate {
-		jsonMap["vars"] = nil
 	}
 }

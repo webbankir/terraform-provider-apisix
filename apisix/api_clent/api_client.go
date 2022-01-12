@@ -133,7 +133,7 @@ func (client ApiClient) Patch(path string, jsonBytes []byte) (int, []byte, error
 func (client ApiClient) Put(path string, jsonBytes []byte) (int, []byte, error) {
 	apiUrl := client.Endpoint + path
 
-	log.Printf("[DEBUG] SEND PUT -> %v", string(jsonBytes))
+	log.Printf("[DEBUG] SEND PUT to %v -> %v", apiUrl, string(jsonBytes))
 	req, err := http.NewRequest("PUT", apiUrl, bytes.NewReader(jsonBytes))
 	if err != nil {
 		return 0, nil, err

@@ -123,27 +123,24 @@ func UpstreamChecksActiveMapToState(data map[string]interface{}) *UpstreamChecks
 	return &output
 }
 
-func UpstreamChecksActiveStateToMap(state *UpstreamChecksActiveType, dMap map[string]interface{}, isUpdate bool) {
+func UpstreamChecksActiveStateToMap(state *UpstreamChecksActiveType, dMap map[string]interface{}) {
 	if state == nil {
-		if isUpdate {
-			dMap["active"] = nil
-		}
 		return
 	}
 
 	output := make(map[string]interface{})
 
-	utils.StringTypeValueToMap(state.Type, output, "type", isUpdate)
-	utils.NumberTypeValueToMap(state.Timeout, output, "timeout", isUpdate)
-	utils.NumberTypeValueToMap(state.Concurrency, output, "concurrency", isUpdate)
-	utils.StringTypeValueToMap(state.HTTPPath, output, "http_path", isUpdate)
-	utils.StringTypeValueToMap(state.Host, output, "host", isUpdate)
-	utils.NumberTypeValueToMap(state.Port, output, "port", isUpdate)
-	utils.BoolTypeValueToMap(state.HTTPSVerifyCertificate, output, "https_verify_certificate", isUpdate)
-	utils.ListTypeValueToMap(state.ReqHeaders, output, "req_headers", isUpdate)
+	utils.StringTypeValueToMap(state.Type, output, "type")
+	utils.NumberTypeValueToMap(state.Timeout, output, "timeout")
+	utils.NumberTypeValueToMap(state.Concurrency, output, "concurrency")
+	utils.StringTypeValueToMap(state.HTTPPath, output, "http_path")
+	utils.StringTypeValueToMap(state.Host, output, "host")
+	utils.NumberTypeValueToMap(state.Port, output, "port")
+	utils.BoolTypeValueToMap(state.HTTPSVerifyCertificate, output, "https_verify_certificate")
+	utils.ListTypeValueToMap(state.ReqHeaders, output, "req_headers")
 
-	UpstreamChecksActiveHealthyStateToMap(state.Healthy, output, isUpdate)
-	UpstreamChecksActiveUnhealthyStateToMap(state.Unhealthy, output, isUpdate)
+	UpstreamChecksActiveHealthyStateToMap(state.Healthy, output)
+	UpstreamChecksActiveUnhealthyStateToMap(state.Unhealthy, output)
 
 	dMap["active"] = output
 }

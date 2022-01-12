@@ -92,9 +92,9 @@ func SslCertificateTypeStateToMap(state SslCertificateType) (map[string]interfac
 
 	requestObject := make(map[string]interface{})
 
-	utils.StringTypeValueToMap(state.Certificate, requestObject, "cert", true)
-	utils.StringTypeValueToMap(state.PrivateKey, requestObject, "key", true)
-	utils.ListTypeValueToMap(state.Snis, requestObject, "snis", true)
+	utils.StringTypeValueToMap(state.Certificate, requestObject, "cert")
+	utils.StringTypeValueToMap(state.PrivateKey, requestObject, "key")
+	utils.ListTypeValueToMap(state.Snis, requestObject, "snis")
 
 	return requestObject, nil
 }

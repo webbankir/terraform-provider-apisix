@@ -74,14 +74,14 @@ func (s PluginRequestIdType) MapToState(data map[string]interface{}, pluginsType
 	pluginsType.RequestId = &item
 }
 
-func (s PluginRequestIdType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginRequestIdType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.StringTypeValueToMap(s.HeaderName, pluginValue, "header_name", false)
-	utils.BoolTypeValueToMap(s.IncludeInResponse, pluginValue, "include_in_response", false)
-	utils.StringTypeValueToMap(s.Algorithm, pluginValue, "algorithm", false)
+	utils.StringTypeValueToMap(s.HeaderName, pluginValue, "header_name")
+	utils.BoolTypeValueToMap(s.IncludeInResponse, pluginValue, "include_in_response")
+	utils.StringTypeValueToMap(s.Algorithm, pluginValue, "algorithm")
 
 	m[s.Name()] = pluginValue
 }

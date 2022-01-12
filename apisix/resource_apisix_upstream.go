@@ -32,7 +32,7 @@ func (r ResourceUpstreamType) Create(ctx context.Context, request tfsdk.CreateRe
 		return
 	}
 
-	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&plan, false)
+	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&plan)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",
@@ -121,7 +121,7 @@ func (r ResourceUpstreamType) Update(ctx context.Context, request tfsdk.UpdateRe
 		return
 	}
 
-	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&state, true)
+	requestObjectJsonBytes, err := model.UpstreamTypeStateToMap(&state)
 	if err != nil {
 		response.Diagnostics.AddError(
 			"Error in transformation from state to map",

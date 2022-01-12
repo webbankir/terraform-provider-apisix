@@ -69,14 +69,14 @@ func (s PluginIpRestrictionType) MapToState(data map[string]interface{}, plugins
 	pluginsType.IpRestriction = &item
 }
 
-func (s PluginIpRestrictionType) StateToMap(m map[string]interface{}, _ bool) {
+func (s PluginIpRestrictionType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.ListTypeValueToMap(s.BlackList, pluginValue, "blacklist", false)
-	utils.ListTypeValueToMap(s.WhiteList, pluginValue, "whitelist", false)
-	utils.StringTypeValueToMap(s.Message, pluginValue, "message", false)
+	utils.ListTypeValueToMap(s.BlackList, pluginValue, "blacklist")
+	utils.ListTypeValueToMap(s.WhiteList, pluginValue, "whitelist")
+	utils.StringTypeValueToMap(s.Message, pluginValue, "message")
 
 	m[s.Name()] = pluginValue
 }

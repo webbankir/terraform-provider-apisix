@@ -72,19 +72,16 @@ func UpstreamChecksActiveHealthyMapToState(data map[string]interface{}) *Upstrea
 	return &output
 }
 
-func UpstreamChecksActiveHealthyStateToMap(state *UpstreamChecksActiveHealthyType, dMap map[string]interface{}, isUpdate bool) {
+func UpstreamChecksActiveHealthyStateToMap(state *UpstreamChecksActiveHealthyType, dMap map[string]interface{}) {
 	if state == nil {
-		if isUpdate {
-			dMap["healthy"] = nil
-		}
 		return
 	}
 
 	output := make(map[string]interface{})
 
-	utils.NumberTypeValueToMap(state.Interval, output, "interval", isUpdate)
-	utils.ListTypeValueToMap(state.HTTPStatuses, output, "http_statuses", isUpdate)
-	utils.NumberTypeValueToMap(state.Successes, output, "successes", isUpdate)
+	utils.NumberTypeValueToMap(state.Interval, output, "interval")
+	utils.ListTypeValueToMap(state.HTTPStatuses, output, "http_statuses")
+	utils.NumberTypeValueToMap(state.Successes, output, "successes")
 
 	dMap["healthy"] = output
 

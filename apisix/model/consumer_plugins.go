@@ -12,6 +12,6 @@ var ConsumerPluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfs
 
 type ConsumerPluginCommonInterface interface {
 	Name() string
-	StateToMap(m map[string]interface{}, isUpdate bool)
+	StateToMap(m map[string]interface{})
 	MapToState(v map[string]interface{}, pluginsType *ConsumerPluginsType)
 }

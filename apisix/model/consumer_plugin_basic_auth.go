@@ -52,12 +52,12 @@ func (s ConsumerPluginBasicAuthType) MapToState(data map[string]interface{}, plu
 	pluginsType.BasicAuth = &item
 }
 
-func (s ConsumerPluginBasicAuthType) StateToMap(m map[string]interface{}, _ bool) {
+func (s ConsumerPluginBasicAuthType) StateToMap(m map[string]interface{}) {
 	var pluginValue = make(map[string]interface{})
 
-	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable", false)
-	utils.StringTypeValueToMap(s.Username, pluginValue, "username", false)
-	utils.StringTypeValueToMap(s.Password, pluginValue, "password", false)
+	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
+	utils.StringTypeValueToMap(s.Username, pluginValue, "username")
+	utils.StringTypeValueToMap(s.Password, pluginValue, "password")
 
 	m[s.Name()] = pluginValue
 }

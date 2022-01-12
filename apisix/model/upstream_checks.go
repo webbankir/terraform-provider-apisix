@@ -17,18 +17,15 @@ var UpstreamChecksSchemaAttribute = tfsdk.Attribute{
 	}),
 }
 
-func UpstreamChecksStateToMap(state *UpstreamChecksType, dMap map[string]interface{}, isUpdate bool) {
+func UpstreamChecksStateToMap(state *UpstreamChecksType, dMap map[string]interface{}) {
 	if state == nil {
-		if isUpdate {
-			dMap["checks"] = nil
-		}
 		return
 	}
 
 	output := make(map[string]interface{})
 
-	UpstreamChecksActiveStateToMap(state.Active, output, isUpdate)
-	UpstreamChecksPassiveStateToMap(state.Passive, output, isUpdate)
+	UpstreamChecksActiveStateToMap(state.Active, output)
+	UpstreamChecksPassiveStateToMap(state.Passive, output)
 
 	dMap["checks"] = output
 }

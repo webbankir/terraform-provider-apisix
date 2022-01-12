@@ -89,17 +89,17 @@ func (s PluginProxyRewriteType) MapToState(data map[string]interface{}, pluginsT
 	pluginsType.ProxyRewrite = &item
 }
 
-func (s PluginProxyRewriteType) StateToMap(m map[string]interface{}, isUpdate bool) {
+func (s PluginProxyRewriteType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{
 		"disable": s.Disable.Value,
 	}
 
-	utils.StringTypeValueToMap(s.Scheme, pluginValue, "scheme", false)
-	utils.StringTypeValueToMap(s.Uri, pluginValue, "uri", false)
-	utils.MapTypeValueToMap(s.Headers, pluginValue, "headers", false)
-	utils.StringTypeValueToMap(s.Host, pluginValue, "host", isUpdate)
-	utils.StringTypeValueToMap(s.Method, pluginValue, "method", false)
-	utils.ListTypeValueToMap(s.RegexUri, pluginValue, "regex_uri", false)
+	utils.StringTypeValueToMap(s.Scheme, pluginValue, "scheme")
+	utils.StringTypeValueToMap(s.Uri, pluginValue, "uri")
+	utils.MapTypeValueToMap(s.Headers, pluginValue, "headers")
+	utils.StringTypeValueToMap(s.Host, pluginValue, "host")
+	utils.StringTypeValueToMap(s.Method, pluginValue, "method")
+	utils.ListTypeValueToMap(s.RegexUri, pluginValue, "regex_uri")
 
 	m[s.Name()] = pluginValue
 }
