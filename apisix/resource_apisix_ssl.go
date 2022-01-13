@@ -185,6 +185,30 @@ func (r ResourceSslCertificateType) Update(ctx context.Context, request tfsdk.Up
 }
 
 func (r ResourceSslCertificateType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
-	//TODO implement me
-	panic("implement me")
+
+	result, err := r.p.client.GetSslCertificate(request.ID)
+
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Can't read ssl certificate resource",
+			"Unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	newState, err := model.SslCertificateTypeMapToState(result)
+
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Can't transform json to state",
+			"Unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	diags := response.State.Set(ctx, &newState)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
 }

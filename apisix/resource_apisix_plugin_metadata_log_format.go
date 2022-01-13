@@ -172,6 +172,30 @@ func (r ResourcePluginMetadataLogFormatType) Update(ctx context.Context, request
 }
 
 func (r ResourcePluginMetadataLogFormatType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
-	//TODO implement me
-	panic("implement me")
+	result, err := r.p.client.GetPluginMetadataLogFormat(request.ID)
+
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Can't read certificate resource",
+			"Unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	newState, err := model.PluginMetadataHTTPLoggerTypeMapToState(result)
+	newState.Name = types.String{Value: request.ID}
+
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Can't transform json to state",
+			"Unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	diags := response.State.Set(ctx, &newState)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
 }

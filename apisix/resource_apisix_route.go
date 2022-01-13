@@ -188,6 +188,29 @@ func (r ResourceRouteType) Delete(ctx context.Context, request tfsdk.DeleteResou
 }
 
 func (r ResourceRouteType) ImportState(ctx context.Context, request tfsdk.ImportResourceStateRequest, response *tfsdk.ImportResourceStateResponse) {
-	//TODO implement me
-	panic("implement me")
+	result, err := r.p.client.GetRoute(request.ID)
+
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Can't read route resource",
+			"Unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	newState, err := model.RouteTypeMapToState(result)
+
+	if err != nil {
+		response.Diagnostics.AddError(
+			"Can't transform json to state",
+			"Unexpected error: "+err.Error(),
+		)
+		return
+	}
+
+	diags := response.State.Set(ctx, &newState)
+	response.Diagnostics.Append(diags...)
+	if response.Diagnostics.HasError() {
+		return
+	}
 }
