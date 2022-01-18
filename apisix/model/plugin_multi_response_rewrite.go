@@ -71,7 +71,7 @@ var PluginMultiResponseRewriteSchemaAttribute = tfsdk.Attribute{
 			),
 
 			Validators: []tfsdk.AttributeValidator{
-				validator.HasOneOf("status_code", "body", "headers"),
+				//validator.HasOneOf("status_code", "body", "headers"),
 			},
 		},
 	}),
