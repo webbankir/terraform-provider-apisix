@@ -113,12 +113,12 @@ func (s PluginMultiResponseRewriteType) StateToMap(m map[string]interface{}) {
 
 	for _, v := range s.Variants {
 		variant := map[string]interface{}{}
-		utils.NumberTypeValueToMap(v.StatusCode, pluginValue, "status_code")
-		utils.StringTypeValueToMap(v.Body, pluginValue, "body")
-		utils.BoolTypeValueToMap(v.BodyBase64, pluginValue, "body_base64")
-		utils.MapTypeValueToMap(v.Headers, pluginValue, "headers")
+		utils.NumberTypeValueToMap(v.StatusCode, variant, "status_code")
+		utils.StringTypeValueToMap(v.Body, variant, "body")
+		utils.BoolTypeValueToMap(v.BodyBase64, variant, "body_base64")
+		utils.MapTypeValueToMap(v.Headers, variant, "headers")
 
-		varsStateToMap(v.Vars, pluginValue)
+		varsStateToMap(v.Vars, variant)
 		variants = append(variants, variant)
 	}
 	pluginValue["variants"] = variants
