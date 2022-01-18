@@ -9,7 +9,11 @@ import (
 )
 
 type UpstreamType struct {
-	ID            types.String               `tfsdk:"id"`
+	ID types.String `tfsdk:"id"`
+	UpstreamWithoutIDType
+}
+
+type UpstreamWithoutIDType struct {
 	Type          types.String               `tfsdk:"type"`
 	ServiceName   types.String               `tfsdk:"service_name"`
 	DiscoveryType types.String               `tfsdk:"discovery_type"`
@@ -29,110 +33,126 @@ type UpstreamType struct {
 	Nodes         *[]UpstreamNodeType        `tfsdk:"nodes"`
 }
 
-var UpstreamSchemaAttribute = tfsdk.Attribute{
-	Optional: true,
-	Attributes: tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
-		"id": {
-			Type:     types.StringType,
-			Computed: true,
-			PlanModifiers: []tfsdk.AttributePlanModifier{
-				tfsdk.UseStateForUnknown(),
-			},
+var UpstreamSchemaAttrs = map[string]tfsdk.Attribute{
+	"type": {
+		Type:     types.StringType,
+		Optional: true,
+		Computed: true,
+		PlanModifiers: []tfsdk.AttributePlanModifier{
+			plan_modifier.DefaultString("roundrobin"),
 		},
-		"type": {
-			Type:     types.StringType,
-			Optional: true,
-			Computed: true,
-			PlanModifiers: []tfsdk.AttributePlanModifier{
-				plan_modifier.DefaultString("roundrobin"),
-			},
-			Validators: []tfsdk.AttributeValidator{
-				validator.StringInSlice("roundrobin", "chash", "ewma", "least_conn"),
-			},
+		Validators: []tfsdk.AttributeValidator{
+			validator.StringInSlice("roundrobin", "chash", "ewma", "least_conn"),
 		},
-		"service_name": {
-			Type:     types.StringType,
-			Optional: true,
-			Validators: []tfsdk.AttributeValidator{
-				validator.ComesWith("discovery_type"),
-			},
+	},
+	"service_name": {
+		Type:     types.StringType,
+		Optional: true,
+		Validators: []tfsdk.AttributeValidator{
+			validator.ComesWith("discovery_type"),
 		},
-		"discovery_type": {
-			Type:     types.StringType,
-			Optional: true,
-			Validators: []tfsdk.AttributeValidator{
-				validator.ComesWith("service_name"),
-			},
+	},
+	"discovery_type": {
+		Type:     types.StringType,
+		Optional: true,
+		Validators: []tfsdk.AttributeValidator{
+			validator.ComesWith("service_name"),
 		},
-		"timeout": TimeoutSchemaAttribute,
-		"name": {
-			Type:     types.StringType,
-			Optional: true,
-		},
-		"desc": {
-			Type:     types.StringType,
-			Optional: true,
-		},
+	},
+	"timeout": TimeoutSchemaAttribute,
+	"name": {
+		Type:     types.StringType,
+		Optional: true,
+	},
+	"desc": {
+		Type:     types.StringType,
+		Optional: true,
+	},
 
-		"pass_host": {
-			Type:     types.StringType,
-			Optional: true,
-			Computed: true,
-			Validators: []tfsdk.AttributeValidator{
-				validator.StringInSlice("pass", "node", "rewrite"),
-			},
-			PlanModifiers: []tfsdk.AttributePlanModifier{
-				plan_modifier.DefaultString("pass"),
-			},
+	"pass_host": {
+		Type:     types.StringType,
+		Optional: true,
+		Computed: true,
+		Validators: []tfsdk.AttributeValidator{
+			validator.StringInSlice("pass", "node", "rewrite"),
 		},
-		"scheme": {
-			Type:     types.StringType,
-			Optional: true,
-			Computed: true,
-			Validators: []tfsdk.AttributeValidator{
-				validator.StringInSlice("http", "https"),
-			},
-			PlanModifiers: []tfsdk.AttributePlanModifier{
-				plan_modifier.DefaultString("http"),
-			},
+		PlanModifiers: []tfsdk.AttributePlanModifier{
+			plan_modifier.DefaultString("pass"),
 		},
-		"retries": {
-			Type:     types.NumberType,
-			Optional: true,
+	},
+	"scheme": {
+		Type:     types.StringType,
+		Optional: true,
+		Computed: true,
+		// FIXME: Currently can't check when in for_each
+		//Validators: []tfsdk.AttributeValidator{
+		//	validator.StringInSlice("http", "https", "grpc", "grpcs"),
+		//},
+		PlanModifiers: []tfsdk.AttributePlanModifier{
+			plan_modifier.DefaultString("http"),
 		},
-		"retry_timeout": {
-			Type:     types.NumberType,
-			Optional: true,
+	},
+	"retries": {
+		Type:     types.NumberType,
+		Optional: true,
+	},
+	"retry_timeout": {
+		Type:     types.NumberType,
+		Optional: true,
+	},
+	"upstream_host": {
+		Type:     types.StringType,
+		Optional: true,
+	},
+	"hash_on": {
+		Type:     types.StringType,
+		Optional: true,
+		Computed: true,
+		PlanModifiers: []tfsdk.AttributePlanModifier{
+			plan_modifier.DefaultString("vars"),
 		},
-		"upstream_host": {
-			Type:     types.StringType,
-			Optional: true,
-		},
-		"hash_on": {
-			Type:     types.StringType,
-			Optional: true,
-			Computed: true,
-			PlanModifiers: []tfsdk.AttributePlanModifier{
-				plan_modifier.DefaultString("vars"),
-			},
-		},
-		"labels": {
-			Type:     types.MapType{ElemType: types.StringType},
-			Optional: true,
-		},
+	},
+	"labels": {
+		Type:     types.MapType{ElemType: types.StringType},
+		Optional: true,
+	},
 
-		"keepalive_pool": UpstreamKeepAlivePoolSchemaAttribute,
-		"tls":            UpstreamTLSSchemaAttribute,
-		"checks":         UpstreamChecksSchemaAttribute,
-		"nodes":          UpstreamNodesSchemaAttribute,
-	}),
+	"keepalive_pool": UpstreamKeepAlivePoolSchemaAttribute,
+	"tls":            UpstreamTLSSchemaAttribute,
+	"checks":         UpstreamChecksSchemaAttribute,
+	"nodes":          UpstreamNodesSchemaAttribute,
+}
 
+var UpstreamSchemaWithoutIDAttribute = tfsdk.Attribute{
+	Optional:   true,
+	Attributes: tfsdk.SingleNestedAttributes(UpstreamSchemaAttrs),
 	Validators: []tfsdk.AttributeValidator{
 		validator.OneOf("nodes", "discovery_type"),
 	},
 }
 
-func UpstreamTypeMapToState(data map[string]interface{}) (*UpstreamType, error) {
+var UpstreamSchemaAttribute = tfsdk.Attribute{
+	Optional: true,
+	Attributes: tfsdk.SingleNestedAttributes(
+		utils.MergeKeysAttribute(
+			map[string]tfsdk.Attribute{
+				"id": {
+					Type:     types.StringType,
+					Computed: true,
+					PlanModifiers: []tfsdk.AttributePlanModifier{
+						tfsdk.UseStateForUnknown(),
+					},
+				},
+			},
+			UpstreamSchemaAttrs,
+		),
+	),
+	Validators: []tfsdk.AttributeValidator{
+		validator.OneOf("nodes", "discovery_type"),
+	},
+}
+
+func UpstreamTypeMapToStateWithoutId(data map[string]interface{}) (*UpstreamWithoutIDType, error) {
 	v := data["upstream"]
 	if v == nil {
 		return nil, nil
@@ -140,9 +160,8 @@ func UpstreamTypeMapToState(data map[string]interface{}) (*UpstreamType, error) 
 
 	jsonMap := v.(map[string]interface{})
 
-	newState := UpstreamType{}
+	newState := UpstreamWithoutIDType{}
 
-	utils.MapValueToStringTypeValue(jsonMap, "id", &newState.ID)
 	utils.MapValueToStringTypeValue(jsonMap, "type", &newState.Type)
 	utils.MapValueToStringTypeValue(jsonMap, "service_name", &newState.ServiceName)
 	utils.MapValueToStringTypeValue(jsonMap, "discovery_type", &newState.DiscoveryType)
@@ -166,30 +185,83 @@ func UpstreamTypeMapToState(data map[string]interface{}) (*UpstreamType, error) 
 
 }
 
-func UpstreamTypeStateToMap(state *UpstreamType) (map[string]interface{}, error) {
+func UpstreamTypeMapToState(data map[string]interface{}) (*UpstreamType, error) {
+	v := data["upstream"]
+	if v == nil {
+		return nil, nil
+	}
+
+	jsonMap := v.(map[string]interface{})
+
+	newStateWithoutId, err := UpstreamTypeMapToStateWithoutId(data)
+	if err != nil {
+		return nil, err
+	}
+
+	newState := UpstreamType{
+		UpstreamWithoutIDType: *newStateWithoutId,
+	}
+
+	utils.MapValueToStringTypeValue(jsonMap, "id", &newState.ID)
+
+	return &newState, nil
+
+}
+
+func UpstreamWithoutIdTypeStateToMap(state *UpstreamWithoutIDType) (map[string]interface{}, error) {
 	if state == nil {
 		return nil, nil
 	}
-	upstreamRequestObject := make(map[string]interface{})
+	requestObject := make(map[string]interface{})
 
-	utils.StringTypeValueToMap(state.Type, upstreamRequestObject, "type")
-	utils.StringTypeValueToMap(state.Name, upstreamRequestObject, "name")
-	utils.StringTypeValueToMap(state.ServiceName, upstreamRequestObject, "service_name")
-	utils.StringTypeValueToMap(state.DiscoveryType, upstreamRequestObject, "discovery_type")
-	utils.StringTypeValueToMap(state.Desc, upstreamRequestObject, "desc")
-	utils.StringTypeValueToMap(state.PassHost, upstreamRequestObject, "pass_host")
-	utils.StringTypeValueToMap(state.Scheme, upstreamRequestObject, "scheme")
-	utils.NumberTypeValueToMap(state.Retries, upstreamRequestObject, "retries")
-	utils.NumberTypeValueToMap(state.RetryTimeout, upstreamRequestObject, "retry_timeout")
-	utils.MapTypeValueToMap(state.Labels, upstreamRequestObject, "labels")
-	utils.StringTypeValueToMap(state.UpstreamHost, upstreamRequestObject, "upstream_host")
-	utils.StringTypeValueToMap(state.HashOn, upstreamRequestObject, "hash_on")
+	utils.StringTypeValueToMap(state.Type, requestObject, "type")
+	utils.StringTypeValueToMap(state.Name, requestObject, "name")
+	utils.StringTypeValueToMap(state.ServiceName, requestObject, "service_name")
+	utils.StringTypeValueToMap(state.DiscoveryType, requestObject, "discovery_type")
+	utils.StringTypeValueToMap(state.Desc, requestObject, "desc")
+	utils.StringTypeValueToMap(state.PassHost, requestObject, "pass_host")
+	utils.StringTypeValueToMap(state.Scheme, requestObject, "scheme")
+	utils.NumberTypeValueToMap(state.Retries, requestObject, "retries")
+	utils.NumberTypeValueToMap(state.RetryTimeout, requestObject, "retry_timeout")
+	utils.MapTypeValueToMap(state.Labels, requestObject, "labels")
+	utils.StringTypeValueToMap(state.UpstreamHost, requestObject, "upstream_host")
+	utils.StringTypeValueToMap(state.HashOn, requestObject, "hash_on")
 
-	TimeoutStateToMap(state.Timeout, upstreamRequestObject)
-	UpstreamKeepAlivePoolStateToMap(state.KeepalivePool, upstreamRequestObject)
-	UpstreamTLSStateToMap(state.TLS, upstreamRequestObject)
-	UpstreamChecksStateToMap(state.Checks, upstreamRequestObject)
-	UpstreamNodesStateToMap(state.Nodes, upstreamRequestObject)
+	TimeoutStateToMap(state.Timeout, requestObject)
+	UpstreamKeepAlivePoolStateToMap(state.KeepalivePool, requestObject)
+	UpstreamTLSStateToMap(state.TLS, requestObject)
+	UpstreamChecksStateToMap(state.Checks, requestObject)
+	UpstreamNodesStateToMap(state.Nodes, requestObject)
 
-	return upstreamRequestObject, nil
+	return requestObject, nil
+}
+
+// UpstreamTypeStateToMap Fucking golang!
+func UpstreamTypeStateToMap(state *UpstreamType) (map[string]interface{}, error) {
+
+	if state == nil {
+		return nil, nil
+	}
+	requestObject := make(map[string]interface{})
+
+	utils.StringTypeValueToMap(state.Type, requestObject, "type")
+	utils.StringTypeValueToMap(state.Name, requestObject, "name")
+	utils.StringTypeValueToMap(state.ServiceName, requestObject, "service_name")
+	utils.StringTypeValueToMap(state.DiscoveryType, requestObject, "discovery_type")
+	utils.StringTypeValueToMap(state.Desc, requestObject, "desc")
+	utils.StringTypeValueToMap(state.PassHost, requestObject, "pass_host")
+	utils.StringTypeValueToMap(state.Scheme, requestObject, "scheme")
+	utils.NumberTypeValueToMap(state.Retries, requestObject, "retries")
+	utils.NumberTypeValueToMap(state.RetryTimeout, requestObject, "retry_timeout")
+	utils.MapTypeValueToMap(state.Labels, requestObject, "labels")
+	utils.StringTypeValueToMap(state.UpstreamHost, requestObject, "upstream_host")
+	utils.StringTypeValueToMap(state.HashOn, requestObject, "hash_on")
+
+	TimeoutStateToMap(state.Timeout, requestObject)
+	UpstreamKeepAlivePoolStateToMap(state.KeepalivePool, requestObject)
+	UpstreamTLSStateToMap(state.TLS, requestObject)
+	UpstreamChecksStateToMap(state.Checks, requestObject)
+	UpstreamNodesStateToMap(state.Nodes, requestObject)
+
+	return requestObject, nil
 }

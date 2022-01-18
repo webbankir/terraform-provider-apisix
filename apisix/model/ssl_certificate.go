@@ -11,13 +11,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/webbankir/terraform-provider-apisix/apisix/plan_modifier"
 	"github.com/webbankir/terraform-provider-apisix/apisix/utils"
+	"math/big"
 )
 
 type SslCertificateType struct {
-	ID          types.String `tfsdk:"id"`
-	Certificate types.String `tfsdk:"certificate"`
-	PrivateKey  types.String `tfsdk:"private_key"`
-	Snis        types.List   `tfsdk:"snis"`
+	ID            types.String `tfsdk:"id"`
+	IsEnabled     types.Bool   `tfsdk:"is_enabled"`
+	Certificate   types.String `tfsdk:"certificate"`
+	PrivateKey    types.String `tfsdk:"private_key"`
+	Snis          types.List   `tfsdk:"snis"`
+	ValidityEnd   types.Number `tfsdk:"validity_end"`
+	ValidityStart types.Number `tfsdk:"validity_start"`
+	Labels        types.Map    `tfsdk:"labels"`
 }
 
 var SslCertificateSchema = tfsdk.Schema{
@@ -41,6 +46,42 @@ var SslCertificateSchema = tfsdk.Schema{
 			Description: "https private key",
 		},
 
+		"validity_end": {
+			Type:        types.NumberType,
+			Optional:    true,
+			Computed:    true,
+			Description: "NotAfter",
+			PlanModifiers: []tfsdk.AttributePlanModifier{
+				plan_modifier.DefaultFunction(func(ctx context.Context, request tfsdk.ModifyAttributePlanRequest, response *tfsdk.ModifyAttributePlanResponse) (attr.Value, error) {
+					var state SslCertificateType
+					request.Config.Get(ctx, &state)
+					notAfter, err := CertNotAfter(state.Certificate.Value)
+					if err != nil {
+						return types.Number{Null: true}, err
+					}
+					return types.Number{Value: big.NewFloat(float64(notAfter))}, nil
+				}),
+			},
+		},
+
+		"validity_start": {
+			Type:        types.NumberType,
+			Optional:    true,
+			Computed:    true,
+			Description: "NotBefore",
+			PlanModifiers: []tfsdk.AttributePlanModifier{
+				plan_modifier.DefaultFunction(func(ctx context.Context, request tfsdk.ModifyAttributePlanRequest, response *tfsdk.ModifyAttributePlanResponse) (attr.Value, error) {
+					var state SslCertificateType
+					request.Config.Get(ctx, &state)
+					notBefore, err := CertNotBefore(state.Certificate.Value)
+					if err != nil {
+						return types.Number{Null: true}, err
+					}
+					return types.Number{Value: big.NewFloat(float64(notBefore))}, nil
+				}),
+			},
+		},
+
 		"snis": {
 			Type:        types.ListType{ElemType: types.StringType},
 			Optional:    true,
@@ -50,7 +91,7 @@ var SslCertificateSchema = tfsdk.Schema{
 				plan_modifier.DefaultFunction(func(ctx context.Context, request tfsdk.ModifyAttributePlanRequest, response *tfsdk.ModifyAttributePlanResponse) (attr.Value, error) {
 					var state SslCertificateType
 					request.Config.Get(ctx, &state)
-					snis, err := ParseCert(state.Certificate.Value, state.PrivateKey.Value)
+					snis, err := CertSNIS(state.Certificate.Value, state.PrivateKey.Value)
 					if err != nil {
 						return types.List{Null: true}, err
 					}
@@ -64,27 +105,40 @@ var SslCertificateSchema = tfsdk.Schema{
 				}),
 			},
 		},
+		"labels": {
+			Type:     types.MapType{ElemType: types.StringType},
+			Optional: true,
+		},
+		"is_enabled": {
+			Type:     types.BoolType,
+			Optional: true,
+			Computed: true,
+			PlanModifiers: []tfsdk.AttributePlanModifier{
+				plan_modifier.DefaultBool(true),
+			},
+		},
 	},
 }
 
-func SslCertificateTypeMapToState(data map[string]interface{}) (*SslCertificateType, error) {
+func SslCertificateTypeMapToState(jsonMap map[string]interface{}) (*SslCertificateType, error) {
 	newState := SslCertificateType{}
 
-	if v := data["id"]; v != nil {
-		newState.ID = types.String{Value: v.(string)}
-	}
+	utils.MapValueToStringTypeValue(jsonMap, "id", &newState.ID)
+	utils.MapValueToStringTypeValue(jsonMap, "cert", &newState.Certificate)
+	utils.MapValueToListTypeValue(jsonMap, "snis", &newState.Snis)
+	utils.MapValueToNumberTypeValue(jsonMap, "validity_start", &newState.ValidityStart)
+	utils.MapValueToNumberTypeValue(jsonMap, "validity_end", &newState.ValidityEnd)
+	utils.MapValueToMapTypeValue(jsonMap, "labels", &newState.Labels)
 
-	newState.Certificate = types.String{Value: data["cert"].(string)}
-
-	if v := data["snis"]; v != nil {
-		var values []attr.Value
-		for _, value := range v.([]interface{}) {
-			values = append(values, types.String{Value: value.(string)})
+	if v := jsonMap["status"]; v != nil {
+		if v.(float64) == 1 {
+			newState.IsEnabled = types.Bool{Value: true}
+		} else {
+			newState.IsEnabled = types.Bool{Value: false}
 		}
-
-		newState.Snis = types.List{ElemType: types.StringType, Elems: values}
+	} else {
+		newState.IsEnabled = types.Bool{Null: true}
 	}
-
 	return &newState, nil
 }
 
@@ -95,11 +149,20 @@ func SslCertificateTypeStateToMap(state SslCertificateType) (map[string]interfac
 	utils.StringTypeValueToMap(state.Certificate, requestObject, "cert")
 	utils.StringTypeValueToMap(state.PrivateKey, requestObject, "key")
 	utils.ListTypeValueToMap(state.Snis, requestObject, "snis")
-
+	utils.NumberTypeValueToMap(state.ValidityStart, requestObject, "validity_start")
+	utils.NumberTypeValueToMap(state.ValidityEnd, requestObject, "validity_end")
+	utils.MapTypeValueToMap(state.Labels, requestObject, "labels")
+	if !state.IsEnabled.Null {
+		if state.IsEnabled.Value {
+			requestObject["status"] = 1
+		} else {
+			requestObject["status"] = 0
+		}
+	}
 	return requestObject, nil
 }
 
-func ParseCert(crt string, key string) ([]string, error) {
+func CertSNIS(crt string, key string) ([]string, error) {
 	certDERBlock, _ := pem.Decode([]byte(crt))
 	if certDERBlock == nil {
 		return []string{}, nil
@@ -148,4 +211,25 @@ func ParseCert(crt string, key string) ([]string, error) {
 	}
 
 	return snis, nil
+}
+
+func CertNotAfter(crt string) (int64, error) {
+	certDERBlock, _ := pem.Decode([]byte(crt))
+	if certDERBlock == nil {
+		return 0, nil
+	}
+
+	x509Cert, err := x509.ParseCertificate(certDERBlock.Bytes)
+	return x509Cert.NotAfter.Unix(), err
+
+}
+func CertNotBefore(crt string) (int64, error) {
+	certDERBlock, _ := pem.Decode([]byte(crt))
+	if certDERBlock == nil {
+		return 0, nil
+	}
+
+	x509Cert, err := x509.ParseCertificate(certDERBlock.Bytes)
+	return x509Cert.NotBefore.Unix(), err
+
 }

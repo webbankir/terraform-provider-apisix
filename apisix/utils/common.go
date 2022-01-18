@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/attr"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -42,4 +43,14 @@ func IsAttributeIsNull(attribute attr.Value) bool {
 	default:
 		return true
 	}
+}
+
+type m = map[string]tfsdk.Attribute
+
+func MergeKeysAttribute(left, right m) m {
+	for key, rightVal := range right {
+		// key not in left so we can just shove it in
+		left[key] = rightVal
+	}
+	return left
 }

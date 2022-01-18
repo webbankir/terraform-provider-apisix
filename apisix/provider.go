@@ -64,13 +64,14 @@ func (p *provider) Configure(ctx context.Context, req tfsdk.ConfigureProviderReq
 
 func (p *provider) GetResources(_ context.Context) (map[string]tfsdk.ResourceType, diag.Diagnostics) {
 	return map[string]tfsdk.ResourceType{
-		"apisix_ssl_certificate":            ResourceSslCertificateType{},
+		"apisix_consumer":                   ResourceConsumerType{},
+		"apisix_global_rule":                ResourceGlobalRuleType{},
+		"apisix_plugin_metadata_log_format": ResourcePluginMetadataLogFormatType{},
 		"apisix_route":                      ResourceRouteType{},
 		"apisix_service":                    ResourceServiceType{},
-		"apisix_upstream":                   ResourceUpstreamType{},
+		"apisix_ssl_certificate":            ResourceSslCertificateType{},
 		"apisix_stream_route":               ResourceStreamRouteType{},
-		"apisix_consumer":                   ResourceConsumerType{},
-		"apisix_plugin_metadata_log_format": ResourcePluginMetadataLogFormatType{},
+		"apisix_upstream":                   ResourceUpstreamType{},
 	}, nil
 }
 

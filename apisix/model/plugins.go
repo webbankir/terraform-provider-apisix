@@ -72,6 +72,8 @@ type PluginsType struct {
 	ResponseRewrite        *PluginResponseRewriteType        `tfsdk:"response_rewrite"`
 	ServerlessPostFunction *PluginServerlessPostFunctionType `tfsdk:"serverless_post_function"`
 	ServerlessPreFunction  *PluginServerlessPreFunctionType  `tfsdk:"serverless_pre_function"`
+	Headers                *PluginHeadersType                `tfsdk:"headers"`
+	MultiResponseRewrite   *PluginMultiResponseRewriteType   `tfsdk:"multi_response_rewrite"`
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
@@ -91,5 +93,7 @@ var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attri
 	"response_rewrite":         PluginResponseRewriteSchemaAttribute,
 	"serverless_post_function": PluginServerlessPostFunctionSchemaAttribute,
 	"serverless_pre_function":  PluginServerlessPreFunctionSchemaAttribute,
+	"headers":                  PluginHeadersSchemaAttribute,
+	"multi_response_rewrite":   PluginMultiResponseRewriteSchemaAttribute,
 	//"custom":                   PluginCustomSchemaAttribute,
 })

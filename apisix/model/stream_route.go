@@ -7,13 +7,13 @@ import (
 )
 
 type StreamRouteType struct {
-	ID         types.String  `tfsdk:"id"`
-	RemoteAddr types.String  `tfsdk:"remote_addr"`
-	ServerAddr types.String  `tfsdk:"server_addr"`
-	ServerPort types.Number  `tfsdk:"server_port"`
-	SNI        types.String  `tfsdk:"sni"`
-	Upstream   *UpstreamType `tfsdk:"upstream"`
-	UpstreamId types.String  `tfsdk:"upstream_id"`
+	ID         types.String           `tfsdk:"id"`
+	RemoteAddr types.String           `tfsdk:"remote_addr"`
+	ServerAddr types.String           `tfsdk:"server_addr"`
+	ServerPort types.Number           `tfsdk:"server_port"`
+	SNI        types.String           `tfsdk:"sni"`
+	Upstream   *UpstreamWithoutIDType `tfsdk:"upstream"`
+	UpstreamId types.String           `tfsdk:"upstream_id"`
 }
 
 var StreamRouteTypeSchema = tfsdk.Schema{
@@ -45,7 +45,7 @@ var StreamRouteTypeSchema = tfsdk.Schema{
 			Optional:    true,
 			Description: "server name indication \"test.com\"",
 		},
-		"upstream": UpstreamSchemaAttribute,
+		"upstream": UpstreamSchemaWithoutIDAttribute,
 		"upstream_id": {
 			Type:        types.StringType,
 			Optional:    true,
@@ -64,7 +64,7 @@ func StreamRouteTypeMapToState(data map[string]interface{}) (*StreamRouteType, e
 	utils.MapValueToStringTypeValue(data, "upstream_id", &result.UpstreamId)
 	utils.MapValueToNumberTypeValue(data, "server_port", &result.ServerPort)
 
-	upstream, err := UpstreamTypeMapToState(data)
+	upstream, err := UpstreamTypeMapToStateWithoutId(data)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func StreamRouteTypeStateToMap(state StreamRouteType) (map[string]interface{}, e
 	utils.StringTypeValueToMap(state.UpstreamId, result, "upstream_id")
 	utils.StringTypeValueToMap(state.SNI, result, "sni")
 
-	upstream, err := UpstreamTypeStateToMap(state.Upstream)
+	upstream, err := UpstreamWithoutIdTypeStateToMap(state.Upstream)
 	if err != nil {
 		return nil, err
 	}

@@ -10,15 +10,15 @@ import (
 )
 
 type ServiceType struct {
-	ID              types.String  `tfsdk:"id"`
-	Description     types.String  `tfsdk:"desc"`
-	EnableWebsocket types.Bool    `tfsdk:"enable_websocket"`
-	Hosts           types.List    `tfsdk:"hosts"`
-	Labels          types.Map     `tfsdk:"labels"`
-	Name            types.String  `tfsdk:"name"`
-	Plugins         *PluginsType  `tfsdk:"plugins"`
-	Upstream        *UpstreamType `tfsdk:"upstream"`
-	UpstreamId      types.String  `tfsdk:"upstream_id"`
+	ID              types.String           `tfsdk:"id"`
+	Description     types.String           `tfsdk:"desc"`
+	EnableWebsocket types.Bool             `tfsdk:"enable_websocket"`
+	Hosts           types.List             `tfsdk:"hosts"`
+	Labels          types.Map              `tfsdk:"labels"`
+	Name            types.String           `tfsdk:"name"`
+	Plugins         *PluginsType           `tfsdk:"plugins"`
+	Upstream        *UpstreamWithoutIDType `tfsdk:"upstream"`
+	UpstreamId      types.String           `tfsdk:"upstream_id"`
 }
 
 var ServiceSchema = tfsdk.Schema{
@@ -62,7 +62,7 @@ var ServiceSchema = tfsdk.Schema{
 			Optional:   true,
 			Attributes: PluginsSchemaAttribute,
 		},
-		"upstream": UpstreamSchemaAttribute,
+		"upstream": UpstreamSchemaWithoutIDAttribute,
 		"upstream_id": {
 			Type:     types.StringType,
 			Optional: true,
@@ -84,7 +84,7 @@ func ServiceTypeMapToState(jsonMap map[string]interface{}) (*ServiceType, error)
 	utils.MapValueToStringTypeValue(jsonMap, "name", &newState.Name)
 	utils.MapValueToStringTypeValue(jsonMap, "upstream_id", &newState.UpstreamId)
 
-	upstream, err := UpstreamTypeMapToState(jsonMap)
+	upstream, err := UpstreamTypeMapToStateWithoutId(jsonMap)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +150,7 @@ func ServiceTypeStateToMap(state ServiceType) (map[string]interface{}, error) {
 		output["plugins"] = plugins
 	}
 
-	upstream, err := UpstreamTypeStateToMap(state.Upstream)
+	upstream, err := UpstreamWithoutIdTypeStateToMap(state.Upstream)
 
 	if err != nil {
 		return nil, err
