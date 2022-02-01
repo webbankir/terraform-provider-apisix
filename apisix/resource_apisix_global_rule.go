@@ -39,7 +39,7 @@ func (r ResourceGlobalRuleType) Create(ctx context.Context, request tfsdk.Create
 		return
 	}
 
-	result, err := r.p.client.CreateGlobalRule(requestObjectJsonBytes)
+	result, err := r.p.client.CreateGlobalRule(plan.ID.Value, requestObjectJsonBytes)
 
 	if err != nil {
 		response.Diagnostics.AddError(

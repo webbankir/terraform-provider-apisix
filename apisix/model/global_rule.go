@@ -16,9 +16,9 @@ var GlobalRuleSchema = tfsdk.Schema{
 	Attributes: map[string]tfsdk.Attribute{
 		"id": {
 			Type:     types.StringType,
-			Computed: true,
+			Required: true,
 			PlanModifiers: []tfsdk.AttributePlanModifier{
-				tfsdk.UseStateForUnknown(),
+				tfsdk.RequiresReplace(),
 			},
 		},
 		"plugins": {

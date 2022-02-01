@@ -61,6 +61,7 @@ type PluginsType struct {
 	Cors                   *PluginCorsType                   `tfsdk:"cors"`
 	GZIP                   *PluginGZIPType                   `tfsdk:"gzip"`
 	HTTPLogger             *PluginHTTPLoggerType             `tfsdk:"http_logger"`
+	GELFHTTPLogger         *PluginGELFHTTPLoggerType         `tfsdk:"gelf_http_logger"`
 	IpRestriction          *PluginIpRestrictionType          `tfsdk:"ip_restriction"`
 	Prometheus             *PluginPrometheusType             `tfsdk:"prometheus"`
 	ProxyCache             *PluginProxyCacheType             `tfsdk:"proxy_cache"`
@@ -74,6 +75,7 @@ type PluginsType struct {
 	ServerlessPreFunction  *PluginServerlessPreFunctionType  `tfsdk:"serverless_pre_function"`
 	Headers                *PluginHeadersType                `tfsdk:"headers"`
 	MultiResponseRewrite   *PluginMultiResponseRewriteType   `tfsdk:"multi_response_rewrite"`
+	Syslog                 *PluginSyslogType                 `tfsdk:"syslog"`
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
@@ -95,5 +97,7 @@ var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attri
 	"serverless_pre_function":  PluginServerlessPreFunctionSchemaAttribute,
 	"headers":                  PluginHeadersSchemaAttribute,
 	"multi_response_rewrite":   PluginMultiResponseRewriteSchemaAttribute,
+	"syslog":                   PluginSyslogSchemaAttribute,
+	"gelf_http_logger":         PluginGELFHTTPLoggerSchemaAttribute,
 	//"custom":                   PluginCustomSchemaAttribute,
 })
