@@ -9,7 +9,7 @@ func (client ApiClient) CreateGlobalRule(id string, data map[string]interface{})
 }
 
 func (client ApiClient) UpdateGlobalRule(id string, data map[string]interface{}) (map[string]interface{}, error) {
-	return client.RunObject("PATCH", "/global_rules/"+id+"/__full__", &data)
+	return client.RunObject("PATCH", "/global_rules/"+id+"/__patch_terraform_plugin_apisix__", &data)
 }
 
 func (client ApiClient) DeleteGlobalRule(id string) (err error) {

@@ -9,7 +9,7 @@ func (client ApiClient) CreateStreamRoute(data map[string]interface{}) (map[stri
 }
 
 func (client ApiClient) UpdateStreamRoute(id string, data map[string]interface{}) (map[string]interface{}, error) {
-	return client.RunObject("PATCH", "/stream_routes/"+id, &data)
+	return client.RunObject("PUT", "/stream_routes/"+id, &data)
 }
 
 func (client ApiClient) DeleteStreamRoute(id string) (err error) {

@@ -9,7 +9,7 @@ func (client ApiClient) CreateUpstream(data map[string]interface{}) (map[string]
 }
 
 func (client ApiClient) UpdateUpstream(id string, data map[string]interface{}) (map[string]interface{}, error) {
-	return client.RunObject("PATCH", "/upstreams/"+id, &data)
+	return client.RunObject("PATCH", "/upstreams/"+id+"/__patch_terraform_plugin_apisix__", &data)
 }
 
 func (client ApiClient) DeleteUpstream(id string) (err error) {
