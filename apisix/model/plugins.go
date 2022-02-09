@@ -57,7 +57,7 @@ type PluginsType struct {
 	BasicAuth              *PluginBasicAuthType              `tfsdk:"basic-auth"`
 	ConsumerRestriction    *PluginConsumerRestrictionType    `tfsdk:"consumer-restriction"`
 	Cors                   *PluginCorsType                   `tfsdk:"cors"`
-	ExtPluginPostReqType   *PluginExtPluginPreReqType        `tfsdk:"ext-plugin-post-req"`
+	ExtPluginPostReqType   *PluginExtPluginPostReqType       `tfsdk:"ext-plugin-post-req"`
 	ExtPluginPreReqType    *PluginExtPluginPreReqType        `tfsdk:"ext-plugin-pre-req"`
 	GELFUDPLogger          *PluginGELFUDPLoggerType          `tfsdk:"gelf-udp-logger"`
 	GZIP                   *PluginGZIPType                   `tfsdk:"gzip"`
