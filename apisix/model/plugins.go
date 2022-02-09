@@ -7,8 +7,6 @@ import (
 //batch-requests
 //echo
 //server-info
-//ext-plugin-pre-req
-//ext-plugin-post-req
 //grpc-transcode
 //fault-injection
 //key-auth
@@ -56,48 +54,52 @@ type PluginCommonInterface interface {
 
 type PluginsType struct {
 	//Custom                 *[]PluginCustomType               `tfsdk:"custom"`
-	BasicAuth              *PluginBasicAuthType              `tfsdk:"basic_auth"`
-	ConsumerRestriction    *PluginConsumerRestrictionType    `tfsdk:"consumer_restriction"`
+	BasicAuth              *PluginBasicAuthType              `tfsdk:"basic-auth"`
+	ConsumerRestriction    *PluginConsumerRestrictionType    `tfsdk:"consumer-restriction"`
 	Cors                   *PluginCorsType                   `tfsdk:"cors"`
+	ExtPluginPostReqType   *PluginExtPluginPreReqType        `tfsdk:"ext-plugin-post-req"`
+	ExtPluginPreReqType    *PluginExtPluginPreReqType        `tfsdk:"ext-plugin-pre-req"`
+	GELFUDPLogger          *PluginGELFUDPLoggerType          `tfsdk:"gelf-udp-logger"`
 	GZIP                   *PluginGZIPType                   `tfsdk:"gzip"`
-	HTTPLogger             *PluginHTTPLoggerType             `tfsdk:"http_logger"`
-	GELFUDPLogger          *PluginGELFUDPLoggerType          `tfsdk:"gelf_udp_logger"`
-	IpRestriction          *PluginIpRestrictionType          `tfsdk:"ip_restriction"`
-	Prometheus             *PluginPrometheusType             `tfsdk:"prometheus"`
-	ProxyCache             *PluginProxyCacheType             `tfsdk:"proxy_cache"`
-	ProxyRewrite           *PluginProxyRewriteType           `tfsdk:"proxy_rewrite"`
-	RealIP                 *PluginRealIPType                 `tfsdk:"real_ip"`
-	Redirect               *PluginRedirectType               `tfsdk:"redirect"`
-	RedirectRegex          *PluginRedirectRegexType          `tfsdk:"redirect_regex"`
-	RequestId              *PluginRequestIdType              `tfsdk:"request_id"`
-	ResponseRewrite        *PluginResponseRewriteType        `tfsdk:"response_rewrite"`
-	ServerlessPostFunction *PluginServerlessPostFunctionType `tfsdk:"serverless_post_function"`
-	ServerlessPreFunction  *PluginServerlessPreFunctionType  `tfsdk:"serverless_pre_function"`
+	HTTPLogger             *PluginHTTPLoggerType             `tfsdk:"http-logger"`
 	Headers                *PluginHeadersType                `tfsdk:"headers"`
-	MultiResponseRewrite   *PluginMultiResponseRewriteType   `tfsdk:"multi_response_rewrite"`
+	IpRestriction          *PluginIpRestrictionType          `tfsdk:"ip-restriction"`
+	MultiResponseRewrite   *PluginMultiResponseRewriteType   `tfsdk:"multi-response-rewrite"`
+	Prometheus             *PluginPrometheusType             `tfsdk:"prometheus"`
+	ProxyCache             *PluginProxyCacheType             `tfsdk:"proxy-cache"`
+	ProxyRewrite           *PluginProxyRewriteType           `tfsdk:"proxy-rewrite"`
+	RealIP                 *PluginRealIPType                 `tfsdk:"real-ip"`
+	Redirect               *PluginRedirectType               `tfsdk:"redirect"`
+	RedirectRegex          *PluginRedirectRegexType          `tfsdk:"redirect-regex"`
+	RequestId              *PluginRequestIdType              `tfsdk:"request-id"`
+	ResponseRewrite        *PluginResponseRewriteType        `tfsdk:"response-rewrite"`
+	ServerlessPostFunction *PluginServerlessPostFunctionType `tfsdk:"serverless-post-function"`
+	ServerlessPreFunction  *PluginServerlessPreFunctionType  `tfsdk:"serverless-pre-function"`
 	Syslog                 *PluginSyslogType                 `tfsdk:"syslog"`
 }
 
 var PluginsSchemaAttribute = tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
-	"basic_auth":               PluginBasicAuthSchemaAttribute,
-	"consumer_restriction":     PluginConsumerRestrictionSchemaAttribute,
+	"basic-auth":               PluginBasicAuthSchemaAttribute,
+	"consumer-restriction":     PluginConsumerRestrictionSchemaAttribute,
 	"cors":                     PluginCorsSchemaAttribute,
+	"ext-plugin-post-req":      PluginExtPluginPostReqSchemaAttribute,
+	"ext-plugin-pre-req":       PluginExtPluginPreReqSchemaAttribute,
+	"gelf-udp-logger":          PluginGELFUDPLoggerSchemaAttribute,
 	"gzip":                     PluginGZIPSchemaAttribute,
-	"http_logger":              PluginHTTPLoggerSchemaAttribute,
-	"ip_restriction":           PluginIpRestrictionSchemaAttribute,
-	"prometheus":               PluginPrometheusSchemaAttribute,
-	"proxy_cache":              PluginProxyCacheSchemaAttribute,
-	"proxy_rewrite":            PluginProxyRewriteSchemaAttribute,
-	"real_ip":                  PluginRealIPSchemaAttribute,
-	"redirect":                 PluginRedirectSchemaAttribute,
-	"redirect_regex":           PluginRedirectRegexSchemaAttribute,
-	"request_id":               PluginRequestIdSchemaAttribute,
-	"response_rewrite":         PluginResponseRewriteSchemaAttribute,
-	"serverless_post_function": PluginServerlessPostFunctionSchemaAttribute,
-	"serverless_pre_function":  PluginServerlessPreFunctionSchemaAttribute,
 	"headers":                  PluginHeadersSchemaAttribute,
-	"multi_response_rewrite":   PluginMultiResponseRewriteSchemaAttribute,
+	"http-logger":              PluginHTTPLoggerSchemaAttribute,
+	"ip-restriction":           PluginIpRestrictionSchemaAttribute,
+	"multi-response-rewrite":   PluginMultiResponseRewriteSchemaAttribute,
+	"prometheus":               PluginPrometheusSchemaAttribute,
+	"proxy-cache":              PluginProxyCacheSchemaAttribute,
+	"proxy-rewrite":            PluginProxyRewriteSchemaAttribute,
+	"real-ip":                  PluginRealIPSchemaAttribute,
+	"redirect":                 PluginRedirectSchemaAttribute,
+	"redirect-regex":           PluginRedirectRegexSchemaAttribute,
+	"request-id":               PluginRequestIdSchemaAttribute,
+	"response-rewrite":         PluginResponseRewriteSchemaAttribute,
+	"serverless-post-function": PluginServerlessPostFunctionSchemaAttribute,
+	"serverless-pre-function":  PluginServerlessPreFunctionSchemaAttribute,
 	"syslog":                   PluginSyslogSchemaAttribute,
-	"gelf_udp_logger":          PluginGELFUDPLoggerSchemaAttribute,
 	//"custom":                   PluginCustomSchemaAttribute,
 })
