@@ -142,7 +142,7 @@ function _M.log(conf, ctx)
         local res = true
         local sock = udp()
         sock:settimeout(conf.timeout * 1000)
-        local ok, err = sock:setpeername("graylog.team.webbankir.cloud", 21002)
+        local ok, err = sock:setpeername(conf.host, conf.port)
         if not ok then
             return false, "failed to connect to UDP server: host[" .. conf.host
                     .. "] port[" .. tostring(conf.port) .. "] err: " .. err
