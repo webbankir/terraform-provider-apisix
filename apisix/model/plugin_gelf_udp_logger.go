@@ -8,7 +8,7 @@ import (
 	"github.com/webbankir/terraform-provider-apisix/apisix/validator"
 )
 
-type PluginGELFHTTPLoggerType struct {
+type PluginGELFUDPLoggerType struct {
 	Disable         types.Bool   `tfsdk:"disable"`
 	Host            types.String `tfsdk:"host"`
 	Port            types.Number `tfsdk:"port"`
@@ -19,19 +19,12 @@ type PluginGELFHTTPLoggerType struct {
 	MaxRetryCount   types.Number `tfsdk:"max_retry_count"`
 	RetryDelay      types.Number `tfsdk:"retry_delay"`
 	IncludeReqBody  types.Bool   `tfsdk:"include_req_body"`
+	BatchMaxSize    types.Number `tfsdk:"batch_max_size"`
 }
 
-// host = { type = "string" },
-//        port = { type = "integer" },
-//        timeout = { type = "integer", minimum = 1, default = 3 },
-//        name = { type = "string", default = "gelf http logger" },
-//        max_retry_count = { type = "integer", minimum = 0, default = 0 },
-//        retry_delay = { type = "integer", minimum = 0, default = 1 },
-//        buffer_duration = { type = "integer", minimum = 1, default = 60 },
-//        inactive_timeout = { type = "integer", minimum = 1, default = 5 },
-//        include_req_body = { type = "boolean", default = false },
+//
 
-var PluginGELFHTTPLoggerSchemaAttribute = tfsdk.Attribute{
+var PluginGELFUDPLoggerSchemaAttribute = tfsdk.Attribute{
 	Optional: true,
 	Attributes: tfsdk.SingleNestedAttributes(map[string]tfsdk.Attribute{
 		"disable": {
@@ -52,13 +45,14 @@ var PluginGELFHTTPLoggerSchemaAttribute = tfsdk.Attribute{
 			Type:        types.NumberType,
 			Description: "port of graylog",
 		},
+
 		"name": {
 			Optional:    true,
 			Computed:    true,
 			Type:        types.StringType,
 			Description: "A unique identifier to identity the logger.",
 			PlanModifiers: []tfsdk.AttributePlanModifier{
-				plan_modifier.DefaultString("gelf http logger"),
+				plan_modifier.DefaultString("gelf udp logger"),
 			},
 		},
 		"timeout": {
@@ -131,18 +125,28 @@ var PluginGELFHTTPLoggerSchemaAttribute = tfsdk.Attribute{
 				plan_modifier.DefaultBool(false),
 			},
 		},
+
+		"batch_max_size": {
+			Optional:    true,
+			Computed:    true,
+			Type:        types.NumberType,
+			Description: "Max size of each batch",
+			PlanModifiers: []tfsdk.AttributePlanModifier{
+				plan_modifier.DefaultNumber(1000),
+			},
+		},
 	}),
 }
 
-func (s PluginGELFHTTPLoggerType) Name() string { return "gelf-http-logger" }
+func (s PluginGELFUDPLoggerType) Name() string { return "gelf-udp-logger" }
 
-func (s PluginGELFHTTPLoggerType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
+func (s PluginGELFUDPLoggerType) MapToState(data map[string]interface{}, pluginsType *PluginsType) {
 	v := data[s.Name()]
 	if v == nil {
 		return
 	}
 	jsonData := v.(map[string]interface{})
-	item := PluginGELFHTTPLoggerType{}
+	item := PluginGELFUDPLoggerType{}
 
 	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
 	utils.MapValueToStringTypeValue(jsonData, "host", &item.Host)
@@ -154,11 +158,12 @@ func (s PluginGELFHTTPLoggerType) MapToState(data map[string]interface{}, plugin
 	utils.MapValueToNumberTypeValue(jsonData, "buffer_duration", &item.BufferDuration)
 	utils.MapValueToNumberTypeValue(jsonData, "max_retry_count", &item.MaxRetryCount)
 	utils.MapValueToNumberTypeValue(jsonData, "retry_delay", &item.RetryDelay)
+	utils.MapValueToNumberTypeValue(jsonData, "batch_max_size", &item.BatchMaxSize)
 
-	pluginsType.GELFHTTPLogger = &item
+	pluginsType.GELFUDPLogger = &item
 }
 
-func (s PluginGELFHTTPLoggerType) StateToMap(m map[string]interface{}) {
+func (s PluginGELFUDPLoggerType) StateToMap(m map[string]interface{}) {
 	pluginValue := map[string]interface{}{}
 
 	utils.BoolTypeValueToMap(s.Disable, pluginValue, "disable")
@@ -171,6 +176,7 @@ func (s PluginGELFHTTPLoggerType) StateToMap(m map[string]interface{}) {
 	utils.NumberTypeValueToMap(s.BufferDuration, pluginValue, "buffer_duration")
 	utils.NumberTypeValueToMap(s.MaxRetryCount, pluginValue, "max_retry_count")
 	utils.NumberTypeValueToMap(s.RetryDelay, pluginValue, "retry_delay")
+	utils.NumberTypeValueToMap(s.BatchMaxSize, pluginValue, "batch_max_size")
 
 	m[s.Name()] = pluginValue
 }
