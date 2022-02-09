@@ -57,12 +57,14 @@ func (s PluginExtPluginPreReqType) MapToState(data map[string]interface{}, plugi
 	utils.MapValueToBoolTypeValue(jsonData, "disable", &item.Disable)
 
 	var subItems []PluginExtPluginPreReqConfType
-	for _, vv := range jsonData["conf"].([]interface{}) {
-		subItem := PluginExtPluginPreReqConfType{}
-		subV := vv.(map[string]interface{})
-		utils.MapValueToStringTypeValue(subV, "name", &subItem.Name)
-		utils.MapValueToStringTypeValue(subV, "value", &subItem.Value)
-		subItems = append(subItems, subItem)
+	if v := jsonData["conf"]; v != nil {
+		for _, vv := range v.([]interface{}) {
+			subItem := PluginExtPluginPreReqConfType{}
+			subV := vv.(map[string]interface{})
+			utils.MapValueToStringTypeValue(subV, "name", &subItem.Name)
+			utils.MapValueToStringTypeValue(subV, "value", &subItem.Value)
+			subItems = append(subItems, subItem)
+		}
 	}
 
 	item.Config = subItems
@@ -79,9 +81,9 @@ func (s PluginExtPluginPreReqType) StateToMap(m map[string]interface{}) {
 		subItem := make(map[string]interface{})
 		utils.StringTypeValueToMap(vv.Name, subItem, "name")
 		utils.StringTypeValueToMap(vv.Value, subItem, "value")
+		subItems = append(subItems, subItem)
 	}
 
-	pluginValue["config"] = subItems
-
+	pluginValue["conf"] = subItems
 	m[s.Name()] = pluginValue
 }
