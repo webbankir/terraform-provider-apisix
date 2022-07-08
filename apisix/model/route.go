@@ -11,28 +11,28 @@ import (
 )
 
 type RouteType struct {
-	ID              types.String           `tfsdk:"id"`
-	Description     types.String           `tfsdk:"desc"`
-	EnableWebsocket types.Bool             `tfsdk:"enable_websocket"`
-	FilterFunc      types.String           `tfsdk:"filter_func"`
-	Host            types.String           `tfsdk:"host"`
-	Hosts           types.List             `tfsdk:"hosts"`
-	IsEnabled       types.Bool             `tfsdk:"is_enabled"`
-	Labels          types.Map              `tfsdk:"labels"`
-	Methods         types.List             `tfsdk:"methods"`
-	Name            types.String           `tfsdk:"name"`
-	PluginConfigId  types.String           `tfsdk:"plugin_config_id"`
-	Plugins         *PluginsType           `tfsdk:"plugins"`
-	Priority        types.Number           `tfsdk:"priority"`
-	RemoteAddr      types.String           `tfsdk:"remote_addr"`
-	RemoteAddrs     types.List             `tfsdk:"remote_addrs"`
-	Script          types.String           `tfsdk:"script"`
-	ServiceId       types.String           `tfsdk:"service_id"`
-	URI             types.String           `tfsdk:"uri"`
-	URIS            types.List             `tfsdk:"uris"`
-	Upstream        *UpstreamWithoutIDType `tfsdk:"upstream"`
-	UpstreamId      types.String           `tfsdk:"upstream_id"`
-	Vars            types.String           `tfsdk:"vars"`
+	ID              types.String  `tfsdk:"id"`
+	Description     types.String  `tfsdk:"desc"`
+	EnableWebsocket types.Bool    `tfsdk:"enable_websocket"`
+	FilterFunc      types.String  `tfsdk:"filter_func"`
+	Host            types.String  `tfsdk:"host"`
+	Hosts           types.List    `tfsdk:"hosts"`
+	IsEnabled       types.Bool    `tfsdk:"is_enabled"`
+	Labels          types.Map     `tfsdk:"labels"`
+	Methods         types.List    `tfsdk:"methods"`
+	Name            types.String  `tfsdk:"name"`
+	PluginConfigId  types.String  `tfsdk:"plugin_config_id"`
+	Plugins         *PluginsType  `tfsdk:"plugins"`
+	Priority        types.Number  `tfsdk:"priority"`
+	RemoteAddr      types.String  `tfsdk:"remote_addr"`
+	RemoteAddrs     types.List    `tfsdk:"remote_addrs"`
+	Script          types.String  `tfsdk:"script"`
+	ServiceId       types.String  `tfsdk:"service_id"`
+	URI             types.String  `tfsdk:"uri"`
+	URIS            types.List    `tfsdk:"uris"`
+	Upstream        *UpstreamType `tfsdk:"upstream"`
+	UpstreamId      types.String  `tfsdk:"upstream_id"`
+	Vars            types.String  `tfsdk:"vars"`
 }
 
 var RouteSchema = tfsdk.Schema{
@@ -171,8 +171,7 @@ var RouteSchema = tfsdk.Schema{
 			Optional:   true,
 			Attributes: PluginsSchemaAttribute,
 		},
-		"upstream": UpstreamSchemaWithoutIDAttribute,
-
+		"upstream": UpstreamSchemaSAttribute,
 		"vars": {
 			Optional: true,
 			Type:     types.StringType,
@@ -214,7 +213,7 @@ func RouteTypeMapToState(jsonMap map[string]interface{}) (*RouteType, error) {
 
 	utils.MapValueToMapTypeValue(jsonMap, "labels", &newState.Labels)
 
-	upstream, err := UpstreamTypeMapToStateWithoutId(jsonMap)
+	upstream, err := UpstreamTypeMapToState(jsonMap, false)
 	if err != nil {
 		return nil, err
 	}
@@ -306,7 +305,7 @@ func RouteTypeStateToMap(plan RouteType) (map[string]interface{}, error) {
 		output["plugins"] = plugins
 	}
 
-	upstream, err := UpstreamWithoutIdTypeStateToMap(plan.Upstream)
+	upstream, err := UpstreamTypeStateToMap(plan.Upstream)
 
 	if err != nil {
 		return nil, err

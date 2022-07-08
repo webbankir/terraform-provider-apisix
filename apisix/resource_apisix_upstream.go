@@ -19,9 +19,7 @@ func (r ResourceUpstreamType) NewResource(_ context.Context, p tfsdk.Provider) (
 }
 
 func (r ResourceUpstreamType) GetSchema(_ context.Context) (tfsdk.Schema, diag.Diagnostics) {
-	return tfsdk.Schema{
-		Attributes: model.UpstreamSchemaAttribute.Attributes.GetAttributes(),
-	}, nil
+	return model.UpstreamSchema, nil
 }
 
 func (r ResourceUpstreamType) Create(ctx context.Context, request tfsdk.CreateResourceRequest, response *tfsdk.CreateResourceResponse) {
@@ -51,7 +49,7 @@ func (r ResourceUpstreamType) Create(ctx context.Context, request tfsdk.CreateRe
 		return
 	}
 
-	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result})
+	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result}, true)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -95,7 +93,7 @@ func (r ResourceUpstreamType) Read(ctx context.Context, request tfsdk.ReadResour
 		return
 	}
 
-	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result})
+	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result}, true)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -140,7 +138,7 @@ func (r ResourceUpstreamType) Update(ctx context.Context, request tfsdk.UpdateRe
 		return
 	}
 
-	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result})
+	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result}, true)
 
 	if err != nil {
 		response.Diagnostics.AddError(
@@ -194,7 +192,7 @@ func (r ResourceUpstreamType) ImportState(ctx context.Context, request tfsdk.Imp
 		return
 	}
 
-	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result})
+	newState, err := model.UpstreamTypeMapToState(map[string]interface{}{"upstream": result}, true)
 
 	if err != nil {
 		response.Diagnostics.AddError(
