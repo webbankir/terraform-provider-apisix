@@ -1,5 +1,7 @@
 # terraform-provider-apisix
 
+!!!no longer supported by me !!!
+
 Only from 2.11.0 
 
 Don't use without next hook. [Docs](https://apisix.apache.org/docs/apisix/plugin-develop/#where-to-put-your-plugins) 
